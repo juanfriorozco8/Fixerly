@@ -1,11 +1,9 @@
-package uvg.plats.fixerly.ui.screens
+package uvg.plats.fixerly.ui.screens.client
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -22,10 +20,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-//import uvg.plats.fixerly.ui.screens.BottomNavigation.ScreenWithBottomNav
+//import uvg.plats.fixerly.ui.screens.components.BottomNavigation.ScreenWithBottomNav
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R
+import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
 @Composable
 fun LaborScreen() {

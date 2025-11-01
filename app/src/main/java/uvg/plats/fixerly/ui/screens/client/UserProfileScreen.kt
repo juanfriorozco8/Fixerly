@@ -1,4 +1,4 @@
-package uvg.plats.fixerly.ui.screens
+package uvg.plats.fixerly.ui.screens.client
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R
+import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
 @Composable
 fun UserProfileScreen() {

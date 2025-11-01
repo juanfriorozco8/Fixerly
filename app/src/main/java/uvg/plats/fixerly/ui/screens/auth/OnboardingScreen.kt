@@ -1,5 +1,6 @@
-package uvg.plats.fixerly.ui.screens
+package uvg.plats.fixerly.ui.screens.auth
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -17,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
-import androidx.compose.ui.text.font.FontFamily
 
 @Composable
 fun OnboardingScreen() {
@@ -91,7 +91,7 @@ fun ButtonsSection() {
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             3.dp,
             MaterialTheme.colorScheme.onPrimary
         )
@@ -114,7 +114,7 @@ fun ButtonsSection() {
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = androidx.compose.foundation.BorderStroke(
+        border = BorderStroke(
             3.dp,
             MaterialTheme.colorScheme.onPrimary
         )
