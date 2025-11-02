@@ -7,12 +7,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 // auth
-import uvg.plats.fixerly.ui.screens.OnboardingScreen
-import uvg.plats.fixerly.ui.screens.LoginScreen
-import uvg.plats.fixerly.ui.screens.RegisterScreen
-import uvg.plats.fixerly.ui.screens.AccountTypeScreen
-import uvg.plats.fixerly.ui.screens.AddressScreen
-import uvg.plats.fixerly.ui.screens.SupplierDataScreen
+import uvg.plats.fixerly.ui.screens.auth.OnboardingScreen
+import uvg.plats.fixerly.ui.screens.auth.LoginScreen
+import uvg.plats.fixerly.ui.screens.auth.RegisterScreen
+import uvg.plats.fixerly.ui.screens.auth.AccountTypeScreen
+import uvg.plats.fixerly.ui.screens.auth.AddressScreen
+import uvg.plats.fixerly.ui.screens.auth.SupplierDataScreen
 //client
 import uvg.plats.fixerly.ui.screens.client.LaborScreen
 import uvg.plats.fixerly.ui.screens.client.TusSolicitudesScreen

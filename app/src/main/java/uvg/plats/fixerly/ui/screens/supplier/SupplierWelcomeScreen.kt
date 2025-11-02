@@ -1,4 +1,4 @@
-package uvg.plats.fixerly.ui.screens
+package uvg.plats.fixerly.ui.screens.supplier
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R
+import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
 data class Cliente(
     val nombre: String,

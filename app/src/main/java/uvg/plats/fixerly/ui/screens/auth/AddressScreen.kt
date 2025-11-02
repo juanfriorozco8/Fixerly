@@ -1,4 +1,4 @@
-package uvg.plats.fixerly.ui.screens
+package uvg.plats.fixerly.ui.screens.auth
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
