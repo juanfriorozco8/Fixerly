@@ -22,7 +22,7 @@ Simple, rápido y sin complicarte la vida.
 - Se usa para manejar el **registro e inicio de sesión** de usuarios.
 - Diferencia entre cliente y proveedor.
 - Permite también la recuperación de contraseñas.
-- Plan usado: solo el **Gratuito (Spark Plan)**.
+- Plan usado: solo el **gratuito (Spark Plan)**.
 
 ### Cloud Firestore
 - Guarda las solicitudes de servicio y las respuestas de los proveedores.
@@ -30,13 +30,10 @@ Simple, rápido y sin complicarte la vida.
 - También se usa para almacenar la información de cada usuario.
 
 ### Room Database (SQLite)
-- **Base de datos local** que guarda información en el dispositivo.
-- Se usa para:
-  - Guardar solicitudes en **modo offline** (sin internet).
-  - Almacenar el perfil del usuario localmente.
-  - Mejorar la velocidad de la app (los datos se cargan más rápido).
-- Cuando hay internet, se sincroniza automáticamente con Firestore.
-- Plan usado: **Gratis** (viene incluido en Android).
+- Guarda información de forma local en el dispositivo.
+- Permite usar la app sin conexión a internet y mejora la velocidad al cargar datos.
+- Se sincroniza con Firestore cuando hay conexión.
+- Plan usado: el **gratis (incluido en Android)**.
 ---
 
 ## Librerías Usadas
