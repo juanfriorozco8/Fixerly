@@ -17,7 +17,7 @@ sealed class BottomNavItem(
 ) {
     object Profile : BottomNavItem("profile", R.drawable.ic_profile, "Perfil")
     object Home : BottomNavItem("home", R.drawable.ic_home, "Inicio")
-    object Messages : BottomNavItem("messages", R.drawable.ic_chat, "Mensajes")
+    //object Messages : BottomNavItem("messages", R.drawable.ic_chat, "Mensajes") *parte de mensajes, revisar bien si se añade o no por tiempo*
 }
 
 @Composable
@@ -28,7 +28,7 @@ fun BottomNavigation(
     val items = listOf(
         BottomNavItem.Profile,
         BottomNavItem.Home,
-        BottomNavItem.Messages
+        //BottomNavItem.Messages *parte de mensajes, revisar bien si se añade o no por tiempo*
     )
 
     NavigationBar(
@@ -65,7 +65,7 @@ fun ScreenWithBottomNav(
     onNavigate: (String) -> Unit = {},
     onNavigateToProfile: () -> Unit = {},   // Navegación real a Profile
     onNavigateToHome: () -> Unit = {},      // Navegación real a Home
-    onNavigateToMessages: () -> Unit = {},  // Navegación real a Messages
+    //onNavigateToMessages: () -> Unit = {},  // Navegación real a Messages *parte de mensajes, revisar bien si se añade o no por tiempo*
     content: @Composable () -> Unit
 ) {
     Scaffold(
@@ -77,7 +77,7 @@ fun ScreenWithBottomNav(
                     when (route) {
                         "profile" -> onNavigateToProfile()
                         "home" -> onNavigateToHome()
-                        "messages" -> onNavigateToMessages()
+                        //"messages" -> onNavigateToMessages() *parte de mensajes, revisar bien si se añade o no por tiempo*
                     }
                     onNavigate(route)  // También actualiza estado local
                 }

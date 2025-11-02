@@ -30,7 +30,7 @@ fun NavigationGraph(
         navController = navController,
         startDestination = OnboardingDestination
     ) {
-        // Onboarding
+        // parte del login y registro, como lo principal
         composable<OnboardingDestination> {
             OnboardingScreen(
                 onNavigateToLogin = { navController.navigate(LoginDestination) },
@@ -60,7 +60,7 @@ fun NavigationGraph(
             )
         }
 
-        // Register
+        // registro
         composable<RegisterDestination> {
             RegisterScreen(
                 onNavigateToLogin = {
@@ -74,7 +74,7 @@ fun NavigationGraph(
             )
         }
 
-        // Account Type
+        // tipo de cuenta
         composable<AccountTypeDestination> {
             AccountTypeScreen(
                 onNavigateToLogin = {
@@ -92,7 +92,7 @@ fun NavigationGraph(
             )
         }
 
-        // Address (Cliente)
+        // localizacion del cliente
         composable<AddressDestination> {
             AddressScreen(
                 onComplete = {
@@ -103,7 +103,7 @@ fun NavigationGraph(
             )
         }
 
-        // Supplier Data
+        // data del proveedor
         composable<SupplierDataDestination> { backStackEntry ->
             val args = backStackEntry.toRoute<SupplierDataDestination>()
             SupplierDataScreen(
@@ -117,7 +117,7 @@ fun NavigationGraph(
             )
         }
 
-        // === CLIENT SCREENS ===
+        // pantallas del cliente
         composable<LaborDestination> {
             LaborScreen(
                 onNavigateToProfile = { navController.navigate(UserProfileDestination) },
@@ -146,7 +146,7 @@ fun NavigationGraph(
                         popUpTo(LaborDestination) { inclusive = true }
                     }
                 },
-                onNavigateToMessages = { navController.navigate(YourRequestsDestination) }
+                //onNavigateToMessages = { navController.navigate(YourRequestsDestination) }
             )
         }
 
@@ -155,7 +155,7 @@ fun NavigationGraph(
             SupplierWelcomeScreen(
                 onNavigateToProfile = { navController.navigate(SupplierProfileDestination) },
                 onNavigateToHome = { /* Ya estamos aquí */ },
-                onNavigateToMessages = { /* Por implementar */ }
+                //onNavigateToMessages = { /* Por implementar */ }
             )
         }
 
@@ -167,7 +167,7 @@ fun NavigationGraph(
                         popUpTo(SupplierWelcomeDestination) { inclusive = true }
                     }
                 },
-                onNavigateToMessages = { /* Por implementar */ }
+                //onNavigateToMessages = { /* Por implementar */ }
             )
         }
     }

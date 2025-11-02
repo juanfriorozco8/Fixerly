@@ -28,9 +28,9 @@ import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
 @Composable
 fun LaborScreen(
-    onNavigateToProfile: () -> Unit = {},   // ← NUEVO: Navegar a perfil
-    onNavigateToHome: () -> Unit = {},      // ← NUEVO: Navegar a home (esta misma pantalla)
-    onNavigateToMessages: () -> Unit = {}   // ← NUEVO: Navegar a solicitudes
+    onNavigateToProfile: () -> Unit = {},   // ← Navegar a perfil
+    onNavigateToHome: () -> Unit = {},      // ← Navegar a home (esta misma pantalla)
+    onNavigateToMessages: () -> Unit = {}   // ← Navegar a solicitudes *parte de mensajes, revisar bien si se añade o no por tiempo*
 ) {
     var currentRoute by remember { mutableStateOf("home") }
 
@@ -40,7 +40,7 @@ fun LaborScreen(
             onNavigate = { route -> currentRoute = route },
             onNavigateToProfile = onNavigateToProfile,      // ← CAMBIO: Pasar callbacks
             onNavigateToHome = onNavigateToHome,
-            onNavigateToMessages = onNavigateToMessages
+            //onNavigateToMessages = onNavigateToMessages *parte de mensajes, revisar bien si se añade o no por tiempo*
         ) {
             LaborContent()
         }
@@ -267,7 +267,7 @@ fun LaborContent() {
 
             Button(
                 onClick = {
-                    // TODO: Enviar solicitud a base de datos
+                    // todito para enviar la soli a la base de datos
                 },
                 modifier = Modifier
                     .fillMaxWidth()

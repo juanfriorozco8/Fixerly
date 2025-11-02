@@ -39,9 +39,9 @@ data class RespuestaProveedor(
 
 @Composable
 fun TusSolicitudesScreen(
-    onNavigateToProfile: () -> Unit = {},   // ← NUEVO: Navegar a perfil
-    onNavigateToHome: () -> Unit = {},      // ← NUEVO: Navegar a home
-    onNavigateToMessages: () -> Unit = {}   // ← NUEVO: Navegar a mensajes (esta misma pantalla)
+    onNavigateToProfile: () -> Unit = {},   // ← Navegar a perfil
+    onNavigateToHome: () -> Unit = {},      // ← Navegar a home
+    onNavigateToMessages: () -> Unit = {}   // ← Navegar a mensajes (esta misma pantalla)
 ) {
     var currentRoute by remember { mutableStateOf("messages") }
 
@@ -51,7 +51,7 @@ fun TusSolicitudesScreen(
             onNavigate = { route -> currentRoute = route },
             onNavigateToProfile = onNavigateToProfile,      // ← CAMBIO: Pasar callbacks
             onNavigateToHome = onNavigateToHome,
-            onNavigateToMessages = onNavigateToMessages
+            //onNavigateToMessages = onNavigateToMessages *parte de mensajes, revisar bien si se añade o no por tiempo*
         ) {
             TusSolicitudesContent()
         }
