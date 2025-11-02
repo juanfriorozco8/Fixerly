@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import uvg.plats.fixerly.ui.screens.auth.OnboardingScreen
+import uvg.plats.fixerly.ui.navigation.NavigationGraph
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,13 +14,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             FixerlyTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    OnboardingScreen()
-                    // LoginScreen()
-                    // RegisterScreen()
-                    // AddressScreen()
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    NavigationGraph()
                 }
             }
         }

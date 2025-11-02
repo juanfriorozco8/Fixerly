@@ -1,4 +1,4 @@
-package uvg.plats.fixerly.ui.screens.auth
+package uvg.plats.fixerly.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,10 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +24,10 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    onNavigateToLogin: () -> Unit = {},         // Navega a login
+    onNavigateToAccountType: () -> Unit = {}    // Navega a selección de tipo de cuenta
+) {
     var nombre by remember { mutableStateOf("") }
     var apellidos by remember { mutableStateOf("") }
     var telefono by remember { mutableStateOf("") }
@@ -59,13 +60,11 @@ fun RegisterScreen() {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(bottom = 24.dp)
             ) {
-                 Image(
-                     painter = painterResource(id = R.drawable.logo_icon),
-                     contentDescription = "Logo",
-                     modifier = Modifier.size(70.dp)
-                 )
-
-                //Spacer(modifier = Modifier.width(12.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.logo_icon),
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(70.dp)
+                )
 
                 Text(
                     text = "Fixerly.",
@@ -130,7 +129,11 @@ fun RegisterScreen() {
             Spacer(modifier = Modifier.height(28.dp))
 
             Button(
-                onClick = { /* Navegar a siguiente pantalla */ },
+                onClick = {
+                    // Guardar datos y navegar a tipo de cuenta
+                            // Validar campos y guardar en base de datos
+                    onNavigateToAccountType()  // Usar callback
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -157,7 +160,6 @@ fun RegisterScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Link a login
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -174,7 +176,7 @@ fun RegisterScreen() {
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { /* Navegar a login */ }
+                    modifier = Modifier.clickable { onNavigateToLogin() }  // Usa callback
                 )
             }
 
@@ -209,10 +211,10 @@ fun FormField(
                 Text(
                     text = "Escribe acá",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontStyle = FontStyle.Italic
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
             },
-            visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
             colors = TextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,

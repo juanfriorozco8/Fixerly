@@ -1,10 +1,12 @@
-package uvg.plats.fixerly.ui.screens.auth
+package uvg.plats.fixerly.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -22,7 +24,11 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 
 @Composable
-fun SupplierDataScreen() {
+fun SupplierDataScreen(
+    accountType: String = "Proveedor",  // Recibe tipo de cuenta desde navegación
+    onNavigateBack: () -> Unit = {},    // Callback para regresar
+    onComplete: () -> Unit = {}         // Callback cuando complete el registro
+) {
     var contactoEmail by remember { mutableStateOf(false) }
     var contactoTelefono by remember { mutableStateOf(false) }
 
@@ -53,6 +59,7 @@ fun SupplierDataScreen() {
                     )
                 )
                 .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState())  // Agrega scroll
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -206,8 +213,14 @@ fun SupplierDataScreen() {
                     }
                 }
 
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Button(
-                    onClick = { /* ir a siguiente pantalla */ },
+                    onClick = {
+                        // Guarda datos de proveedor y completar registro
+                                // Guardar habilidades y detalles en base de datos
+                        onComplete()  // Usa callback para navegar a pantalla principal
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -228,6 +241,7 @@ fun SupplierDataScreen() {
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
+
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
@@ -244,13 +258,16 @@ fun SupplierDataScreen() {
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { /* Navegar anterior */ }
+                        modifier = Modifier.clickable { onNavigateBack() }  // Usa callback
                     )
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun SupplierDataScreenPreview() {

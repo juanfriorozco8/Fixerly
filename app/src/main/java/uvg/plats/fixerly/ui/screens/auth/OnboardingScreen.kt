@@ -1,6 +1,5 @@
-package uvg.plats.fixerly.ui.screens.auth
+package uvg.plats.fixerly.ui.screens
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -20,7 +19,10 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 
 @Composable
-fun OnboardingScreen() {
+fun OnboardingScreen(
+    onNavigateToLogin: () -> Unit = {},      // Callback para navegar a Login
+    onNavigateToRegister: () -> Unit = {}    // Callback para navegar a Register
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -45,28 +47,31 @@ fun OnboardingScreen() {
 
             Spacer(modifier = Modifier.height(90.dp))
 
-            ButtonsSection()
+            ButtonsSection(
+                onNavigateToLogin = onNavigateToLogin,        // Pasa callbacks
+                onNavigateToRegister = onNavigateToRegister
+            )
         }
     }
 }
 
 @Composable
 fun LogoSection() {
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(1.dp),
-        verticalAlignment = Alignment.CenterVertically
-
-    ){
-
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
         Image(
             painter = painterResource(id = R.drawable.logo_icon),
             contentDescription = "Logo Fixerly",
-            modifier = Modifier.size(90.dp)
+            modifier = Modifier
+                .size(90.dp)
                 .align(Alignment.CenterVertically)
-
         )
+
         Spacer(modifier = Modifier.width(1.dp))
 
         Text(
@@ -77,13 +82,15 @@ fun LogoSection() {
             textAlign = TextAlign.Center
         )
     }
-    }
-
+}
 
 @Composable
-fun ButtonsSection() {
+fun ButtonsSection(
+    onNavigateToLogin: () -> Unit = {},      // Recibe callbacks
+    onNavigateToRegister: () -> Unit = {}
+) {
     OutlinedButton(
-        onClick = { /* Navegar a registro */ },
+        onClick = onNavigateToRegister,  // Usa callback en vez de comentario
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),
@@ -91,7 +98,7 @@ fun ButtonsSection() {
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = BorderStroke(
+        border = androidx.compose.foundation.BorderStroke(
             3.dp,
             MaterialTheme.colorScheme.onPrimary
         )
@@ -106,7 +113,7 @@ fun ButtonsSection() {
     Spacer(modifier = Modifier.height(16.dp))
 
     OutlinedButton(
-        onClick = { /* Navegar a login */ },
+        onClick = onNavigateToLogin,  // Usa callback en vez de comentario
         modifier = Modifier
             .fillMaxWidth()
             .height(50.dp),
@@ -114,7 +121,7 @@ fun ButtonsSection() {
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.onPrimary
         ),
-        border = BorderStroke(
+        border = androidx.compose.foundation.BorderStroke(
             3.dp,
             MaterialTheme.colorScheme.onPrimary
         )

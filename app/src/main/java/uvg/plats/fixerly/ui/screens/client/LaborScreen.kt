@@ -20,7 +20,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-//import uvg.plats.fixerly.ui.screens.components.BottomNavigation.ScreenWithBottomNav
+import uvg.plats.fixerly.ui.screens.components.BottomNavigation.ScreenWithBottomNav
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R

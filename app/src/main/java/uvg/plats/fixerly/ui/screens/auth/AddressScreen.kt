@@ -1,4 +1,4 @@
-package uvg.plats.fixerly.ui.screens.auth
+package uvg.plats.fixerly.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,7 +21,9 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 
 @Composable
-fun AddressScreen() {
+fun AddressScreen(
+    onComplete: () -> Unit = {}  // Callback cuando se complete el registro (Cliente)
+) {
     var departamento by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
     var zona by remember { mutableStateOf("") }
@@ -54,13 +55,12 @@ fun AddressScreen() {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(bottom = 24.dp)
             ) {
-                 Image(
-                     painter = painterResource(id = R.drawable.logo_icon),
-                     contentDescription = "Logo",
-                     modifier = Modifier.size(70.dp),
-                     alignment = Alignment.Center
-                 )
-
+                Image(
+                    painter = painterResource(id = R.drawable.logo_icon),
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(70.dp),
+                    alignment = Alignment.Center
+                )
 
                 Text(
                     text = "Fixerly.",
@@ -141,7 +141,11 @@ fun AddressScreen() {
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { /* Finalizar registro */ },
+                onClick = {
+                    // Guarda dirección y completar registro
+                            // Guardar dirección en base de datos
+                    onComplete()  // Usar callback para navegar a pantalla principal
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -188,7 +192,7 @@ fun AddressField(
                 Text(
                     text = "Escribe acá",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontStyle = FontStyle.Italic,
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
                     fontSize = 13.sp
                 )
             },

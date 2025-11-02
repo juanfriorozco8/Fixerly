@@ -1,5 +1,4 @@
-package uvg.plats.fixerly.ui.screens.auth
-
+package uvg.plats.fixerly.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,9 +21,11 @@ import androidx.compose.ui.unit.sp
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 
-
 @Composable
-fun AccountTypeScreen() {
+fun AccountTypeScreen(
+    onNavigateToLogin: () -> Unit = {},     // Navega a login
+    onNavigateToNext: (String) -> Unit = {} // Navega a siguiente con tipo de cuenta
+) {
     var selectedType by remember { mutableStateOf<String?>(null) }
 
     FixerlyTheme {
@@ -136,14 +137,20 @@ fun AccountTypeScreen() {
                 Spacer(modifier = Modifier.height(40.dp))
 
                 Button(
-                    onClick = { /* Aquí irá navegación a DatosProveedorScreen */ },
+                    onClick = {
+                        // Navega según tipo seleccionado
+                        selectedType?.let { type ->
+                            onNavigateToNext(type)  // Pasa tipo de cuenta al callback
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
                     shape = RoundedCornerShape(50),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
-                    )
+                    ),
+                    enabled = selectedType != null  // Solo habilitar si hay selección
                 ) {
                     Text(
                         text = "Siguiente",
@@ -152,6 +159,7 @@ fun AccountTypeScreen() {
                         color = MaterialTheme.colorScheme.onSecondary
                     )
                 }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 HorizontalDivider(
@@ -178,7 +186,7 @@ fun AccountTypeScreen() {
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { /* Navegar a login */ }
+                        modifier = Modifier.clickable { onNavigateToLogin() }  // Usa callback
                     )
                 }
             }

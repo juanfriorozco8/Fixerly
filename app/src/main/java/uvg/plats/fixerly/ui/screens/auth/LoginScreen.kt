@@ -1,5 +1,4 @@
-package uvg.plats.fixerly.ui.screens.auth
-
+package uvg.plats.fixerly.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -24,7 +22,10 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 
 @Composable
-fun LoginScreen() {
+fun LoginScreen(
+    onNavigateToRegister: () -> Unit = {},  // Navega a registro
+    onLoginSuccess: (String) -> Unit = {}   // Callback cuando login exitoso, recibe tipo de cuenta
+) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -54,15 +55,11 @@ fun LoginScreen() {
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(bottom = 32.dp)
             ) {
-                 Image(
-                     painter = painterResource(id = R.drawable.logo_icon),
-                     contentDescription = "Logo",
-                     modifier = Modifier.size(80.dp),
-
-                 )
-
-
-                //Spacer(modifier = Modifier.width(12.dp))
+                Image(
+                    painter = painterResource(id = R.drawable.logo_icon),
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(80.dp)
+                )
 
                 Text(
                     text = "Fixerly.",
@@ -112,7 +109,7 @@ fun LoginScreen() {
                     Text(
                         text = "Escribe acá",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontStyle = FontStyle.Italic
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     )
                 },
                 colors = TextFieldDefaults.colors(
@@ -148,7 +145,7 @@ fun LoginScreen() {
                     Text(
                         text = "Escribe acá",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        fontStyle = FontStyle.Italic
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                     )
                 },
                 visualTransformation = PasswordVisualTransformation(),
@@ -166,7 +163,12 @@ fun LoginScreen() {
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = { /* Navegar a siguiente pantalla */ },
+                onClick = {
+                    // Simulación login y decidir tipo de cuenta
+                    //      Implementar lógica real de autenticación
+                    val accountType = "Cliente" // Por ahora hardcodeado, después vendrá de la base de datos
+                    onLoginSuccess(accountType)  // Llama al callback con tipo de cuenta
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -198,18 +200,18 @@ fun LoginScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "¿Ya tienes una cuenta? ",
+                    text = "¿No tienes una cuenta? ",
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
 
                 Text(
-                    text = "Inicia sesión",
+                    text = "Regístrate",
                     fontSize = 15.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { /* Navegar a login */ }
+                    modifier = Modifier.clickable { onNavigateToRegister() }
                 )
             }
         }

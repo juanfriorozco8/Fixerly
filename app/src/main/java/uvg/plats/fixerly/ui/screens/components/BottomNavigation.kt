@@ -1,7 +1,5 @@
-package uvg.plats.fixerly.ui.screens.components
+package uvg.plats.fixerly.ui.screens
 
-
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
@@ -65,17 +63,28 @@ fun BottomNavigation(
 fun ScreenWithBottomNav(
     currentRoute: String = "home",
     onNavigate: (String) -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},   // Navegación real a Profile
+    onNavigateToHome: () -> Unit = {},      // Navegación real a Home
+    onNavigateToMessages: () -> Unit = {},  // Navegación real a Messages
     content: @Composable () -> Unit
 ) {
     Scaffold(
         bottomBar = {
             BottomNavigation(
                 currentRoute = currentRoute,
-                onNavigate = onNavigate
+                onNavigate = { route ->
+                    // Mapea rutas a callbacks reales de navegación
+                    when (route) {
+                        "profile" -> onNavigateToProfile()
+                        "home" -> onNavigateToHome()
+                        "messages" -> onNavigateToMessages()
+                    }
+                    onNavigate(route)  // También actualiza estado local
+                }
             )
         }
     ) { paddingValues ->
-        Box(
+        androidx.compose.foundation.layout.Box(
             modifier = Modifier.padding(paddingValues)
         ) {
             content()
