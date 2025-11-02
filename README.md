@@ -29,6 +29,14 @@ Simple, rápido y sin complicarte la vida.
 - Permite que todo se actualice **en tiempo real** (si un proveedor responde, el cliente lo ve al instante).
 - También se usa para almacenar la información de cada usuario.
 
+### Room Database (SQLite)
+- **Base de datos local** que guarda información en el dispositivo.
+- Se usa para:
+  - Guardar solicitudes en **modo offline** (sin internet).
+  - Almacenar el perfil del usuario localmente.
+  - Mejorar la velocidad de la app (los datos se cargan más rápido).
+- Cuando hay internet, se sincroniza automáticamente con Firestore.
+- Plan usado: **Gratis** (viene incluido en Android).
 ---
 
 ## Librerías Usadas
