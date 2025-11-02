@@ -1,4 +1,4 @@
-package uvg.plats.fixerly.ui.screens
+package uvg.plats.fixerly.ui.screens.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
