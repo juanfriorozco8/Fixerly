@@ -10,6 +10,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -25,6 +27,7 @@ import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
+// Estructura para guardar los datos de un cliente
 data class Cliente(
     val nombre: String,
     val zona: String,
@@ -34,9 +37,9 @@ data class Cliente(
 
 @Composable
 fun SupplierWelcomeScreen(
-    onNavigateToProfile: () -> Unit = {},   // ← NUEVO: Navegar a perfil
-    onNavigateToHome: () -> Unit = {},      // ← NUEVO: Navegar a home (esta misma pantalla)
-    onNavigateToMessages: () -> Unit = {}   // ← NUEVO: Navegar a mensajes
+    onNavigateToProfile: () -> Unit = {},   // Para navegar a la pantalla de perfil
+    onNavigateToHome: () -> Unit = {},      // Para volver a la pantalla de inicio
+    // onNavigateToMessages: () -> Unit = {}   // Para ir a la pantalla de mensajes *parte de mensajes, revisar bien si se añade o no por tiempo*
 ) {
     var currentRoute by remember { mutableStateOf("home") }
 
@@ -44,10 +47,11 @@ fun SupplierWelcomeScreen(
         ScreenWithBottomNav(
             currentRoute = currentRoute,
             onNavigate = { route -> currentRoute = route },
-            onNavigateToProfile = onNavigateToProfile,      // ← CAMBIO: Pasar callbacks
-            onNavigateToHome = onNavigateToHome,
-            onNavigateToMessages = onNavigateToMessages
+            onNavigateToProfile = onNavigateToProfile,      // Pasamos la función para navegar al perfil
+            onNavigateToHome = onNavigateToHome,            // Pasamos la función para navegar al inicio
+            //onNavigateToMessages = onNavigateToMessages     // Pasamos la función para navegar a los mensajes *parte de mensajes, revisar bien si se añade o no por tiempo*
         ) {
+            // Aquí adentro va todo el contenido de la pantalla
             SupplierWelcomeScreenContent()
         }
     }
@@ -55,6 +59,7 @@ fun SupplierWelcomeScreen(
 
 @Composable
 fun SupplierWelcomeScreenContent() {
+    // Lista de categorías para los filtros
     val categorias = listOf(
         "Plomería",
         "Limpieza y lavandería",
@@ -67,8 +72,10 @@ fun SupplierWelcomeScreenContent() {
         "Todos"
     )
 
+    // Variable para saber qué filtro está seleccionado
     var categoriaSeleccionada by remember { mutableStateOf("Todos") }
 
+    // Lista de clientes de ejemplo para mostrar en la pantalla
     val clientes = listOf(
         Cliente(
             nombre = "Juan Pérez",
@@ -103,11 +110,13 @@ fun SupplierWelcomeScreenContent() {
     )
 
     FixerlyTheme {
+        // La columna principal que organiza todo
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(White)
         ) {
+            // Barra superior con el logo y nombre de la app
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -134,6 +143,7 @@ fun SupplierWelcomeScreenContent() {
                 }
             }
 
+            // Imagen grande de bienvenida con un texto encima
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -145,6 +155,7 @@ fun SupplierWelcomeScreenContent() {
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
+                // Capa oscura para que el texto se lea mejor
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -160,6 +171,7 @@ fun SupplierWelcomeScreenContent() {
                 }
             }
 
+            // Sección para los filtros de categoría
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -173,6 +185,7 @@ fun SupplierWelcomeScreenContent() {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
+                // Fila que se puede deslizar para ver todas las categorías
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -198,12 +211,14 @@ fun SupplierWelcomeScreenContent() {
                 }
             }
 
+            // Línea para separar las secciones
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 thickness = 1.dp
             )
 
+            // Lista deslizable con las tarjetas de los clientes
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -234,11 +249,13 @@ fun ClientCard(cliente: Cliente) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // Fila superior con la info del cliente y el botón
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Parte izquierda: foto y nombre del cliente
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
@@ -265,8 +282,9 @@ fun ClientCard(cliente: Cliente) {
                     )
                 }
 
+                // Botón para que el proveedor envíe su información
                 Button(
-                    onClick = { /* Enviar información */ },
+                    onClick = { /* poner la logica recordar */ },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     ),
@@ -283,6 +301,7 @@ fun ClientCard(cliente: Cliente) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
+            // Detalles del problema del cliente
             Text(
                 text = "Ubicación: ${cliente.zona}",
                 fontSize = 14.sp,
@@ -307,6 +326,7 @@ fun ClientCard(cliente: Cliente) {
     }
 }
 
+// Así se ve la pantalla en el preview de Android Studio
 @Preview(showBackground = true)
 @Composable
 fun SupplierWelcomeScreenPreview() {

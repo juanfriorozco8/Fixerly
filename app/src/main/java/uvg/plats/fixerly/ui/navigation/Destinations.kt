@@ -2,7 +2,7 @@ package uvg.plats.fixerly.ui.navigation
 
 import kotlinx.serialization.Serializable
 
-// ========== AUTH FLOW (Register, Login, etc) ==========
+// flujo de la autenticacion, login y eso
 @Serializable
 data object OnboardingDestination
 
@@ -24,7 +24,7 @@ data class SupplierDataDestination(
 )
 
 
-// ========== CLIENT FLOW ==========
+// navs y flujo del cliente
 @Serializable
 data object LaborDestination
 
@@ -35,7 +35,7 @@ data object YourRequestsDestination
 data object UserProfileDestination
 
 
-// ========== SUPPLIER FLOW ==========
+// navs y flujo del proveedor
 @Serializable
 data object SupplierWelcomeDestination
 
