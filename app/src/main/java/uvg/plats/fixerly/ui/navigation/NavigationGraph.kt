@@ -30,6 +30,7 @@ fun NavigationGraph(
         navController = navController,
         startDestination = OnboardingDestination
     ) {
+
         // parte del login y registro, como lo principal
         composable<OnboardingDestination> {
             OnboardingScreen(
