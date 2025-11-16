@@ -196,7 +196,7 @@ fun SupplierWelcomeScreenContent() {
                 text = "Filtrar por categoría:",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,  // ← CAMBIO: Era .primary, ahora .onSurface
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO: antes era .primary
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 

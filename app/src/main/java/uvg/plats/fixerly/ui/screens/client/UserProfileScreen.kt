@@ -3,21 +3,19 @@ package uvg.plats.fixerly.ui.screens.client
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R
@@ -37,40 +35,35 @@ fun UserProfileScreen(
             onNavigateToProfile = onNavigateToProfile,
             onNavigateToHome = onNavigateToHome,
         ) {
-            UserProfileContent()
+            // ← CAMBIO: Agregar Box con degradado
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.background,
+                                MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    )
+            ) {
+                UserProfileContent()
+            }
         }
     }
 }
 
 @Composable
 fun UserProfileContent() {
-    // CAMBIO: Column con degradado en vez de fondo blanco
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.background,           // ← NUEVO: Arriba
-                        MaterialTheme.colorScheme.primaryContainer      // ← NUEVO: Abajo
-                    )
-                )
-            )
-            .verticalScroll(rememberScrollState()),  // ← NUEVO: Scroll para contenido largo
+        modifier = Modifier.fillMaxSize(),  // ← CAMBIO: Quitar .background(White)
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // CAMBIO: Banner superior con degradado
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primaryContainer
-                        )
-                    )
-                )
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(vertical = 16.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -88,14 +81,13 @@ fun UserProfileContent() {
                     text = "Fixerly.",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary  // ← CAMBIO: Era White
+                    color = MaterialTheme.colorScheme.onPrimary  // ← CAMBIO: antes White
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        // CAMBIO: Icono de perfil circular
         Box(
             modifier = Modifier
                 .size(180.dp)
@@ -107,9 +99,9 @@ fun UserProfileContent() {
                 painter = painterResource(id = R.drawable.ic_profile),
                 contentDescription = "Foto de perfil",
                 modifier = Modifier
-                    .size(160.dp)           // ← CAMBIO: Más pequeño que contenedor
-                    .clip(CircleShape),     // ← NUEVO: Clip circular
-                contentScale = ContentScale.Crop  // ← NUEVO: Ajustar contenido
+                    .size(160.dp)  // ← CAMBIO: Más pequeño que contenedor
+                    .clip(CircleShape),  // ← NUEVO
+                contentScale = ContentScale.Crop  // ← NUEVO
             )
         }
 
@@ -121,7 +113,6 @@ fun UserProfileContent() {
                 .padding(horizontal = 32.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            // CAMBIO: Usar onBackground en vez de primary para que funcione en dark/light
             Text(
                 text = "Nombre:",
                 fontSize = 16.sp,
@@ -140,13 +131,13 @@ fun UserProfileContent() {
             Text(
                 text = "Apellidos:",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Apellidos del Usuario",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Bold
             )
 
@@ -155,13 +146,13 @@ fun UserProfileContent() {
             Text(
                 text = "Número de celular:",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "1111 1111",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Bold
             )
 
@@ -170,13 +161,13 @@ fun UserProfileContent() {
             Text(
                 text = "Correo electrónico:",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Usuario@gmail.com",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Bold
             )
 
@@ -185,18 +176,18 @@ fun UserProfileContent() {
             Text(
                 text = "Cambiar Contraseña",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Usuario@gmail.com",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
                 fontWeight = FontWeight.Bold
             )
         }
 
-        Spacer(modifier = Modifier.height(40.dp))  // ← NUEVO: Espacio al final
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
