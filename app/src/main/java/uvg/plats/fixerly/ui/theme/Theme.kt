@@ -27,14 +27,14 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = DarkBackgroundBottom,               // ← CAMBIO: Oscuro por defecto
+    primary = DarkBackgroundBottom,
     onPrimary = White,
-    primaryContainer = DarkPrimary,               // ← CAMBIO: Claro al presionar
+    primaryContainer = DarkPrimary,
     onPrimaryContainer = White,
 
-    secondary = DarkSecondaryDark,                // ← CAMBIO: Verde oscuro
+    secondary = DarkSecondaryDark,
     onSecondary = White,
-    secondaryContainer = DarkSecondary,           // ← NUEVO: Verde claro al presionar
+    secondaryContainer = DarkSecondary,
 
     background = DarkBackgroundTop,
     onBackground = White,

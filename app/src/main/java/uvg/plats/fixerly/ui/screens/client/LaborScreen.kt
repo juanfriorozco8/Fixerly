@@ -67,19 +67,17 @@ fun LaborContent() {
     var descripcionBreve by remember { mutableStateOf(TextFieldValue("")) }
     var descripcionDetallada by remember { mutableStateOf(TextFieldValue("")) }
 
-    // ========================================
-    // FONDO CON DEGRADADO (como light mode)
-    // ========================================
+
     val backgroundBrush = if (isDarkMode) {
         Brush.verticalGradient(
             colors = listOf(
-                DarkBackgroundTop,      // Azul muy oscuro arriba
-                DarkBackgroundBottom    // Azul oscuro abajo
+                DarkBackgroundTop,
+                DarkBackgroundBottom
             )
         )
     } else {
         Brush.verticalGradient(
-            colors = listOf(White, White)  // Blanco sólido en light mode
+            colors = listOf(White, White)
         )
     }
 
@@ -87,17 +85,15 @@ fun LaborContent() {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = backgroundBrush)  // ← DEGRADADO aplicado
+            .background(brush = backgroundBrush)
             .verticalScroll(rememberScrollState())
     ) {
-        // ========================================
-        // BANNER FIXERLY (sin cambios)
-        // ========================================
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primary)
-                .padding(vertical = 12.dp),  // ← Reducido de 16dp a 12dp
+                .padding(vertical = 12.dp),
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -107,25 +103,23 @@ fun LaborContent() {
                 Image(
                     painter = painterResource(id = R.drawable.logo_icon),
                     contentDescription = "Logo",
-                    modifier = Modifier.size(36.dp)  // ← Reducido de 40dp a 36dp
+                    modifier = Modifier.size(36.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Fixerly.",
-                    fontSize = 28.sp,  // ← Reducido de 32sp a 28sp
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = White
                 )
             }
         }
 
-        // ========================================
-        // IMAGEN DE BIENVENIDA (más delgada)
-        // ========================================
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)  // ← REDUCIDO de 160dp a 100dp
+                .height(100.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.herramientas),
@@ -141,30 +135,26 @@ fun LaborContent() {
             ) {
                 Text(
                     text = "¡Manos a la\nobra!",
-                    fontSize = 36.sp,  // ← Reducido de 42sp a 36sp
+                    fontSize = 36.sp,
                     fontWeight = FontWeight.Bold,
                     color = White,
                     textAlign = TextAlign.Center,
-                    lineHeight = 40.sp  // ← Reducido de 46sp a 40sp
+                    lineHeight = 40.sp
                 )
             }
         }
 
-        // ========================================
-        // CONTENIDO PRINCIPAL
-        // ========================================
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 12.dp)  // ← Reducido padding vertical
+                .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // ========================================
-                // COLUMNA IZQUIERDA: Categorías
-                // ========================================
+
                 Column(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
@@ -173,23 +163,23 @@ fun LaborContent() {
                         text = "Selecciona la categoría\nde la problemática en la\nque te podemos ayudar:",
                         color = MaterialTheme.colorScheme.onBackground,  // ← Texto adaptable
                         fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,  // ← Reducido de 15sp a 14sp
-                        lineHeight = 17.sp  // ← Reducido de 18sp a 17sp
+                        fontSize = 14.sp,
+                        lineHeight = 17.sp
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))  // ← Reducido de 10dp a 8dp
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     categorias.forEach { categoria ->
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 2.dp),  // ← Reducido de 3dp a 2dp
+                                .padding(vertical = 2.dp),
                             shape = RoundedCornerShape(8.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = if (categoriaSeleccionada == categoria) {
                                     MaterialTheme.colorScheme.primary
                                 } else {
-                                    MaterialTheme.colorScheme.surface  // ← Card con color correcto
+                                    MaterialTheme.colorScheme.surface
                                 }
                             ),
                             elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
@@ -199,23 +189,21 @@ fun LaborContent() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable { categoriaSeleccionada = categoria }
-                                    .padding(8.dp),  // ← Reducido de 10dp a 8dp
+                                    .padding(8.dp),
                                 color = if (categoriaSeleccionada == categoria) {
                                     White
                                 } else {
-                                    MaterialTheme.colorScheme.onSurface  // ← Texto adaptable
+                                    MaterialTheme.colorScheme.onSurface
                                 },
-                                fontSize = 12.sp  // ← Reducido de 13sp a 12sp
+                                fontSize = 12.sp
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))  // ← Reducido de 20dp a 16dp
+                Spacer(modifier = Modifier.width(16.dp))
 
-                // ========================================
-                // COLUMNA DERECHA: Descripciones
-                // ========================================
+
                 Column(
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.Start
@@ -311,18 +299,16 @@ fun LaborContent() {
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))  // ← Reducido de 20dp a 16dp
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // ========================================
-            // BOTÓN ENVIAR
-            // ========================================
+
             Button(
                 onClick = {
                     // Enviar solicitud a la base de datos
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp),  // ← Reducido de 52dp a 50dp
+                    .height(50.dp),
                 shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
@@ -336,7 +322,7 @@ fun LaborContent() {
                 )
             }
 
-            Spacer(modifier = Modifier.height(12.dp))  // ← Reducido de 16dp a 12dp
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }

@@ -25,8 +25,8 @@ import uvg.plats.fixerly.R
 
 @Composable
 fun RegisterScreen(
-    onNavigateToLogin: () -> Unit = {},         // Navega a login
-    onNavigateToAccountType: () -> Unit = {}    // Navega a selección de tipo de cuenta
+    onNavigateToLogin: () -> Unit = {},
+    onNavigateToAccountType: () -> Unit = {}
 ) {
     var nombre by remember { mutableStateOf("") }
     var apellidos by remember { mutableStateOf("") }
@@ -50,15 +50,15 @@ fun RegisterScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(32.dp),
+                .padding(horizontal = 32.dp)
+                .padding(vertical = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(bottom = 24.dp)
+                horizontalArrangement = Arrangement.Center
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_icon),
@@ -75,8 +75,7 @@ fun RegisterScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 text = "¡Crea tu cuenta!",
                 fontSize = 30.sp,
@@ -85,7 +84,7 @@ fun RegisterScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             FormField(
                 label = "Nombre",
@@ -93,7 +92,7 @@ fun RegisterScreen(
                 onValueChange = { nombre = it }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             FormField(
                 label = "Apellidos",
@@ -101,7 +100,7 @@ fun RegisterScreen(
                 onValueChange = { apellidos = it }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             FormField(
                 label = "Número de celular",
@@ -109,15 +108,14 @@ fun RegisterScreen(
                 onValueChange = { telefono = it }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
+            Spacer(modifier = Modifier.height(20.dp))
             FormField(
                 label = "Correo electrónico",
                 value = email,
                 onValueChange = { email = it }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             FormField(
                 label = "Crea una contraseña",
@@ -126,13 +124,11 @@ fun RegisterScreen(
                 isPassword = true
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(30.dp))
 
             Button(
                 onClick = {
-                    // Guardar datos y navegar a tipo de cuenta
-                            // Validar campos y guardar en base de datos
-                    onNavigateToAccountType()  // Usar callback
+                    onNavigateToAccountType()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -150,7 +146,7 @@ fun RegisterScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
@@ -158,7 +154,7 @@ fun RegisterScreen(
                 thickness = 1.dp
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Row(
                 horizontalArrangement = Arrangement.Center,
@@ -176,11 +172,11 @@ fun RegisterScreen(
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable { onNavigateToLogin() }  // Usa callback
+                    modifier = Modifier.clickable { onNavigateToLogin() }
                 )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }

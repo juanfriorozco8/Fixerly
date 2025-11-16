@@ -35,7 +35,7 @@ fun BottomNavigation(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = White,
         tonalElevation = 8.dp,
-        modifier = Modifier.height(90.dp)  // ← CAMBIO: De 70dp a 90dp (más grueso)
+        modifier = Modifier.height(90.dp)
     ) {
         items.forEach { item ->
             NavigationBarItem(
@@ -43,8 +43,13 @@ fun BottomNavigation(
                     Icon(
                         painter = painterResource(id = item.iconRes),
                         contentDescription = item.label,
-                        modifier = Modifier.size(32.dp),  // ← CAMBIO: De 28dp a 32dp
-                        tint = if (currentRoute == item.route) White else White.copy(alpha = 0.6f)  // ← NUEVO: Tint explícito
+                        modifier = Modifier.size(32.dp),
+                        // ✅ CAMBIO: tint explícito con color sólido
+                        tint = if (currentRoute == item.route) {
+                            White
+                        } else {
+                            White.copy(alpha = 0.6f)
+                        }
                     )
                 },
                 selected = currentRoute == item.route,
@@ -56,8 +61,7 @@ fun BottomNavigation(
                     unselectedTextColor = White.copy(alpha = 0.6f),
                     indicatorColor = MaterialTheme.colorScheme.primaryContainer
                 ),
-                modifier = Modifier  // ← NUEVO: Alineación vertical
-                    .align(Alignment.CenterVertically)
+                modifier = Modifier.align(Alignment.CenterVertically)
             )
         }
     }

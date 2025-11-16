@@ -24,9 +24,9 @@ import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
 @Composable
 fun SupplierProfileScreen(
-    onNavigateToProfile: () -> Unit = {},   // ← Navegar a perfil (esta misma pantalla)
-    onNavigateToHome: () -> Unit = {},      // ← Navegar a home
-    // onNavigateToMessages: () -> Unit = {}   // ← Navegar a mensajes *parte de mensajes, revisar bien si se añade o no por tiempo*
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    // onNavigateToMessages: () -> Unit = {}   // Navegar a mensajes *parte de mensajes, revisar bien si se añade o no por tiempo*
 ) {
     var currentRoute by remember { mutableStateOf("profile") }
 
@@ -34,7 +34,7 @@ fun SupplierProfileScreen(
         ScreenWithBottomNav(
             currentRoute = currentRoute,
             onNavigate = { route -> currentRoute = route },
-            onNavigateToProfile = onNavigateToProfile,      // ← CAMBIO: Pasar callbacks
+            onNavigateToProfile = onNavigateToProfile,
             onNavigateToHome = onNavigateToHome,
             //onNavigateToMessages = onNavigateToMessages *parte de mensajes, revisar bien si se añade o no por tiempo*
         ) {

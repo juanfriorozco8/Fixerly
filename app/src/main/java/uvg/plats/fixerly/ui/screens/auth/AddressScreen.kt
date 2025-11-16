@@ -22,7 +22,7 @@ import uvg.plats.fixerly.R
 
 @Composable
 fun AddressScreen(
-    onComplete: () -> Unit = {}  // Callback cuando se complete el registro (Cliente)
+    onComplete: () -> Unit = {}
 ) {
     var departamento by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
@@ -45,15 +45,15 @@ fun AddressScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(32.dp),
+                .padding(horizontal = 32.dp)
+                .padding(vertical = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(100.dp))
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(bottom = 24.dp)
+                horizontalArrangement = Arrangement.Center
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_icon),
@@ -71,8 +71,7 @@ fun AddressScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
+            Spacer(modifier = Modifier.height(90.dp))
             Text(
                 text = "¿Listo para comenzar?",
                 fontSize = 24.sp,
@@ -89,7 +88,7 @@ fun AddressScreen(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             HorizontalDivider(
                 modifier = Modifier.width(200.dp),
@@ -97,15 +96,14 @@ fun AddressScreen(
                 thickness = 2.dp
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
-
+            Spacer(modifier = Modifier.height(36.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     AddressField(
                         label = "Departamento",
@@ -122,7 +120,7 @@ fun AddressScreen(
 
                 Column(
                     modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     AddressField(
                         label = "Dirección",
@@ -138,13 +136,11 @@ fun AddressScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(60.dp))
 
             Button(
                 onClick = {
-                    // Guarda dirección y completar registro
-                            // Guardar dirección en base de datos
-                    onComplete()  // Usar callback para navegar a pantalla principal
+                    onComplete()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -162,7 +158,7 @@ fun AddressScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
         }
     }
 }

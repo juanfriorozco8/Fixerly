@@ -105,9 +105,7 @@ fun SupplierWelcomeScreenContent() {
         )
     )
 
-    // ========================================
-    // FONDO CON DEGRADADO
-    // ========================================
+
     val backgroundBrush = if (isDarkMode) {
         Brush.verticalGradient(
             colors = listOf(
@@ -124,16 +122,14 @@ fun SupplierWelcomeScreenContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = backgroundBrush)  // ← DEGRADADO aplicado
+            .background(brush = backgroundBrush)
     ) {
-        // ========================================
-        // BANNER FIXERLY (más compacto)
-        // ========================================
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primary)
-                .padding(vertical = 12.dp),  // ← Reducido
+                .padding(vertical = 12.dp),
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -143,25 +139,22 @@ fun SupplierWelcomeScreenContent() {
                 Image(
                     painter = painterResource(id = R.drawable.logo_icon),
                     contentDescription = "Logo",
-                    modifier = Modifier.size(36.dp)  // ← Reducido
+                    modifier = Modifier.size(36.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Fixerly.",
-                    fontSize = 28.sp,  // ← Reducido
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
 
-        // ========================================
-        // IMAGEN DE BIENVENIDA (más delgada)
-        // ========================================
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)  // ← REDUCIDO de 180dp a 100dp
+                .height(100.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.herramientas),
@@ -177,26 +170,24 @@ fun SupplierWelcomeScreenContent() {
             ) {
                 Text(
                     text = "¡Bienvenido!",
-                    fontSize = 40.sp,  // ← Reducido de 48sp
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
                     color = White
                 )
             }
         }
 
-        // ========================================
-        // FILTROS (más compactos y arriba)
-        // ========================================
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 10.dp)  // ← Reducido padding vertical
+                .padding(horizontal = 16.dp, vertical = 10.dp)
         ) {
             Text(
                 text = "Filtrar por categoría:",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,  // ← CAMBIO: Era .primary, ahora .onSurface
+                color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -210,7 +201,7 @@ fun SupplierWelcomeScreenContent() {
                         label = {
                             Text(
                                 text = categoria,
-                                fontSize = 13.sp  // ← Reducido de 14sp
+                                fontSize = 13.sp
                             )
                         },
                         colors = FilterChipDefaults.filterChipColors(
@@ -231,15 +222,13 @@ fun SupplierWelcomeScreenContent() {
             thickness = 1.dp
         )
 
-        // ========================================
-        // LISTA DE CLIENTES
-        // ========================================
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 12.dp)  // ← Reducido de 16dp
+            contentPadding = PaddingValues(vertical = 12.dp)
         ) {
             items(clientes) { cliente ->
                 ClientCard(cliente = cliente)
@@ -254,7 +243,7 @@ fun ClientCard(cliente: Cliente) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface  // ← Color correcto
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {

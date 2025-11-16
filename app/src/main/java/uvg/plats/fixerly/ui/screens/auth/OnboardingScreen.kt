@@ -20,8 +20,8 @@ import uvg.plats.fixerly.R
 
 @Composable
 fun OnboardingScreen(
-    onNavigateToLogin: () -> Unit = {},      // Callback para navegar a Login
-    onNavigateToRegister: () -> Unit = {}    // Callback para navegar a Register
+    onNavigateToLogin: () -> Unit = {},
+    onNavigateToRegister: () -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -33,24 +33,27 @@ fun OnboardingScreen(
                         MaterialTheme.colorScheme.primaryContainer
                     )
                 )
-            ),
-        contentAlignment = Alignment.Center
+            )
     ) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(horizontal = 32.dp)
+                .padding(vertical = 60.dp)
         ) {
+            Spacer(modifier = Modifier.height(180.dp))
+
             LogoSection()
 
-            Spacer(modifier = Modifier.height(90.dp))
-
             ButtonsSection(
-                onNavigateToLogin = onNavigateToLogin,        // Pasa callbacks
+                onNavigateToLogin = onNavigateToLogin,
                 onNavigateToRegister = onNavigateToRegister
             )
+
+            Spacer(modifier = Modifier.height(180.dp))
         }
     }
 }
@@ -86,51 +89,56 @@ fun LogoSection() {
 
 @Composable
 fun ButtonsSection(
-    onNavigateToLogin: () -> Unit = {},      // Recibe callbacks
+    onNavigateToLogin: () -> Unit = {},
     onNavigateToRegister: () -> Unit = {}
 ) {
-    OutlinedButton(
-        onClick = onNavigateToRegister,  // Usa callback en vez de comentario
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(50),
-        colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            3.dp,
-            MaterialTheme.colorScheme.onPrimary
-        )
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(
-            text = "Regístrate",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-    }
+        OutlinedButton(
+            onClick = onNavigateToRegister,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            border = androidx.compose.foundation.BorderStroke(
+                3.dp,
+                MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
+            Text(
+                text = "Regístrate",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
 
-    Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(22.dp))
 
-    OutlinedButton(
-        onClick = onNavigateToLogin,  // Usa callback en vez de comentario
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(50),
-        colors = ButtonDefaults.outlinedButtonColors(
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        border = androidx.compose.foundation.BorderStroke(
-            3.dp,
-            MaterialTheme.colorScheme.onPrimary
-        )
-    ) {
-        Text(
-            text = "Inicia Sesión",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.SemiBold
-        )
+        OutlinedButton(
+            onClick = onNavigateToLogin,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            border = androidx.compose.foundation.BorderStroke(
+                3.dp,
+                MaterialTheme.colorScheme.onPrimary
+            )
+        ) {
+            Text(
+                text = "Inicia Sesión",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
     }
 }
 

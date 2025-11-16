@@ -23,8 +23,8 @@ import uvg.plats.fixerly.R
 
 @Composable
 fun AccountTypeScreen(
-    onNavigateToLogin: () -> Unit = {},     // Navega a login
-    onNavigateToNext: (String) -> Unit = {} // Navega a siguiente con tipo de cuenta
+    onNavigateToLogin: () -> Unit = {},
+    onNavigateToNext: (String) -> Unit = {}
 ) {
     var selectedType by remember { mutableStateOf<String?>(null) }
 
@@ -44,151 +44,168 @@ fun AccountTypeScreen(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(32.dp),
+                    .padding(horizontal = 32.dp)
+                    .padding(vertical = 48.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(80.dp))
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                // Logo y título
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_icon),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(80.dp)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_icon),
+                            contentDescription = "Logo",
+                            modifier = Modifier.size(80.dp)
+                        )
+
+                        Text(
+                            text = "Fixerly.",
+                            fontSize = 56.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(120.dp))
 
                     Text(
-                        text = "Fixerly.",
-                        fontSize = 56.sp,
+                        text = "¡Hola! Antes de seguir, escoge tu tipo de cuenta:",
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        textAlign = TextAlign.Center
                     )
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
-                Text(
-                    text = "¡Hola! Antes de seguir, escoge tu tipo de cuenta:",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Button(
-                    onClick = { selectedType = "Cliente" },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            shape = RoundedCornerShape(50)
-                        ),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedType == "Cliente")
-                            MaterialTheme.colorScheme.primaryContainer
-                        else
-                            MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text(
-                        text = "Cliente",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
-                    onClick = { selectedType = "Proveedor" },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            shape = RoundedCornerShape(50)
-                        ),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (selectedType == "Proveedor")
-                            MaterialTheme.colorScheme.primaryContainer
-                        else
-                            MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    )
-                ) {
-                    Text(
-                        text = "Proveedor",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Button(
-                    onClick = {
-                        // Navega según tipo seleccionado
-                        selectedType?.let { type ->
-                            onNavigateToNext(type)  // Pasa tipo de cuenta al callback
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    enabled = selectedType != null  // Solo habilitar si hay selección
-                ) {
-                    Text(
-                        text = "Siguiente",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                HorizontalDivider(
+                // Botones de selección
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    thickness = 1.dp
-                )
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Button(
+                        onClick = { selectedType = "Cliente" },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = RoundedCornerShape(50)
+                            ),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedType == "Cliente")
+                                MaterialTheme.colorScheme.primaryContainer
+                            else
+                                MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text(
+                            text = "Cliente",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(28.dp))
+                    Button(
+                        onClick = { selectedType = "Proveedor" },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                shape = RoundedCornerShape(50)
+                            ),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (selectedType == "Proveedor")
+                                MaterialTheme.colorScheme.primaryContainer
+                            else
+                                MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text(
+                            text = "Proveedor",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(110.dp))
+
+                    Button(
+                        onClick = {
+                            selectedType?.let { type ->
+                                onNavigateToNext(type)
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        enabled = selectedType != null
+                    ) {
+                        Text(
+                            text = "Siguiente",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // Footer
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        thickness = 1.dp
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "¿Ya tienes una cuenta? ",
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+
+                        Text(
+                            text = "Inicia sesión",
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable { onNavigateToLogin() }
+                        )
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "¿Ya tienes una cuenta? ",
-                        fontSize = 15.sp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-
-                    Text(
-                        text = "Inicia sesión",
-                        fontSize = 15.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { onNavigateToLogin() }  // Usa callback
-                    )
-                }
             }
         }
     }

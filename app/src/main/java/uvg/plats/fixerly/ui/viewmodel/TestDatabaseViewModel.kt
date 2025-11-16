@@ -33,14 +33,14 @@ class TestDatabaseViewModel(application: Application) : AndroidViewModel(applica
                 )
 
                 userDao.insertUser(testUser)
-                _testResult.value = "✅ Usuario insertado correctamente\n"
+                _testResult.value = "Usuario insertado correctamente\n"
 
                 // 2. Leer el usuario
                 val retrievedUser = userDao.getUserByEmail("juan@test.com")
 
                 if (retrievedUser != null) {
                     _testResult.value += """
-                        ✅ Usuario recuperado:
+                         Usuario recuperado:
                         - ID: ${retrievedUser.id}
                         - Nombre: ${retrievedUser.nombre} ${retrievedUser.apellidos}
                         - Email: ${retrievedUser.email}
@@ -50,11 +50,11 @@ class TestDatabaseViewModel(application: Application) : AndroidViewModel(applica
                         🎉 Room está funcionando correctamente!
                     """.trimIndent()
                 } else {
-                    _testResult.value += "❌ Error: No se pudo recuperar el usuario"
+                    _testResult.value += "Error: No se pudo recuperar el usuario"
                 }
 
             } catch (e: Exception) {
-                _testResult.value = "❌ Error en la base de datos:\n${e.message}"
+                _testResult.value = "Error en la base de datos:\n${e.message}"
             }
         }
     }
@@ -68,7 +68,7 @@ class TestDatabaseViewModel(application: Application) : AndroidViewModel(applica
                     _testResult.value = "🗑️ Datos de prueba eliminados"
                 }
             } catch (e: Exception) {
-                _testResult.value = "❌ Error al eliminar: ${e.message}"
+                _testResult.value = "Error al eliminar: ${e.message}"
             }
         }
     }
