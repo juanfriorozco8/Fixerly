@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552867805038",
+    "project_id": "fixerly-88022",
+    "storage_bucket": "fixerly-88022.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552867805038:android:393434aedee59f3f88f37f",
+        "android_client_info": {
+          "package_name": "uvg.plats.fixerly"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABTXXxZKbWVFS0acwvGCFNFGIY1nIqJB8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
