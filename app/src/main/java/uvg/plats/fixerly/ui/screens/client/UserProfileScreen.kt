@@ -35,7 +35,7 @@ fun UserProfileScreen(
             onNavigateToProfile = onNavigateToProfile,
             onNavigateToHome = onNavigateToHome,
         ) {
-            // ← CAMBIO: Agregar Box con degradado
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -57,7 +57,7 @@ fun UserProfileScreen(
 @Composable
 fun UserProfileContent() {
     Column(
-        modifier = Modifier.fillMaxSize(),  // ← CAMBIO: Quitar .background(White)
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(
@@ -81,7 +81,7 @@ fun UserProfileContent() {
                     text = "Fixerly.",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimary  // ← CAMBIO: antes White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -99,9 +99,9 @@ fun UserProfileContent() {
                 painter = painterResource(id = R.drawable.ic_profile),
                 contentDescription = "Foto de perfil",
                 modifier = Modifier
-                    .size(160.dp)  // ← CAMBIO: Más pequeño que contenedor
-                    .clip(CircleShape),  // ← NUEVO
-                contentScale = ContentScale.Crop  // ← NUEVO
+                    .size(160.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
         }
 
@@ -116,13 +116,13 @@ fun UserProfileContent() {
             Text(
                 text = "Nombre:",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Nombre del Usuario",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             )
 
@@ -131,13 +131,13 @@ fun UserProfileContent() {
             Text(
                 text = "Apellidos:",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Apellidos del Usuario",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             )
 
@@ -146,13 +146,13 @@ fun UserProfileContent() {
             Text(
                 text = "Número de celular:",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "1111 1111",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             )
 
@@ -161,13 +161,13 @@ fun UserProfileContent() {
             Text(
                 text = "Correo electrónico:",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Usuario@gmail.com",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             )
 
@@ -176,13 +176,13 @@ fun UserProfileContent() {
             Text(
                 text = "Cambiar Contraseña",
                 fontSize = 16.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Normal
             )
             Text(
                 text = "Usuario@gmail.com",
                 fontSize = 18.sp,
-                color = MaterialTheme.colorScheme.onBackground,  // ← CAMBIO
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             )
         }

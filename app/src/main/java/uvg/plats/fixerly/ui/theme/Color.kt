@@ -12,13 +12,13 @@ val TextFieldPlaceholder = Color(0xFF5DADE2)
 val TextFieldText = Color(0xFF1B4F72)
 
 // ========== DARK MODE COLORS ==========
-val DarkBackgroundTop = Color(0xFF1A3A4F)        // ← CAMBIO: Más claro (antes 0xFF05090F)
-val DarkBackgroundBottom = Color(0xFF0D1922)     // Más oscuro (sin cambio)
-val DarkSurface = Color(0xFF1A2F42)              // Cards y superficies
-val DarkStatusBar = Color(0xFF1A3A4F)            // ← CAMBIO: Match con DarkBackgroundTop
-val DarkPrimary = Color(0xFF3B7EA1)              // Azul más claro
-val DarkSecondary = Color(0xFF5CAF82)            // ← CAMBIO: Verde más claro (antes 0xFF4A9B6E)
-val DarkSecondaryDark = Color(0xFF3D8A64)        // ← CAMBIO: Verde medio (antes 0xFF2D5F47)
+val DarkBackgroundTop = Color(0xFF1A3A4F)
+val DarkBackgroundBottom = Color(0xFF0D1922)
+val DarkSurface = Color(0xFF1A2F42)
+val DarkStatusBar = Color(0xFF1A3A4F)
+val DarkPrimary = Color(0xFF3B7EA1)
+val DarkSecondary = Color(0xFF5CAF82)
+val DarkSecondaryDark = Color(0xFF3D8A64)
 
 // ========== UNIVERSAL ==========
 val White = Color(0xFFFFFFFF)

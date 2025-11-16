@@ -22,7 +22,6 @@ class MainActivity : ComponentActivity() {
                 val systemUiController = rememberSystemUiController()
                 val isDark = isSystemInDarkTheme()
 
-                // ← CAMBIO: Configurar status bar Y navigation bar
                 SideEffect {
                     val statusColor = if (isDark) DarkStatusBar else FixerlyBlue
 
@@ -31,7 +30,6 @@ class MainActivity : ComponentActivity() {
                         darkIcons = false
                     )
 
-                    // ← NUEVO: Navigation bar también usa el mismo color
                     systemUiController.setNavigationBarColor(
                         color = statusColor,
                         darkIcons = false

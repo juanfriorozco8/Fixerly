@@ -96,9 +96,7 @@ fun TusSolicitudesContent() {
 
     var solicitudExpandida by remember { mutableStateOf<String?>(null) }
 
-    // ========================================
-    // FONDO CON DEGRADADO
-    // ========================================
+
     val backgroundBrush = if (isDarkMode) {
         Brush.verticalGradient(
             colors = listOf(
@@ -144,11 +142,11 @@ fun TusSolicitudesContent() {
             }
         }
 
-        // Imagen de header (más delgada)
+        // Imagen de header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)  // ← REDUCIDO de 180dp
+                .height(100.dp)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.herramientas),
@@ -172,7 +170,7 @@ fun TusSolicitudesContent() {
             }
         }
 
-        // Lista de solicitudes
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

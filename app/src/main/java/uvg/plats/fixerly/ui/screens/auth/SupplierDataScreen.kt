@@ -25,9 +25,9 @@ import uvg.plats.fixerly.R
 
 @Composable
 fun SupplierDataScreen(
-    accountType: String = "Proveedor",  // Recibe tipo de cuenta desde navegación
-    onNavigateBack: () -> Unit = {},    // Callback para regresar
-    onComplete: () -> Unit = {}         // Callback cuando complete el registro
+    accountType: String = "Proveedor",
+    onNavigateBack: () -> Unit = {},
+    onComplete: () -> Unit = {}
 ) {
     var contactoEmail by remember { mutableStateOf(false) }
     var contactoTelefono by remember { mutableStateOf(false) }
@@ -58,15 +58,17 @@ fun SupplierDataScreen(
                         )
                     )
                 )
-                .padding(horizontal = 24.dp)
-                .verticalScroll(rememberScrollState())  // Agrega scroll
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp)
+                    .padding(vertical = 40.dp)
             ) {
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(60.dp))
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -85,7 +87,7 @@ fun SupplierDataScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Text(
                     text = "¿Listo para comenzar?",
@@ -101,7 +103,7 @@ fun SupplierDataScreen(
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
                     text = "¡Esta será la información que recibirá el usuario para contratar un servicio!",
@@ -111,7 +113,7 @@ fun SupplierDataScreen(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
@@ -119,12 +121,54 @@ fun SupplierDataScreen(
                     thickness = 1.dp
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
+                    // ✅ COLUMNA IZQUIERDA: Habilidades
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "Selecciona tus habilidades:",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        habilidades.forEach { habilidad ->
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(vertical = 0.dp)
+                                    .height(32.dp)
+                            ) {
+                                Checkbox(
+                                    checked = habilidadesSeleccionadas[habilidad] == true,
+                                    onCheckedChange = { habilidadesSeleccionadas[habilidad] = it },
+                                    colors = CheckboxDefaults.colors(
+                                        checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = habilidad,
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontSize = 13.sp
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(20.dp))
+
+
                     Column(
                         modifier = Modifier.weight(1f),
                         horizontalAlignment = Alignment.Start
@@ -136,25 +180,53 @@ fun SupplierDataScreen(
                             fontSize = 16.sp
                         )
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(vertical = 0.dp)
+                                .height(32.dp)
+                        ) {
                             Checkbox(
                                 checked = contactoEmail,
                                 onCheckedChange = { contactoEmail = it },
-                                colors = CheckboxDefaults.colors(checkmarkColor = MaterialTheme.colorScheme.onPrimary)
+                                colors = CheckboxDefaults.colors(
+                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                modifier = Modifier.size(20.dp)
                             )
-                            Text("Correo electrónico", color = MaterialTheme.colorScheme.onPrimary)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Correo electrónico",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 13.sp
+                            )
                         }
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .padding(vertical = 0.dp)
+                                .height(32.dp)
+                        ) {
                             Checkbox(
                                 checked = contactoTelefono,
                                 onCheckedChange = { contactoTelefono = it },
-                                colors = CheckboxDefaults.colors(checkmarkColor = MaterialTheme.colorScheme.onPrimary)
+                                colors = CheckboxDefaults.colors(
+                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                ),
+                                modifier = Modifier.size(20.dp)
                             )
-                            Text("Teléfono", color = MaterialTheme.colorScheme.onPrimary)
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Teléfono",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 13.sp
+                            )
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
                             text = "¡Agrega más detalles sobre ti! (Opcional)",
@@ -163,16 +235,21 @@ fun SupplierDataScreen(
                             fontSize = 16.sp
                         )
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         OutlinedTextField(
                             value = detalles,
                             onValueChange = { detalles = it },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(100.dp),
+                                .height(80.dp),
                             shape = RoundedCornerShape(16.dp),
-                            placeholder = { Text("Escribe aquí...") },
+                            placeholder = {
+                                Text(
+                                    "Escribe aquí...",
+                                    fontSize = 12.sp
+                                )
+                            },
                             colors = TextFieldDefaults.colors(
                                 focusedTextColor = MaterialTheme.colorScheme.onPrimary,
                                 unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
@@ -186,40 +263,13 @@ fun SupplierDataScreen(
                             )
                         )
                     }
-
-                    Spacer(modifier = Modifier.width(24.dp))
-
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(
-                            text = "Selecciona tus habilidades:",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
-                        )
-
-                        habilidades.forEach { habilidad ->
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Checkbox(
-                                    checked = habilidadesSeleccionadas[habilidad] == true,
-                                    onCheckedChange = { habilidadesSeleccionadas[habilidad] = it },
-                                    colors = CheckboxDefaults.colors(checkmarkColor = MaterialTheme.colorScheme.onPrimary)
-                                )
-                                Text(habilidad, color = MaterialTheme.colorScheme.onPrimary)
-                            }
-                        }
-                    }
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(40.dp))
 
                 Button(
                     onClick = {
-                        // Guarda datos de proveedor y completar registro
-                                // Guardar habilidades y detalles en base de datos
-                        onComplete()  // Usa callback para navegar a pantalla principal
+                        onComplete()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -240,7 +290,7 @@ fun SupplierDataScreen(
                     thickness = 1.dp
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.Center,
@@ -258,7 +308,7 @@ fun SupplierDataScreen(
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { onNavigateBack() }  // Usa callback
+                        modifier = Modifier.clickable { onNavigateBack() }
                     )
                 }
 
