@@ -4,7 +4,9 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
 
-    // Juanfri
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14" apply false
+    // navegación
+    alias(libs.plugins.kotlin.serialization) apply false
 
+    // ksp
+    alias(libs.plugins.ksp) apply false
 }
