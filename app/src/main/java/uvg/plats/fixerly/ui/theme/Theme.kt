@@ -5,8 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color.Companion.White
-
+import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
     primary = FixerlyBlue,
@@ -28,22 +27,23 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = FixerlyBlue,
+    primary = DarkBackgroundBottom,               // ← CAMBIO: Oscuro por defecto
     onPrimary = White,
-    primaryContainer = FixerlyBlueDark,
+    primaryContainer = DarkPrimary,               // ← CAMBIO: Claro al presionar
     onPrimaryContainer = White,
 
-    secondary = FixerlyGreen,
+    secondary = DarkSecondaryDark,                // ← CAMBIO: Verde oscuro
     onSecondary = White,
+    secondaryContainer = DarkSecondary,           // ← NUEVO: Verde claro al presionar
 
-    background = FixerlyBlueDark,
+    background = DarkBackgroundTop,
     onBackground = White,
 
-    surface = TextFieldBackground,
-    onSurface = TextFieldText,
+    surface = DarkSurface,
+    onSurface = White,
 
-    surfaceVariant = TextFieldBackground,
-    onSurfaceVariant = TextFieldPlaceholder
+    surfaceVariant = DarkSurface,
+    onSurfaceVariant = Color(0xFF8FA3B8)
 )
 
 @Composable

@@ -2,6 +2,7 @@ package uvg.plats.fixerly.ui.screens.supplier
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -10,11 +11,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -22,12 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import uvg.plats.fixerly.ui.theme.FixerlyTheme
-import uvg.plats.fixerly.ui.theme.White
+import uvg.plats.fixerly.ui.theme.*
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
-// Estructura para guardar los datos de un cliente
 data class Cliente(
     val nombre: String,
     val zona: String,
@@ -37,9 +35,9 @@ data class Cliente(
 
 @Composable
 fun SupplierWelcomeScreen(
-    onNavigateToProfile: () -> Unit = {},   // Para navegar a la pantalla de perfil
-    onNavigateToHome: () -> Unit = {},      // Para volver a la pantalla de inicio
-    // onNavigateToMessages: () -> Unit = {}   // Para ir a la pantalla de mensajes *parte de mensajes, revisar bien si se añade o no por tiempo*
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    // onNavigateToMessages: () -> Unit = {}
 ) {
     var currentRoute by remember { mutableStateOf("home") }
 
@@ -47,11 +45,10 @@ fun SupplierWelcomeScreen(
         ScreenWithBottomNav(
             currentRoute = currentRoute,
             onNavigate = { route -> currentRoute = route },
-            onNavigateToProfile = onNavigateToProfile,      // Pasamos la función para navegar al perfil
-            onNavigateToHome = onNavigateToHome,            // Pasamos la función para navegar al inicio
-            //onNavigateToMessages = onNavigateToMessages     // Pasamos la función para navegar a los mensajes *parte de mensajes, revisar bien si se añade o no por tiempo*
+            onNavigateToProfile = onNavigateToProfile,
+            onNavigateToHome = onNavigateToHome,
+            // onNavigateToMessages = onNavigateToMessages
         ) {
-            // Aquí adentro va todo el contenido de la pantalla
             SupplierWelcomeScreenContent()
         }
     }
@@ -59,7 +56,8 @@ fun SupplierWelcomeScreen(
 
 @Composable
 fun SupplierWelcomeScreenContent() {
-    // Lista de categorías para los filtros
+    val isDarkMode = isSystemInDarkTheme()
+
     val categorias = listOf(
         "Plomería",
         "Limpieza y lavandería",
@@ -72,10 +70,8 @@ fun SupplierWelcomeScreenContent() {
         "Todos"
     )
 
-    // Variable para saber qué filtro está seleccionado
     var categoriaSeleccionada by remember { mutableStateOf("Todos") }
 
-    // Lista de clientes de ejemplo para mostrar en la pantalla
     val clientes = listOf(
         Cliente(
             nombre = "Juan Pérez",
@@ -109,126 +105,144 @@ fun SupplierWelcomeScreenContent() {
         )
     )
 
-    FixerlyTheme {
-        // La columna principal que organiza todo
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(White)
-        ) {
-            // Barra superior con el logo y nombre de la app
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(vertical = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_icon),
-                        contentDescription = "Logo",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Fixerly.",
-                        fontSize = 32.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }
+    // ========================================
+    // FONDO CON DEGRADADO
+    // ========================================
+    val backgroundBrush = if (isDarkMode) {
+        Brush.verticalGradient(
+            colors = listOf(
+                DarkBackgroundTop,
+                DarkBackgroundBottom
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(White, White)
+        )
+    }
 
-            // Imagen grande de bienvenida con un texto encima
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(brush = backgroundBrush)  // ← DEGRADADO aplicado
+    ) {
+        // ========================================
+        // BANNER FIXERLY (más compacto)
+        // ========================================
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(vertical = 12.dp),  // ← Reducido
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.herramientas),
-                    contentDescription = "Imagen de bienvenida",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    painter = painterResource(id = R.drawable.logo_icon),
+                    contentDescription = "Logo",
+                    modifier = Modifier.size(36.dp)  // ← Reducido
                 )
-                // Capa oscura para que el texto se lea mejor
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.4f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "¡Bienvenido!",
-                        fontSize = 48.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = White
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Fixerly.",
+                    fontSize = 28.sp,  // ← Reducido
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary
+                )
+            }
+        }
+
+        // ========================================
+        // IMAGEN DE BIENVENIDA (más delgada)
+        // ========================================
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(100.dp)  // ← REDUCIDO de 180dp a 100dp
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.herramientas),
+                contentDescription = "Imagen de bienvenida",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "¡Bienvenido!",
+                    fontSize = 40.sp,  // ← Reducido de 48sp
+                    fontWeight = FontWeight.Bold,
+                    color = White
+                )
+            }
+        }
+
+        // ========================================
+        // FILTROS (más compactos y arriba)
+        // ========================================
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 10.dp)  // ← Reducido padding vertical
+        ) {
+            Text(
+                text = "Filtrar por categoría:",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,  // ← CAMBIO: Era .primary, ahora .onSurface
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(categorias) { categoria ->
+                    FilterChip(
+                        selected = categoriaSeleccionada == categoria,
+                        onClick = { categoriaSeleccionada = categoria },
+                        label = {
+                            Text(
+                                text = categoria,
+                                fontSize = 13.sp  // ← Reducido de 14sp
+                            )
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            labelColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        shape = RoundedCornerShape(20.dp)
                     )
                 }
             }
+        }
 
-            // Sección para los filtros de categoría
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                Text(
-                    text = "Filtrar por categoría:",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
+        HorizontalDivider(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+            thickness = 1.dp
+        )
 
-                // Fila que se puede deslizar para ver todas las categorías
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(categorias) { categoria ->
-                        FilterChip(
-                            selected = categoriaSeleccionada == categoria,
-                            onClick = { categoriaSeleccionada = categoria },
-                            label = {
-                                Text(
-                                    text = categoria,
-                                    fontSize = 14.sp
-                                )
-                            },
-                            colors = FilterChipDefaults.filterChipColors(
-                                selectedContainerColor = MaterialTheme.colorScheme.primary,
-                                selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                                containerColor = MaterialTheme.colorScheme.surface,
-                                labelColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                    }
-                }
-            }
-
-            // Línea para separar las secciones
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.surfaceVariant,
-                thickness = 1.dp
-            )
-
-            // Lista deslizable con las tarjetas de los clientes
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(clientes) { cliente ->
-                    ClientCard(cliente = cliente)
-                }
+        // ========================================
+        // LISTA DE CLIENTES
+        // ========================================
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(vertical = 12.dp)  // ← Reducido de 16dp
+        ) {
+            items(clientes) { cliente ->
+                ClientCard(cliente = cliente)
             }
         }
     }
@@ -240,7 +254,7 @@ fun ClientCard(cliente: Cliente) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface  // ← Color correcto
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -249,13 +263,11 @@ fun ClientCard(cliente: Cliente) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            // Fila superior con la info del cliente y el botón
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Parte izquierda: foto y nombre del cliente
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.weight(1f)
@@ -264,7 +276,7 @@ fun ClientCard(cliente: Cliente) {
                         modifier = Modifier
                             .size(50.dp)
                             .clip(CircleShape)
-                            .background(White),
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
                         contentAlignment = Alignment.Center
                     ) {
                         Image(
@@ -278,13 +290,12 @@ fun ClientCard(cliente: Cliente) {
                         text = cliente.nombre,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
-                // Botón para que el proveedor envíe su información
                 Button(
-                    onClick = { /* poner la logica recordar */ },
+                    onClick = { /* Lógica para enviar información */ },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     ),
@@ -301,7 +312,6 @@ fun ClientCard(cliente: Cliente) {
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Detalles del problema del cliente
             Text(
                 text = "Ubicación: ${cliente.zona}",
                 fontSize = 14.sp,
@@ -326,7 +336,6 @@ fun ClientCard(cliente: Cliente) {
     }
 }
 
-// Así se ve la pantalla en el preview de Android Studio
 @Preview(showBackground = true)
 @Composable
 fun SupplierWelcomeScreenPreview() {

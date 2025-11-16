@@ -1,9 +1,11 @@
 package uvg.plats.fixerly.ui.screens.components
 
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -17,7 +19,6 @@ sealed class BottomNavItem(
 ) {
     object Profile : BottomNavItem("profile", R.drawable.ic_profile, "Perfil")
     object Home : BottomNavItem("home", R.drawable.ic_home, "Inicio")
-    //object Messages : BottomNavItem("messages", R.drawable.ic_chat, "Mensajes") *parte de mensajes, revisar bien si se añade o no por tiempo*
 }
 
 @Composable
@@ -28,13 +29,13 @@ fun BottomNavigation(
     val items = listOf(
         BottomNavItem.Profile,
         BottomNavItem.Home,
-        //BottomNavItem.Messages *parte de mensajes, revisar bien si se añade o no por tiempo*
     )
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = White,
-        tonalElevation = 8.dp
+        tonalElevation = 8.dp,
+        modifier = Modifier.height(90.dp)  // ← CAMBIO: De 70dp a 90dp (más grueso)
     ) {
         items.forEach { item ->
             NavigationBarItem(
@@ -42,7 +43,8 @@ fun BottomNavigation(
                     Icon(
                         painter = painterResource(id = item.iconRes),
                         contentDescription = item.label,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(32.dp),  // ← CAMBIO: De 28dp a 32dp
+                        tint = if (currentRoute == item.route) White else White.copy(alpha = 0.6f)  // ← NUEVO: Tint explícito
                     )
                 },
                 selected = currentRoute == item.route,
@@ -53,7 +55,9 @@ fun BottomNavigation(
                     selectedTextColor = White,
                     unselectedTextColor = White.copy(alpha = 0.6f),
                     indicatorColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                modifier = Modifier  // ← NUEVO: Alineación vertical
+                    .align(Alignment.CenterVertically)
             )
         }
     }
@@ -63,9 +67,8 @@ fun BottomNavigation(
 fun ScreenWithBottomNav(
     currentRoute: String = "home",
     onNavigate: (String) -> Unit = {},
-    onNavigateToProfile: () -> Unit = {},   // Navegación real a Profile
-    onNavigateToHome: () -> Unit = {},      // Navegación real a Home
-    //onNavigateToMessages: () -> Unit = {},  // Navegación real a Messages *parte de mensajes, revisar bien si se añade o no por tiempo*
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     Scaffold(
@@ -73,13 +76,11 @@ fun ScreenWithBottomNav(
             BottomNavigation(
                 currentRoute = currentRoute,
                 onNavigate = { route ->
-                    // Mapea rutas a callbacks reales de navegación
                     when (route) {
                         "profile" -> onNavigateToProfile()
                         "home" -> onNavigateToHome()
-                        //"messages" -> onNavigateToMessages() *parte de mensajes, revisar bien si se añade o no por tiempo*
                     }
-                    onNavigate(route)  // También actualiza estado local
+                    onNavigate(route)
                 }
             )
         }

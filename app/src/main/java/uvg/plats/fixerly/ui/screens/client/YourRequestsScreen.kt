@@ -3,6 +3,7 @@ package uvg.plats.fixerly.ui.screens.client
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -20,8 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import uvg.plats.fixerly.ui.theme.FixerlyTheme
-import uvg.plats.fixerly.ui.theme.White
+import uvg.plats.fixerly.ui.theme.*
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 
@@ -39,9 +40,9 @@ data class RespuestaProveedor(
 
 @Composable
 fun TusSolicitudesScreen(
-    onNavigateToProfile: () -> Unit = {},   // ← Navegar a perfil
-    onNavigateToHome: () -> Unit = {},      // ← Navegar a home
-    onNavigateToMessages: () -> Unit = {}   // ← Navegar a mensajes (esta misma pantalla)
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
+    onNavigateToMessages: () -> Unit = {}
 ) {
     var currentRoute by remember { mutableStateOf("messages") }
 
@@ -49,9 +50,9 @@ fun TusSolicitudesScreen(
         ScreenWithBottomNav(
             currentRoute = currentRoute,
             onNavigate = { route -> currentRoute = route },
-            onNavigateToProfile = onNavigateToProfile,      // ← CAMBIO: Pasar callbacks
+            onNavigateToProfile = onNavigateToProfile,
             onNavigateToHome = onNavigateToHome,
-            //onNavigateToMessages = onNavigateToMessages *parte de mensajes, revisar bien si se añade o no por tiempo*
+            // onNavigateToMessages = onNavigateToMessages
         ) {
             TusSolicitudesContent()
         }
@@ -60,6 +61,8 @@ fun TusSolicitudesScreen(
 
 @Composable
 fun TusSolicitudesContent() {
+    val isDarkMode = isSystemInDarkTheme()
+
     val solicitudes = listOf(
         Solicitud(
             nombreProblema = "Falla de electrodomésticos",
@@ -93,16 +96,33 @@ fun TusSolicitudesContent() {
 
     var solicitudExpandida by remember { mutableStateOf<String?>(null) }
 
+    // ========================================
+    // FONDO CON DEGRADADO
+    // ========================================
+    val backgroundBrush = if (isDarkMode) {
+        Brush.verticalGradient(
+            colors = listOf(
+                DarkBackgroundTop,
+                DarkBackgroundBottom
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(White, White)
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(White)
+            .background(brush = backgroundBrush)
     ) {
+        // Banner Fixerly
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.primary)
-                .padding(vertical = 16.dp),
+                .padding(vertical = 12.dp),
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -112,22 +132,23 @@ fun TusSolicitudesContent() {
                 Image(
                     painter = painterResource(id = R.drawable.logo_icon),
                     contentDescription = "Logo",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(36.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "Fixerly.",
-                    fontSize = 32.sp,
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
 
+        // Imagen de header (más delgada)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(180.dp)
+                .height(100.dp)  // ← REDUCIDO de 180dp
         ) {
             Image(
                 painter = painterResource(id = R.drawable.herramientas),
@@ -143,20 +164,21 @@ fun TusSolicitudesContent() {
             ) {
                 Text(
                     text = "Tus\nsolicitudes",
-                    fontSize = 48.sp,
+                    fontSize = 40.sp,
                     fontWeight = FontWeight.Bold,
                     color = White,
-                    lineHeight = 52.sp
+                    lineHeight = 44.sp
                 )
             }
         }
 
+        // Lista de solicitudes
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            contentPadding = PaddingValues(vertical = 12.dp)
         ) {
             items(solicitudes) { solicitud ->
                 SolicitudCard(
@@ -185,7 +207,7 @@ fun SolicitudCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
-            containerColor = White
+            containerColor = MaterialTheme.colorScheme.surface  // ← Color correcto
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -195,7 +217,7 @@ fun SolicitudCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.surface)
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -204,13 +226,13 @@ fun SolicitudCard(
                     text = "Nombre del problema",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
                     text = "Ver información\ncompleta...",
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clickable { onExpandClick() },
                     lineHeight = 14.sp
                 )
@@ -225,7 +247,7 @@ fun SolicitudCard(
                     text = solicitud.nombreProblema,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -234,7 +256,7 @@ fun SolicitudCard(
                     text = "Respuestas:",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -263,7 +285,7 @@ fun RespuestaProveedorItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.surface,
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(12.dp)
@@ -276,7 +298,7 @@ fun RespuestaProveedorItem(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .background(White),
+                    .background(MaterialTheme.colorScheme.surface),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -290,7 +312,7 @@ fun RespuestaProveedorItem(
                 text = respuesta.nombre,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
