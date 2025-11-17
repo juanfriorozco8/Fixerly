@@ -26,6 +26,7 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
 import uvg.plats.fixerly.ui.viewmodel.AuthState
+import kotlinx.coroutines.delay
 
 @Composable
 fun SupplierDataScreen(
@@ -62,8 +63,8 @@ fun SupplierDataScreen(
     LaunchedEffect(authState) {
         when (val state = authState) {
             is AuthState.Success -> {
-                // ✅ proveedor creado y logeado
-                onComplete()              // navega a SupplierWelcome
+                onComplete()
+                delay(100)
                 viewModel.resetAuthState()
             }
             is AuthState.Error -> {
@@ -299,17 +300,14 @@ fun SupplierDataScreen(
 
                     Button(
                         onClick = {
-                            // Preparar lista de contactos
                             val contactPrefs = mutableListOf<String>()
                             if (contactoEmail) contactPrefs.add("email")
                             if (contactoTelefono) contactPrefs.add("telefono")
 
-                            // Preparar lista de habilidades seleccionadas
                             val skillsList = habilidadesSeleccionadas
                                 .filter { it.value }
                                 .map { it.key }
 
-                            // Ahora sí registrar el proveedor en Firebase
                             viewModel.registerProvider(
                                 contactPreferences = contactPrefs,
                                 about = detalles.text,

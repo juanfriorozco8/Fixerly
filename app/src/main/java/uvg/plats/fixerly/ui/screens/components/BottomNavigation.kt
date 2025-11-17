@@ -11,6 +11,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.theme.White
+import uvg.plats.fixerly.ui.theme.DarkBackgroundBottom
 
 sealed class BottomNavItem(
     val route: String,
@@ -32,11 +33,11 @@ fun BottomNavigation(
     )
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.primary,
+        containerColor = DarkBackgroundBottom,
         contentColor = White,
         tonalElevation = 8.dp,
         modifier = Modifier.height(90.dp)
-    ) {
+    ){
         items.forEach { item ->
             NavigationBarItem(
                 icon = {
@@ -44,7 +45,6 @@ fun BottomNavigation(
                         painter = painterResource(id = item.iconRes),
                         contentDescription = item.label,
                         modifier = Modifier.size(32.dp),
-                        // ✅ CAMBIO: tint explícito con color sólido
                         tint = if (currentRoute == item.route) {
                             White
                         } else {

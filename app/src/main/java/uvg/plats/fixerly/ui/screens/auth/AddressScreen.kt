@@ -23,6 +23,7 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
 import uvg.plats.fixerly.ui.viewmodel.AuthState
+import kotlinx.coroutines.delay
 
 @Composable
 fun AddressScreen(
@@ -40,16 +41,14 @@ fun AddressScreen(
     LaunchedEffect(authState) {
         when (val state = authState) {
             is AuthState.Success -> {
-                // ✅ Ya se registró el cliente y Firebase lo dejó logeado
-                onComplete()               // navega a LaborDestination
-                viewModel.resetAuthState() // limpia el estado
+                onComplete()
+                delay(100)
+                viewModel.resetAuthState()
             }
-
             is AuthState.Error -> {
                 snackbarHostState.showSnackbar(state.message)
                 viewModel.resetAuthState()
             }
-
             else -> Unit
         }
     }
@@ -101,6 +100,7 @@ fun AddressScreen(
                 }
 
                 Spacer(modifier = Modifier.height(90.dp))
+
                 Text(
                     text = stringResource(R.string.address_ready_title),
                     fontSize = 24.sp,
@@ -126,6 +126,7 @@ fun AddressScreen(
                 )
 
                 Spacer(modifier = Modifier.height(36.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)

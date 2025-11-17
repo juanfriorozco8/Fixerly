@@ -1,32 +1,27 @@
 package uvg.plats.fixerly.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import uvg.plats.fixerly.data.model.Address
 import uvg.plats.fixerly.utils.FirebaseConstants
-
-// Auth screens
 import uvg.plats.fixerly.ui.screens.auth.OnboardingScreen
 import uvg.plats.fixerly.ui.screens.auth.LoginScreen
 import uvg.plats.fixerly.ui.screens.auth.RegisterScreen
 import uvg.plats.fixerly.ui.screens.auth.AccountTypeScreen
 import uvg.plats.fixerly.ui.screens.auth.AddressScreen
 import uvg.plats.fixerly.ui.screens.auth.SupplierDataScreen
-
-// Client screens
 import uvg.plats.fixerly.ui.screens.client.LaborScreen
 import uvg.plats.fixerly.ui.screens.client.YourRequestsScreen
 import uvg.plats.fixerly.ui.screens.client.UserProfileScreen
-
-// Supplier screens
 import uvg.plats.fixerly.ui.screens.supplier.SupplierWelcomeScreen
 import uvg.plats.fixerly.ui.screens.supplier.SupplierProfileScreen
-
-// ViewModel
 import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
 
 @Composable
@@ -38,7 +33,6 @@ fun NavigationGraph(
         startDestination = OnboardingDestination
     ) {
 
-        // ONBOARDING
         composable<OnboardingDestination> {
             OnboardingScreen(
                 onNavigateToLogin = { navController.navigate(LoginDestination) },
@@ -46,7 +40,6 @@ fun NavigationGraph(
             )
         }
 
-        // LOGIN
         composable<LoginDestination> {
             LoginScreen(
                 onNavigateToRegister = {
@@ -66,14 +59,10 @@ fun NavigationGraph(
             )
         }
 
-        // ============================
-        //  REGISTRO (NAV ANIDADO)
-        // ============================
         navigation<RegisterDestination>(
             startDestination = RegisterStepDestination
         ) {
 
-            // Paso 1: datos básicos
             composable<RegisterStepDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -92,7 +81,6 @@ fun NavigationGraph(
                 )
             }
 
-            // Paso 2: tipo de cuenta
             composable<AccountTypeDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -112,7 +100,6 @@ fun NavigationGraph(
                 )
             }
 
-            // Paso 3 (cliente): dirección
             composable<AddressDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -128,7 +115,6 @@ fun NavigationGraph(
                 )
             }
 
-            // Paso 3 (proveedor): datos proveedor
             composable<SupplierDataDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -145,29 +131,61 @@ fun NavigationGraph(
             }
         }
 
-        // ============================
-        //  CLIENTE
-        // ============================
-
         composable<LaborDestination> {
-            LaborScreen()
+            val authViewModel: AuthViewModel = viewModel()
+            val currentUser by authViewModel.currentUser.collectAsState()
+
+            LaborScreen(
+                clientId = currentUser?.userId ?: "",
+                clientName = currentUser?.getFullName() ?: "",
+                clientAddress = currentUser?.address ?: Address(),
+                onNavigateToRequests = {
+                    navController.navigate(YourRequestsDestination)
+                },
+                onNavigateToProfile = {
+                    navController.navigate(UserProfileDestination)
+                },
+                onNavigateToHome = {}
+            )
         }
 
         composable<YourRequestsDestination> {
-            YourRequestsScreen()
+            val authViewModel: AuthViewModel = viewModel()
+            val currentUser by authViewModel.currentUser.collectAsState()
+
+            YourRequestsScreen(
+                clientId = currentUser?.userId ?: "",
+                onNavigateToProfile = {
+                    navController.navigate(UserProfileDestination)
+                },
+                onNavigateToHome = {
+                    navController.navigate(LaborDestination)
+                }
+            )
         }
 
         composable<UserProfileDestination> {
-            UserProfileScreen()
-        }
+            val authViewModel: AuthViewModel = viewModel()
+            val currentUser by authViewModel.currentUser.collectAsState()
 
-        // ============================
-        //  PROVEEDOR
-        // ============================
+            UserProfileScreen(
+                userId = currentUser?.userId ?: "",
+                onNavigateToProfile = {},
+                onNavigateToHome = {
+                    navController.navigate(LaborDestination)
+                },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(OnboardingDestination) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            )
+        }
 
         composable<SupplierWelcomeDestination> {
             SupplierWelcomeScreen(
-                onNavigateToHome = { /* ya estamos en home */ },
+                onNavigateToHome = {},
                 onNavigateToProfile = {
                     navController.navigate(SupplierProfileDestination)
                 }
@@ -175,13 +193,19 @@ fun NavigationGraph(
         }
 
         composable<SupplierProfileDestination> {
+            val authViewModel: AuthViewModel = viewModel()
+
             SupplierProfileScreen(
                 onNavigateToHome = {
-                    navController.navigate(SupplierWelcomeDestination) {
-                        popUpTo(SupplierWelcomeDestination) { inclusive = true }
-                    }
+                    navController.navigate(SupplierWelcomeDestination)
                 },
-                onNavigateToProfile = { /* ya estamos en perfil */ }
+                onNavigateToProfile = {},
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(OnboardingDestination) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
             )
         }
     }

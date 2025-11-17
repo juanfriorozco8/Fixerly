@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
+import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 import uvg.plats.fixerly.ui.viewmodel.ProfileViewModel
@@ -28,13 +30,16 @@ import uvg.plats.fixerly.ui.viewmodel.OperationState
 fun UserProfileScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    userId: String = "temp_user_id",
+    onLogout: () -> Unit = {},
+    userId: String = "",
     viewModel: ProfileViewModel = viewModel()
 ) {
     var currentRoute by remember { mutableStateOf("profile") }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadUserProfile(userId)
+    LaunchedEffect(userId) {
+        if (userId.isNotEmpty()) {
+            viewModel.loadUserProfile(userId)
+        }
     }
 
     FixerlyTheme {
@@ -42,9 +47,8 @@ fun UserProfileScreen(
             currentRoute = currentRoute,
             onNavigate = { route -> currentRoute = route },
             onNavigateToProfile = onNavigateToProfile,
-            onNavigateToHome = onNavigateToHome,
+            onNavigateToHome = onNavigateToHome
         ) {
-
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -57,14 +61,20 @@ fun UserProfileScreen(
                         )
                     )
             ) {
-                UserProfileContent(viewModel = viewModel)
+                UserProfileContent(
+                    viewModel = viewModel,
+                    onLogout = onLogout
+                )
             }
         }
     }
 }
 
 @Composable
-fun UserProfileContent(viewModel: ProfileViewModel) {
+fun UserProfileContent(
+    viewModel: ProfileViewModel,
+    onLogout: () -> Unit = {}
+) {
     val userProfile by viewModel.userProfile.collectAsState()
     val operationState by viewModel.operationState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -233,20 +243,25 @@ fun UserProfileContent(viewModel: ProfileViewModel) {
                             fontWeight = FontWeight.Bold
                         )
 
-                        Spacer(modifier = Modifier.height(20.dp))
+                        Spacer(modifier = Modifier.height(32.dp))
 
-                        Text(
-                            text = stringResource(R.string.user_profile_change_password),
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Normal
-                        )
-                        Text(
-                            text = user?.email ?: "Usuario@gmail.com",
-                            fontSize = 18.sp,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.Bold
-                        )
+                        Button(
+                            onClick = onLogout,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp),
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.error
+                            )
+                        ) {
+                            Text(
+                                text = "Cerrar Sesión",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = White
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.weight(1f))

@@ -45,14 +45,15 @@ data class RespuestaProveedor(
 fun YourRequestsScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    onNavigateToMessages: () -> Unit = {},
-    clientId: String = "temp_client_id",
+    clientId: String = "",
     viewModel: ServiceViewModel = viewModel()
 ) {
     var currentRoute by remember { mutableStateOf("messages") }
 
-    LaunchedEffect(Unit) {
-        viewModel.loadClientRequests(clientId)
+    LaunchedEffect(clientId) {
+        if (clientId.isNotEmpty()) {
+            viewModel.loadClientRequests(clientId)
+        }
     }
 
     FixerlyTheme {
@@ -60,7 +61,7 @@ fun YourRequestsScreen(
             currentRoute = currentRoute,
             onNavigate = { route -> currentRoute = route },
             onNavigateToProfile = onNavigateToProfile,
-            onNavigateToHome = onNavigateToHome,
+            onNavigateToHome = onNavigateToHome
         ) {
             YourRequestsContent(viewModel = viewModel)
         }

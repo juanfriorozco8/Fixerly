@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -31,14 +32,13 @@ import uvg.plats.fixerly.ui.viewmodel.OperationState
 fun SupplierProfileScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
+    onLogout: () -> Unit = {},
     profileViewModel: ProfileViewModel = viewModel()
 ) {
-    // Obtener el usuario actual
     val userId = remember {
         FirebaseAuth.getInstance().currentUser?.uid
     }
 
-    // Cargar perfil cuando tengamos userId
     LaunchedEffect(userId) {
         if (userId != null) {
             profileViewModel.loadUserProfile(userId)
@@ -54,13 +54,19 @@ fun SupplierProfileScreen(
             onNavigateToProfile = onNavigateToProfile,
             onNavigateToHome = onNavigateToHome
         ) {
-            SupplierProfileContent(viewModel = profileViewModel)
+            SupplierProfileContent(
+                viewModel = profileViewModel,
+                onLogout = onLogout
+            )
         }
     }
 }
 
 @Composable
-fun SupplierProfileContent(viewModel: ProfileViewModel) {
+fun SupplierProfileContent(
+    viewModel: ProfileViewModel,
+    onLogout: () -> Unit = {}
+) {
     val habilidades = listOf(
         stringResource(R.string.labor_filter_plumbing),
         stringResource(R.string.labor_filter_electricity),
@@ -97,11 +103,9 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
             is OperationState.Success -> {
                 snackbarHostState.showSnackbar(state.message)
             }
-
             is OperationState.Error -> {
                 snackbarHostState.showSnackbar(state.message)
             }
-
             else -> {}
         }
     }
@@ -126,7 +130,6 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                     CircularProgressIndicator()
                 }
             }
-
             userProfile.hasError -> {
                 Box(
                     modifier = Modifier
@@ -135,13 +138,11 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = userProfile.errorMessage
-                            ?: stringResource(R.string.user_profile_error),
+                        text = userProfile.errorMessage ?: stringResource(R.string.user_profile_error),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
             }
-
             else -> {
                 val user = userProfile.data
                 Column(
@@ -305,8 +306,8 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                                     modifier = Modifier.padding(vertical = 2.dp)
                                 ) {
                                     Checkbox(
-                                        checked = user?.skills?.contains(habilidad) == true
-                                                || (habilidadesSeleccionadas[habilidad] == true),
+                                        checked = user?.skills?.contains(habilidad) == true ||
+                                                (habilidadesSeleccionadas[habilidad] == true),
                                         onCheckedChange = {
                                             habilidadesSeleccionadas[habilidad] = it
                                         },
@@ -324,6 +325,27 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                                 }
                             }
                         }
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Button(
+                        onClick = onLogout,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
+                            .height(56.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.error
+                        )
+                    ) {
+                        Text(
+                            text = "Cerrar Sesión",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = White
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(32.dp))
