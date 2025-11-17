@@ -23,9 +23,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import uvg.plats.fixerly.ui.theme.*
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
+import uvg.plats.fixerly.ui.viewmodel.ServiceViewModel
 
 data class Solicitud(
     val nombreProblema: String,
@@ -40,12 +42,18 @@ data class RespuestaProveedor(
 )
 
 @Composable
-fun TusSolicitudesScreen(
+fun YourRequestsScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    onNavigateToMessages: () -> Unit = {}
+    onNavigateToMessages: () -> Unit = {},
+    clientId: String = "temp_client_id",
+    viewModel: ServiceViewModel = viewModel()
 ) {
     var currentRoute by remember { mutableStateOf("messages") }
+
+    LaunchedEffect(Unit) {
+        viewModel.loadClientRequests(clientId)
+    }
 
     FixerlyTheme {
         ScreenWithBottomNav(
@@ -54,14 +62,15 @@ fun TusSolicitudesScreen(
             onNavigateToProfile = onNavigateToProfile,
             onNavigateToHome = onNavigateToHome,
         ) {
-            TusSolicitudesContent()
+            YourRequestsContent(viewModel = viewModel)
         }
     }
 }
 
 @Composable
-fun TusSolicitudesContent() {
+fun YourRequestsContent(viewModel: ServiceViewModel) {
     val isDarkMode = isSystemInDarkTheme()
+    val clientRequests by viewModel.clientRequests.collectAsState()
 
     val solicitudes = listOf(
         Solicitud(
@@ -95,7 +104,6 @@ fun TusSolicitudesContent() {
     )
 
     var solicitudExpandida by remember { mutableStateOf<String?>(null) }
-
 
     val backgroundBrush = if (isDarkMode) {
         Brush.verticalGradient(
@@ -168,26 +176,48 @@ fun TusSolicitudesContent() {
             }
         }
 
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 12.dp)
-        ) {
-            items(solicitudes) { solicitud ->
-                SolicitudCard(
-                    solicitud = solicitud,
-                    isExpanded = solicitudExpandida == solicitud.nombreProblema,
-                    onExpandClick = {
-                        solicitudExpandida = if (solicitudExpandida == solicitud.nombreProblema) {
-                            null
-                        } else {
-                            solicitud.nombreProblema
-                        }
+        when {
+            clientRequests.isLoading -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            clientRequests.hasError -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = clientRequests.errorMessage ?: "Error al cargar solicitudes",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(vertical = 12.dp)
+                ) {
+                    items(solicitudes) { solicitud ->
+                        SolicitudCard(
+                            solicitud = solicitud,
+                            isExpanded = solicitudExpandida == solicitud.nombreProblema,
+                            onExpandClick = {
+                                solicitudExpandida = if (solicitudExpandida == solicitud.nombreProblema) {
+                                    null
+                                } else {
+                                    solicitud.nombreProblema
+                                }
+                            }
+                        )
                     }
-                )
+                }
             }
         }
     }
@@ -316,7 +346,7 @@ fun RespuestaProveedorItem(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.your_requests_contact_label) + " ${respuesta.contacto}",
+                text = "${stringResource(R.string.your_requests_contact_label)} ${respuesta.contacto}",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 lineHeight = 16.sp
@@ -325,7 +355,7 @@ fun RespuestaProveedorItem(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = stringResource(R.string.your_requests_skills_label) + " ${respuesta.habilidades}",
+                text = "${stringResource(R.string.your_requests_skills_label)} ${respuesta.habilidades}",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 lineHeight = 16.sp
@@ -334,7 +364,7 @@ fun RespuestaProveedorItem(
             Spacer(modifier = Modifier.height(4.dp))
 
             Text(
-                text = stringResource(R.string.your_requests_details_label) + " ${respuesta.detalles}",
+                text = "${stringResource(R.string.your_requests_details_label)} ${respuesta.detalles}",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                 lineHeight = 16.sp
@@ -345,6 +375,6 @@ fun RespuestaProveedorItem(
 
 @Preview(showBackground = true)
 @Composable
-fun TusSolicitudesScreenPreview() {
-    TusSolicitudesScreen()
+fun YourRequestsScreenPreview() {
+    YourRequestsScreen()
 }
