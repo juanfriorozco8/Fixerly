@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import uvg.plats.fixerly.utils.FirebaseConstants
 
 // Auth screens
 import uvg.plats.fixerly.ui.screens.auth.OnboardingScreen
@@ -37,6 +38,7 @@ fun NavigationGraph(
         startDestination = OnboardingDestination
     ) {
 
+        // ONBOARDING
         composable<OnboardingDestination> {
             OnboardingScreen(
                 onNavigateToLogin = { navController.navigate(LoginDestination) },
@@ -44,13 +46,14 @@ fun NavigationGraph(
             )
         }
 
+        // LOGIN
         composable<LoginDestination> {
             LoginScreen(
                 onNavigateToRegister = {
                     navController.navigate(RegisterDestination)
                 },
                 onLoginSuccess = { accountType ->
-                    if (accountType == "Cliente") {
+                    if (accountType == FirebaseConstants.TYPE_CLIENT) {
                         navController.navigate(LaborDestination) {
                             popUpTo(OnboardingDestination) { inclusive = true }
                         }
@@ -63,11 +66,14 @@ fun NavigationGraph(
             )
         }
 
-        // viewModel compartido
+        // ============================
+        //  REGISTRO (NAV ANIDADO)
+        // ============================
         navigation<RegisterDestination>(
             startDestination = RegisterStepDestination
         ) {
 
+            // Paso 1: datos básicos
             composable<RegisterStepDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -86,6 +92,7 @@ fun NavigationGraph(
                 )
             }
 
+            // Paso 2: tipo de cuenta
             composable<AccountTypeDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -105,6 +112,7 @@ fun NavigationGraph(
                 )
             }
 
+            // Paso 3 (cliente): dirección
             composable<AddressDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -120,6 +128,7 @@ fun NavigationGraph(
                 )
             }
 
+            // Paso 3 (proveedor): datos proveedor
             composable<SupplierDataDestination> {
                 val sharedViewModel: AuthViewModel = viewModel(
                     viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
@@ -136,7 +145,9 @@ fun NavigationGraph(
             }
         }
 
-        // cliente
+        // ============================
+        //  CLIENTE
+        // ============================
 
         composable<LaborDestination> {
             LaborScreen()
@@ -150,14 +161,28 @@ fun NavigationGraph(
             UserProfileScreen()
         }
 
-        // proovedor
+        // ============================
+        //  PROVEEDOR
+        // ============================
 
         composable<SupplierWelcomeDestination> {
-            SupplierWelcomeScreen()
+            SupplierWelcomeScreen(
+                onNavigateToHome = { /* ya estamos en home */ },
+                onNavigateToProfile = {
+                    navController.navigate(SupplierProfileDestination)
+                }
+            )
         }
 
         composable<SupplierProfileDestination> {
-            SupplierProfileScreen()
+            SupplierProfileScreen(
+                onNavigateToHome = {
+                    navController.navigate(SupplierWelcomeDestination) {
+                        popUpTo(SupplierWelcomeDestination) { inclusive = true }
+                    }
+                },
+                onNavigateToProfile = { /* ya estamos en perfil */ }
+            )
         }
     }
 }

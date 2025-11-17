@@ -26,6 +26,8 @@
     <string name="register_already_have_account">¿Ya tienes una cuenta? </string>
     <string name="register_login_link">Inicia sesión</string>
 
+    <string name="address_continue">Continuar</string>
+
     <string name="address_ready_title">¿Listo para comenzar?</string>
     <string name="address_add_title">Agrega una dirección</string>
     <string name="address_department">Departamento</string>

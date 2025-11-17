@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.auth.FirebaseAuth
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.R
@@ -30,23 +31,30 @@ import uvg.plats.fixerly.ui.viewmodel.OperationState
 fun SupplierProfileScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
-    userId: String = "temp_supplier_id",
-    viewModel: ProfileViewModel = viewModel()
+    profileViewModel: ProfileViewModel = viewModel()
 ) {
-    var currentRoute by remember { mutableStateOf("profile") }
-
-    LaunchedEffect(Unit) {
-        viewModel.loadUserProfile(userId)
+    // Obtener el usuario actual
+    val userId = remember {
+        FirebaseAuth.getInstance().currentUser?.uid
     }
+
+    // Cargar perfil cuando tengamos userId
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            profileViewModel.loadUserProfile(userId)
+        }
+    }
+
+    var currentRoute by remember { mutableStateOf("profile") }
 
     FixerlyTheme {
         ScreenWithBottomNav(
             currentRoute = currentRoute,
             onNavigate = { route -> currentRoute = route },
             onNavigateToProfile = onNavigateToProfile,
-            onNavigateToHome = onNavigateToHome,
+            onNavigateToHome = onNavigateToHome
         ) {
-            SupplierProfileContent(viewModel = viewModel)
+            SupplierProfileContent(viewModel = profileViewModel)
         }
     }
 }
@@ -64,13 +72,21 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
         stringResource(R.string.labor_filter_other)
     )
 
-    val habilidadesSeleccionadas = remember { mutableStateMapOf<String, Boolean>().apply {
-        put(habilidades[0], true)
-        put(habilidades[1], true)
-        put(habilidades[2], true)
-    } }
+    val habilidadesSeleccionadas = remember {
+        mutableStateMapOf<String, Boolean>().apply {
+            put(habilidades[0], true)
+            put(habilidades[1], true)
+            put(habilidades[2], true)
+        }
+    }
 
-    var detalles by remember { mutableStateOf(TextFieldValue("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.")) }
+    var detalles by remember {
+        mutableStateOf(
+            TextFieldValue(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+            )
+        )
+    }
 
     val userProfile by viewModel.userProfile.collectAsState()
     val operationState by viewModel.operationState.collectAsState()
@@ -81,9 +97,11 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
             is OperationState.Success -> {
                 snackbarHostState.showSnackbar(state.message)
             }
+
             is OperationState.Error -> {
                 snackbarHostState.showSnackbar(state.message)
             }
+
             else -> {}
         }
     }
@@ -108,6 +126,7 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                     CircularProgressIndicator()
                 }
             }
+
             userProfile.hasError -> {
                 Box(
                     modifier = Modifier
@@ -116,11 +135,13 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = userProfile.errorMessage ?: stringResource(R.string.user_profile_error),
+                        text = userProfile.errorMessage
+                            ?: stringResource(R.string.user_profile_error),
                         color = MaterialTheme.colorScheme.error
                     )
                 }
             }
+
             else -> {
                 val user = userProfile.data
                 Column(
@@ -237,22 +258,7 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = user?.email ?: "Usuario@gmail.com",
-                                fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Normal
-                            )
-
-                            Spacer(modifier = Modifier.height(16.dp))
-
-                            Text(
-                                text = stringResource(R.string.user_profile_change_password),
-                                fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = user?.email ?: "Usuario@gmail.com",
+                                text = user?.email ?: "usuario@gmail.com",
                                 fontSize = 16.sp,
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Normal
@@ -299,8 +305,11 @@ fun SupplierProfileContent(viewModel: ProfileViewModel) {
                                     modifier = Modifier.padding(vertical = 2.dp)
                                 ) {
                                     Checkbox(
-                                        checked = user?.skills?.contains(habilidad) == true || (habilidadesSeleccionadas[habilidad] == true),
-                                        onCheckedChange = { habilidadesSeleccionadas[habilidad] = it },
+                                        checked = user?.skills?.contains(habilidad) == true
+                                                || (habilidadesSeleccionadas[habilidad] == true),
+                                        onCheckedChange = {
+                                            habilidadesSeleccionadas[habilidad] = it
+                                        },
                                         colors = CheckboxDefaults.colors(
                                             checkedColor = MaterialTheme.colorScheme.primary,
                                             uncheckedColor = MaterialTheme.colorScheme.primary,

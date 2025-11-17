@@ -60,20 +60,17 @@ fun SupplierDataScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(authState) {
-        when (authState) {
+        when (val state = authState) {
             is AuthState.Success -> {
-                onComplete()
+                // ✅ proveedor creado y logeado
+                onComplete()              // navega a SupplierWelcome
+                viewModel.resetAuthState()
             }
             is AuthState.Error -> {
-                snackbarHostState.showSnackbar((authState as AuthState.Error).message)
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.resetAuthState()
             }
-            else -> {}
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        viewModel.message.collect { message ->
-            snackbarHostState.showSnackbar(message)
+            else -> Unit
         }
     }
 

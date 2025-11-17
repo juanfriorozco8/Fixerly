@@ -38,20 +38,19 @@ fun AddressScreen(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(authState) {
-        when (authState) {
+        when (val state = authState) {
             is AuthState.Success -> {
-                onComplete()
+                // ✅ Ya se registró el cliente y Firebase lo dejó logeado
+                onComplete()               // navega a LaborDestination
+                viewModel.resetAuthState() // limpia el estado
             }
-            is AuthState.Error -> {
-                snackbarHostState.showSnackbar((authState as AuthState.Error).message)
-            }
-            else -> {}
-        }
-    }
 
-    LaunchedEffect(Unit) {
-        viewModel.message.collect { message ->
-            snackbarHostState.showSnackbar(message)
+            is AuthState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.resetAuthState()
+            }
+
+            else -> Unit
         }
     }
 
@@ -170,7 +169,6 @@ fun AddressScreen(
 
                 Button(
                     onClick = {
-                        // Ahora sí registrar el cliente en Firebase
                         viewModel.registerClient(
                             department = departamento,
                             address = direccion,
@@ -180,29 +178,26 @@ fun AddressScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp),
+                        .height(50.dp),
                     shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    enabled = authState !is AuthState.Loading
+                    enabled = authState !is AuthState.Loading &&
+                            departamento.isNotBlank() &&
+                            direccion.isNotBlank() &&
+                            zona.isNotBlank()
                 ) {
                     if (authState is AuthState.Loading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
+                            modifier = Modifier.size(22.dp),
                             color = MaterialTheme.colorScheme.onSecondary
                         )
                     } else {
                         Text(
-                            text = stringResource(R.string.address_done_button),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSecondary
+                            stringResource(R.string.address_continue),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
-
-                Spacer(modifier = Modifier.height(40.dp))
             }
         }
     }
