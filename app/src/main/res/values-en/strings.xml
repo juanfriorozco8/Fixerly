@@ -324,6 +324,12 @@
     <string name="time_hours_ago">%d hours ago</string>
     <string name="time_days_ago">%d days ago</string>
 
+    <string name="labor_subtitle">What service do you need?</string>
+    <string name="labor_filter_label">Select service type</string>
+    <string name="labor_description_label">Detailed description</string>
+    <string name="labor_description_placeholder">Describe the work you need...</string>
+    <string name="labor_button">Request service</string>
+
     <string name="empty_state_no_data">No data available</string>
     <string name="empty_state_search">No results found</string>
     <string name="empty_state_try_again">Try a different search</string>

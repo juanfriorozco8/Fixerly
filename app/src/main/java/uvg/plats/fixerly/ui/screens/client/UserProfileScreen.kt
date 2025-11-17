@@ -16,96 +16,164 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
+import uvg.plats.fixerly.ui.viewmodel.ProfileViewModel
+import uvg.plats.fixerly.ui.viewmodel.OperationState
 
 @Composable
-fun UserProfileScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp)
-            .padding(vertical = 16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
+fun UserProfileScreen(
+    userId: String = "temp_user_id",
+    viewModel: ProfileViewModel = viewModel()
+) {
+    val userProfile by viewModel.userProfile.collectAsState()
+    val operationState by viewModel.operationState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-            )
+    LaunchedEffect(Unit) {
+        viewModel.loadUserProfile(userId)
+    }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = stringResource(R.string.user_profile_edit_photo),
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            )
+    LaunchedEffect(operationState) {
+        when (val state = operationState) {
+            is OperationState.Success -> {
+                snackbarHostState.showSnackbar(state.message)
+            }
+            is OperationState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+            }
+            else -> {}
         }
+    }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = stringResource(R.string.user_profile_section_personal),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        ProfileInfoItem(
-            label = stringResource(R.string.user_profile_name),
-            value = "Usuario"
-        )
-
-        ProfileInfoItem(
-            label = stringResource(R.string.user_profile_email),
-            value = "usuario@ejemplo.com"
-        )
-
-        ProfileInfoItem(
-            label = stringResource(R.string.user_profile_phone),
-            value = "+502 1234-5678"
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Text(
-                stringResource(R.string.user_profile_save_changes),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
+    LaunchedEffect(Unit) {
+        viewModel.message.collect { message ->
+            snackbarHostState.showSnackbar(message)
         }
+    }
 
-        Spacer(modifier = Modifier.height(32.dp))
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        when {
+            userProfile.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            userProfile.hasError -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = userProfile.errorMessage ?: stringResource(R.string.user_profile_error_loading),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+            else -> {
+                val user = userProfile.data
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(MaterialTheme.colorScheme.background)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp)
+                        .padding(vertical = 16.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                        )
+
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        Text(
+                            text = stringResource(R.string.user_profile_edit_photo),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Text(
+                        text = stringResource(R.string.user_profile_section_personal),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    ProfileInfoItem(
+                        label = stringResource(R.string.user_profile_name),
+                        value = user?.name ?: ""
+                    )
+
+                    ProfileInfoItem(
+                        label = stringResource(R.string.user_profile_email),
+                        value = user?.email ?: ""
+                    )
+
+                    ProfileInfoItem(
+                        label = stringResource(R.string.user_profile_phone),
+                        value = user?.phone ?: ""
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(50),
+                        enabled = operationState !is OperationState.Loading
+                    ) {
+                        if (operationState is OperationState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.user_profile_save_changes),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun ProfileInfoItem(
-    label: String,
-    value: String
-) {
+fun ProfileInfoItem(label: String, value: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,17 +182,17 @@ fun ProfileInfoItem(
         Text(
             text = label,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 14.sp
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
         )
-
         Spacer(modifier = Modifier.height(4.dp))
-
         Text(
             text = value,
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
+            fontSize = 16.sp
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 

@@ -327,6 +327,11 @@
     <string name="empty_state_no_data">No hay datos disponibles</string>
     <string name="empty_state_search">No se encontraron resultados</string>
     <string name="empty_state_try_again">Intenta una búsqueda diferente</string>
+    <string name="labor_subtitle">¿Qué servicio necesitas?</string>
+    <string name="labor_filter_label">Selecciona el tipo de servicio</string>
+    <string name="labor_description_label">Descripción detallada</string>
+    <string name="labor_description_placeholder">Describe el trabajo que necesitas...</string>
+    <string name="labor_button">Solicitar servicio</string>
 
     <string name="app_name_display">Fixerly.</string>
     <string name="logo_description">Logo</string>

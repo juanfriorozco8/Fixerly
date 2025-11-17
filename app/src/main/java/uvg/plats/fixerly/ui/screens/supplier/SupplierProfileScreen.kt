@@ -16,131 +16,220 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
+import uvg.plats.fixerly.ui.viewmodel.ProfileViewModel
+import uvg.plats.fixerly.ui.viewmodel.OperationState
 
 @Composable
-fun SupplierProfileScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp)
-            .padding(vertical = 16.dp)
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
+fun SupplierProfileScreen(
+    userId: String = "temp_supplier_id",
+    viewModel: ProfileViewModel = viewModel()
+) {
+    val userProfile by viewModel.userProfile.collectAsState()
+    val operationState by viewModel.operationState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-            )
+    var profession by remember { mutableStateOf("") }
+    var experience by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
 
-            Spacer(modifier = Modifier.height(16.dp))
+    LaunchedEffect(Unit) {
+        viewModel.loadUserProfile(userId)
+    }
 
-            Text(
-                text = stringResource(R.string.supplier_profile_edit_photo),
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            )
+    LaunchedEffect(userProfile.data) {
+        userProfile.data?.let { user ->
+            profession = ""
+            experience = ""
+            description = ""
         }
+    }
 
-        Spacer(modifier = Modifier.height(32.dp))
+    LaunchedEffect(operationState) {
+        when (val state = operationState) {
+            is OperationState.Success -> {
+                snackbarHostState.showSnackbar(state.message)
+            }
+            is OperationState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+            }
+            else -> {}
+        }
+    }
 
-        Text(
-            text = stringResource(R.string.supplier_profile_section_info),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+    LaunchedEffect(Unit) {
+        viewModel.message.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
 
-        Spacer(modifier = Modifier.height(16.dp))
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        when {
+            userProfile.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }
+            userProfile.hasError -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = userProfile.errorMessage ?: stringResource(R.string.user_profile_error_loading),
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+            else -> {
+                val user = userProfile.data
 
-        ProfileInfoItem(
-            label = stringResource(R.string.supplier_profile_profession),
-            value = "Electricista"
-        )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+                        .background(MaterialTheme.colorScheme.background)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp)
+                        .padding(vertical = 16.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(20.dp))
 
-        ProfileInfoItem(
-            label = stringResource(R.string.supplier_profile_experience),
-            value = "5 años"
-        )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(100.dp)
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                        )
 
-        ProfileInfoItem(
-            label = stringResource(R.string.supplier_profile_description),
-            value = "Especialista en instalaciones eléctricas"
-        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(24.dp))
+                        Text(
+                            text = stringResource(R.string.user_profile_edit_photo),
+                            color = MaterialTheme.colorScheme.primary,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
 
-        Text(
-            text = stringResource(R.string.supplier_profile_section_services),
-            color = MaterialTheme.colorScheme.onBackground,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
+                    Spacer(modifier = Modifier.height(32.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.supplier_profile_section_info),                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
 
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = stringResource(R.string.labor_filter_electricity),
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Q150.00",
-                    color = MaterialTheme.colorScheme.primary,
-                    fontSize = 14.sp
-                )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    OutlinedTextField(
+                        value = profession,
+                        onValueChange = { profession = it },
+                        label = { Text(stringResource(R.string.supplier_profile_profession)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = experience,
+                        onValueChange = { experience = it },
+                        label = { Text(stringResource(R.string.supplier_profile_experience)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text(stringResource(R.string.supplier_profile_description)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = stringResource(R.string.user_profile_section_personal),
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    SupplierProfileInfoItem(
+                        label = stringResource(R.string.user_profile_name),
+                        value = user?.name ?: ""
+                    )
+
+                    SupplierProfileInfoItem(
+                        label = stringResource(R.string.user_profile_email),
+                        value = user?.email ?: ""
+                    )
+
+                    SupplierProfileInfoItem(
+                        label = stringResource(R.string.user_profile_phone),
+                        value = user?.phone ?: ""
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Button(
+                        onClick = { },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        shape = RoundedCornerShape(50),
+                        enabled = operationState !is OperationState.Loading
+                    ) {
+                        if (operationState is OperationState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.user_profile_save_changes),
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            )
-        ) {
-            Text(
-                stringResource(R.string.supplier_profile_save_changes),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
 @Composable
-fun ProfileInfoItem(
-    label: String,
-    value: String
-) {
+fun SupplierProfileInfoItem(label: String, value: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,17 +238,17 @@ fun ProfileInfoItem(
         Text(
             text = label,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 14.sp
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
         )
-
         Spacer(modifier = Modifier.height(4.dp))
-
         Text(
             text = value,
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium
+            fontSize = 16.sp
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
     }
 }
 
