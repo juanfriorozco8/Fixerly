@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 
 // Auth screens
 import uvg.plats.fixerly.ui.screens.auth.OnboardingScreen
@@ -33,9 +32,7 @@ fun NavigationGraph(
         startDestination = OnboardingDestination
     ) {
 
-        // -------------------------
         // ONBOARDING
-        // -------------------------
         composable<OnboardingDestination> {
             OnboardingScreen(
                 onNavigateToLogin = { navController.navigate(LoginDestination) },
@@ -43,9 +40,7 @@ fun NavigationGraph(
             )
         }
 
-        // -------------------------
         // LOGIN
-        // -------------------------
         composable<LoginDestination> {
             LoginScreen(
                 onNavigateToRegister = {
@@ -65,10 +60,7 @@ fun NavigationGraph(
             )
         }
 
-
-        // -------------------------
         // REGISTRO
-        // -------------------------
         composable<RegisterDestination> {
             RegisterScreen(
                 onNavigateToLogin = {
@@ -82,9 +74,7 @@ fun NavigationGraph(
             )
         }
 
-        // -------------------------
         // TIPO DE CUENTA
-        // -------------------------
         composable<AccountTypeDestination> {
             AccountTypeScreen(
                 onNavigateToLogin = {
@@ -92,6 +82,8 @@ fun NavigationGraph(
                 },
                 onNavigateToNext = { accountType ->
                     if (accountType == "Proveedor") {
+                        // No necesitamos leer el parámetro en la pantalla,
+                        // solo navegamos a esa ruta.
                         navController.navigate(SupplierDataDestination(accountType))
                     } else {
                         navController.navigate(AddressDestination)
@@ -100,9 +92,7 @@ fun NavigationGraph(
             )
         }
 
-        // -------------------------
         // DIRECCIÓN DEL CLIENTE
-        // -------------------------
         composable<AddressDestination> {
             AddressScreen(
                 onComplete = {
@@ -113,14 +103,9 @@ fun NavigationGraph(
             )
         }
 
-        // -------------------------
         // DATOS DEL PROVEEDOR
-        // -------------------------
-        composable<SupplierDataDestination> { backStackEntry ->
-            val args = backStackEntry.toRoute<SupplierDataDestination>()
+        composable<SupplierDataDestination> {
             SupplierDataScreen(
-                accountType = args.accountType,
-                onNavigateBack = { navController.popBackStack() },
                 onComplete = {
                     navController.navigate(SupplierWelcomeDestination) {
                         popUpTo(OnboardingDestination) { inclusive = true }
@@ -129,55 +114,28 @@ fun NavigationGraph(
             )
         }
 
-
-        // ==========================================================
-        //  CLIENTE
-        // ==========================================================
+        // ==================== CLIENTE ====================
 
         composable<LaborDestination> {
-            LaborScreen(
-                onNavigateToProfile = { navController.navigate(UserProfileDestination) },
-                onNavigateToHome = { /* ya estamos en home */ },
-                onNavigateToMessages = { navController.navigate(YourRequestsDestination) }
-            )
+            LaborScreen()
         }
 
         composable<YourRequestsDestination> {
-            YourRequestsScreen() // esta pantalla ya NO recibe callbacks
+            YourRequestsScreen()
         }
 
         composable<UserProfileDestination> {
-            UserProfileScreen(
-                onNavigateToProfile = { /* ya estamos aquí */ },
-                onNavigateToHome = {
-                    navController.navigate(LaborDestination) {
-                        popUpTo(LaborDestination) { inclusive = true }
-                    }
-                }
-            )
+            UserProfileScreen()
         }
 
-
-        // ==========================================================
-        //  PROVEEDOR
-        // ==========================================================
+        // ==================== PROVEEDOR ====================
 
         composable<SupplierWelcomeDestination> {
-            SupplierWelcomeScreen(
-                onNavigateToProfile = { navController.navigate(SupplierProfileDestination) },
-                onNavigateToHome = { /* ya estamos aquí */ }
-            )
+            SupplierWelcomeScreen()
         }
 
         composable<SupplierProfileDestination> {
-            SupplierProfileScreen(
-                onNavigateToProfile = { /* ya estamos aquí */ },
-                onNavigateToHome = {
-                    navController.navigate(SupplierWelcomeDestination) {
-                        popUpTo(SupplierWelcomeDestination) { inclusive = true }
-                    }
-                }
-            )
+            SupplierProfileScreen()
         }
     }
 }
