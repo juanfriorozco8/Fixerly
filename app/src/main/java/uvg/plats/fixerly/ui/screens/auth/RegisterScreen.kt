@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -62,12 +63,12 @@ fun RegisterScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_icon),
-                    contentDescription = "Logo",
+                    contentDescription = stringResource(R.string.logo_description),
                     modifier = Modifier.size(70.dp)
                 )
 
                 Text(
-                    text = "Fixerly.",
+                    text = stringResource(R.string.app_name_display),
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -77,97 +78,84 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = "¡Crea tu cuenta!",
-                fontSize = 30.sp,
+                text = stringResource(R.string.register_title),
+                fontSize = 26.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center
+                color = MaterialTheme.colorScheme.onPrimary
             )
-
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(
+                text = stringResource(R.string.register_subtitle),
+                fontSize = 15.sp,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+            Spacer(modifier = Modifier.height(32.dp))
 
             FormField(
-                label = "Nombre",
+                label = stringResource(R.string.register_name_label),
                 value = nombre,
                 onValueChange = { nombre = it }
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             FormField(
-                label = "Apellidos",
-                value = apellidos,
-                onValueChange = { apellidos = it }
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            FormField(
-                label = "Número de celular",
+                label = stringResource(R.string.register_phone_label),
                 value = telefono,
                 onValueChange = { telefono = it }
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
             FormField(
-                label = "Correo electrónico",
+                label = stringResource(R.string.register_email_label),
                 value = email,
                 onValueChange = { email = it }
             )
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             FormField(
-                label = "Crea una contraseña",
+                label = stringResource(R.string.register_password_label),
                 value = password,
                 onValueChange = { password = it },
                 isPassword = true
             )
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Button(
-                onClick = {
-                    onNavigateToAccountType()
-                },
+                onClick = { onNavigateToAccountType() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape = RoundedCornerShape(50),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
+                shape = RoundedCornerShape(12.dp)
             ) {
                 Text(
-                    text = "Siguiente",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondary
+                    text = stringResource(R.string.register_button),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
-
-            HorizontalDivider(
-                modifier = Modifier.fillMaxWidth(),
-                color = MaterialTheme.colorScheme.onPrimary,
-                thickness = 1.dp
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Row(
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "¿Ya tienes una cuenta? ",
+                    text = stringResource(R.string.register_have_account) + " ",
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onPrimary
                 )
 
                 Text(
-                    text = "Inicia sesión",
+                    text = stringResource(R.string.register_login),
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
@@ -205,7 +193,7 @@ fun FormField(
                 .height(56.dp),
             placeholder = {
                 Text(
-                    text = "Escribe acá",
+                    text = stringResource(R.string.form_field_placeholder),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
