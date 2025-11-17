@@ -40,9 +40,12 @@ fun LoginScreen(
     val currentUser by viewModel.currentUser.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(currentUser) {
-        currentUser?.let { user ->
-            onLoginSuccess(user.userType)
+    var hasNavigated by remember { mutableStateOf(false) }
+
+    LaunchedEffect(authState, currentUser) {
+        if (authState is AuthState.Success && currentUser != null && !hasNavigated) {
+            hasNavigated = true
+            onLoginSuccess(currentUser!!.userType)
         }
     }
 

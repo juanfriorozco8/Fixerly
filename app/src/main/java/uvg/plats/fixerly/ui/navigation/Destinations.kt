@@ -3,23 +3,15 @@ package uvg.plats.fixerly.ui.navigation
 import kotlinx.serialization.Serializable
 
 
-// === PRUEBA DE DATABASE (TEMPORAL) ===
-//@Serializable
-//data object TestDatabaseDestination
-
-
-// flujo de la autenticacion, login y eso
 @Serializable
 data object OnboardingDestination
 
 @Serializable
 data object LoginDestination
 
-// Flujo de registro completo (ruta padre)
 @Serializable
 data object RegisterDestination
 
-// Primera pantalla del registro
 @Serializable
 data object RegisterStepDestination
 

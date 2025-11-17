@@ -21,7 +21,6 @@ class TestDatabaseViewModel(application: Application) : AndroidViewModel(applica
     fun testDatabaseOperations() {
         viewModelScope.launch {
             try {
-                // 1. Insertar un usuario de prueba
                 val testUser = UserEntity(
                     id = UUID.randomUUID().toString(),
                     nombre = "Juan",
@@ -35,7 +34,6 @@ class TestDatabaseViewModel(application: Application) : AndroidViewModel(applica
                 userDao.insertUser(testUser)
                 _testResult.value = "Usuario insertado correctamente\n"
 
-                // 2. Leer el usuario
                 val retrievedUser = userDao.getUserByEmail("juan@test.com")
 
                 if (retrievedUser != null) {

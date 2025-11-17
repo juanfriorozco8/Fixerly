@@ -1,6 +1,7 @@
 package uvg.plats.fixerly.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,39 +24,74 @@ import uvg.plats.fixerly.ui.screens.client.UserProfileScreen
 import uvg.plats.fixerly.ui.screens.supplier.SupplierWelcomeScreen
 import uvg.plats.fixerly.ui.screens.supplier.SupplierProfileScreen
 import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
+import uvg.plats.fixerly.ui.viewmodel.AuthState
 
 @Composable
 fun NavigationGraph(
     navController: NavHostController = rememberNavController()
 ) {
+    val authViewModel: AuthViewModel = viewModel()
+
+    LaunchedEffect(Unit) {
+        authViewModel.checkUserLoggedIn()
+    }
+
     NavHost(
         navController = navController,
         startDestination = OnboardingDestination
     ) {
 
         composable<OnboardingDestination> {
+            val currentUser by authViewModel.currentUser.collectAsState()
+            val authState by authViewModel.authState.collectAsState()
+
+            LaunchedEffect(authState, currentUser) {
+                if (authState is AuthState.Success && currentUser != null) {
+                    val destination = if (currentUser!!.userType == FirebaseConstants.TYPE_CLIENT) {
+                        YourRequestsDestination
+                    } else {
+                        SupplierWelcomeDestination
+                    }
+                    navController.navigate(destination) {
+                        popUpTo(OnboardingDestination) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            }
+
             OnboardingScreen(
-                onNavigateToLogin = { navController.navigate(LoginDestination) },
-                onNavigateToRegister = { navController.navigate(RegisterDestination) }
+                onNavigateToLogin = {
+                    navController.navigate(LoginDestination) {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToRegister = {
+                    navController.navigate(RegisterDestination) {
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
         composable<LoginDestination> {
             LoginScreen(
                 onNavigateToRegister = {
-                    navController.navigate(RegisterDestination)
+                    navController.navigate(RegisterDestination) {
+                        launchSingleTop = true
+                    }
                 },
                 onLoginSuccess = { accountType ->
-                    if (accountType == FirebaseConstants.TYPE_CLIENT) {
-                        navController.navigate(LaborDestination) {
-                            popUpTo(OnboardingDestination) { inclusive = true }
-                        }
+                    val destination = if (accountType == FirebaseConstants.TYPE_CLIENT) {
+                        YourRequestsDestination
                     } else {
-                        navController.navigate(SupplierWelcomeDestination) {
-                            popUpTo(OnboardingDestination) { inclusive = true }
-                        }
+                        SupplierWelcomeDestination
                     }
-                }
+                    navController.navigate(destination) {
+                        popUpTo(OnboardingDestination) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                viewModel = authViewModel
             )
         }
 
@@ -71,11 +107,13 @@ fun NavigationGraph(
                 RegisterScreen(
                     onNavigateToLogin = {
                         navController.navigate(LoginDestination) {
-                            popUpTo(RegisterDestination) { inclusive = true }
+                            launchSingleTop = true
                         }
                     },
                     onNavigateToAccountType = {
-                        navController.navigate(AccountTypeDestination)
+                        navController.navigate(AccountTypeDestination) {
+                            launchSingleTop = true
+                        }
                     },
                     viewModel = sharedViewModel
                 )
@@ -88,13 +126,19 @@ fun NavigationGraph(
 
                 AccountTypeScreen(
                     onNavigateToLogin = {
-                        navController.navigate(LoginDestination)
+                        navController.navigate(LoginDestination) {
+                            launchSingleTop = true
+                        }
                     },
                     onNavigateToNext = { accountType ->
                         if (accountType == "Proveedor") {
-                            navController.navigate(SupplierDataDestination(accountType))
+                            navController.navigate(SupplierDataDestination(accountType)) {
+                                launchSingleTop = true
+                            }
                         } else {
-                            navController.navigate(AddressDestination)
+                            navController.navigate(AddressDestination) {
+                                launchSingleTop = true
+                            }
                         }
                     }
                 )
@@ -107,8 +151,9 @@ fun NavigationGraph(
 
                 AddressScreen(
                     onComplete = {
-                        navController.navigate(LaborDestination) {
+                        navController.navigate(YourRequestsDestination) {
                             popUpTo(OnboardingDestination) { inclusive = true }
+                            launchSingleTop = true
                         }
                     },
                     viewModel = sharedViewModel
@@ -124,6 +169,7 @@ fun NavigationGraph(
                     onComplete = {
                         navController.navigate(SupplierWelcomeDestination) {
                             popUpTo(OnboardingDestination) { inclusive = true }
+                            launchSingleTop = true
                         }
                     },
                     viewModel = sharedViewModel
@@ -132,7 +178,6 @@ fun NavigationGraph(
         }
 
         composable<LaborDestination> {
-            val authViewModel: AuthViewModel = viewModel()
             val currentUser by authViewModel.currentUser.collectAsState()
 
             LaborScreen(
@@ -140,70 +185,99 @@ fun NavigationGraph(
                 clientName = currentUser?.getFullName() ?: "",
                 clientAddress = currentUser?.address ?: Address(),
                 onNavigateToRequests = {
-                    navController.navigate(YourRequestsDestination)
+                    navController.navigate(YourRequestsDestination) {
+                        popUpTo(YourRequestsDestination) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToProfile = {
-                    navController.navigate(UserProfileDestination)
+                    navController.navigate(UserProfileDestination) {
+                        launchSingleTop = true
+                    }
                 },
-                onNavigateToHome = {}
+                onNavigateToHome = {
+                }
             )
         }
 
         composable<YourRequestsDestination> {
-            val authViewModel: AuthViewModel = viewModel()
             val currentUser by authViewModel.currentUser.collectAsState()
 
             YourRequestsScreen(
                 clientId = currentUser?.userId ?: "",
                 onNavigateToProfile = {
-                    navController.navigate(UserProfileDestination)
+                    navController.navigate(UserProfileDestination) {
+                        launchSingleTop = true
+                    }
                 },
                 onNavigateToHome = {
-                    navController.navigate(LaborDestination)
+                },
+                onNavigateToNewRequest = {
+                    navController.navigate(LaborDestination) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
 
         composable<UserProfileDestination> {
-            val authViewModel: AuthViewModel = viewModel()
             val currentUser by authViewModel.currentUser.collectAsState()
 
             UserProfileScreen(
                 userId = currentUser?.userId ?: "",
-                onNavigateToProfile = {},
+                onNavigateToProfile = {
+                },
                 onNavigateToHome = {
-                    navController.navigate(LaborDestination)
+                    navController.navigate(YourRequestsDestination) {
+                        popUpTo(YourRequestsDestination) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToNewRequest = {
+                    navController.navigate(LaborDestination) {
+                        launchSingleTop = true
+                    }
                 },
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(OnboardingDestination) {
                         popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )
         }
 
         composable<SupplierWelcomeDestination> {
+            val currentUser by authViewModel.currentUser.collectAsState()
+
             SupplierWelcomeScreen(
-                onNavigateToHome = {},
+                currentUser = currentUser,
+                onNavigateToHome = {
+                },
                 onNavigateToProfile = {
-                    navController.navigate(SupplierProfileDestination)
+                    navController.navigate(SupplierProfileDestination) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
 
         composable<SupplierProfileDestination> {
-            val authViewModel: AuthViewModel = viewModel()
-
             SupplierProfileScreen(
                 onNavigateToHome = {
-                    navController.navigate(SupplierWelcomeDestination)
+                    navController.navigate(SupplierWelcomeDestination) {
+                        popUpTo(SupplierWelcomeDestination) { inclusive = true }
+                        launchSingleTop = true
+                    }
                 },
-                onNavigateToProfile = {},
+                onNavigateToProfile = {
+                },
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(OnboardingDestination) {
                         popUpTo(0) { inclusive = true }
+                        launchSingleTop = true
                     }
                 }
             )

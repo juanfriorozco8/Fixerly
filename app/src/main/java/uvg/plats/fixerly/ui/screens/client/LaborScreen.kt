@@ -23,6 +23,7 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.theme.White
 import uvg.plats.fixerly.data.model.Address
+import uvg.plats.fixerly.ui.screens.components.ClientScreenWithBottomNav
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 import uvg.plats.fixerly.ui.viewmodel.ServiceViewModel
 import uvg.plats.fixerly.ui.viewmodel.OperationState
@@ -37,7 +38,7 @@ fun LaborScreen(
     onNavigateToHome: () -> Unit = {},
     viewModel: ServiceViewModel = viewModel()
 ) {
-    var currentRoute by remember { mutableStateOf("home") }
+    var currentRoute by remember { mutableStateOf("new_request") }
     var selectedCategory by remember { mutableStateOf<String?>(null) }
     var briefDescription by remember { mutableStateOf("") }
     var detailedDescription by remember { mutableStateOf("") }
@@ -59,6 +60,7 @@ fun LaborScreen(
                 briefDescription = ""
                 detailedDescription = ""
                 viewModel.resetOperationState()
+                onNavigateToRequests()
             }
             is OperationState.Error -> {
                 snackbarHostState.showSnackbar(state.message)
@@ -68,213 +70,207 @@ fun LaborScreen(
         }
     }
 
-    FixerlyTheme {
-        ScreenWithBottomNav(
-            currentRoute = currentRoute,
-            onNavigate = { route -> currentRoute = route },
-            onNavigateToProfile = onNavigateToProfile,
-            onNavigateToHome = onNavigateToHome
+    ClientScreenWithBottomNav(
+        currentRoute = "new_request",
+        onNavigateToProfile = onNavigateToProfile,
+        onNavigateToRequests = onNavigateToRequests,
+        onNavigateToNewRequest = {}
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primaryContainer
+                        )
+                    )
+                )
         ) {
-            Scaffold(
-                snackbarHost = { SnackbarHost(snackbarHostState) }
-            ) { paddingValues ->
-                Box(
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    MaterialTheme.colorScheme.primary,
-                                    MaterialTheme.colorScheme.primaryContainer
-                                )
-                            )
-                        )
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                            .padding(24.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.logo_icon),
-                                    contentDescription = stringResource(R.string.onboarding_logo_description),
-                                    modifier = Modifier.size(50.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = stringResource(R.string.app_name),
-                                    fontSize = 36.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = White
-                                )
-                            }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_icon),
+                            contentDescription = stringResource(R.string.onboarding_logo_description),
+                            modifier = Modifier.size(50.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            fontSize = 36.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = White
+                        )
+                    }
 
-                            Image(
-                                painter = painterResource(id = R.drawable.herramientas),
-                                contentDescription = stringResource(R.string.labor_image_description),
-                                modifier = Modifier.size(60.dp)
+                    Image(
+                        painter = painterResource(id = R.drawable.herramientas),
+                        contentDescription = stringResource(R.string.labor_image_description),
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.labor_title),
+                    fontSize = 42.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = White,
+                    lineHeight = 48.sp,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = stringResource(R.string.labor_category_label),
+                    fontSize = 18.sp,
+                    color = White,
+                    lineHeight = 22.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                CategorySelector(
+                    selectedCategory = selectedCategory,
+                    onCategorySelected = { selectedCategory = it }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = stringResource(R.string.labor_brief_description_label),
+                    fontSize = 18.sp,
+                    color = White,
+                    lineHeight = 22.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = stringResource(R.string.labor_word_limit),
+                    fontSize = 13.sp,
+                    color = White.copy(alpha = 0.8f),
+                    lineHeight = 16.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = briefDescription,
+                    onValueChange = { if (it.split(" ").size <= 10) briefDescription = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(60.dp),
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.labor_placeholder),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
+                        focusedIndicatorColor = White,
+                        unfocusedIndicatorColor = White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = stringResource(R.string.labor_detailed_description_label),
+                    fontSize = 18.sp,
+                    color = White,
+                    lineHeight = 22.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                TextField(
+                    value = detailedDescription,
+                    onValueChange = { detailedDescription = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(150.dp),
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.labor_placeholder),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    },
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = White,
+                        unfocusedContainerColor = White,
+                        focusedIndicatorColor = White,
+                        unfocusedIndicatorColor = White
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                )
+
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Button(
+                    onClick = {
+                        if (selectedCategory != null && clientId.isNotEmpty()) {
+                            viewModel.createServiceRequest(
+                                clientId = clientId,
+                                clientName = clientName,
+                                serviceType = selectedCategory!!,
+                                description = "$briefDescription - $detailedDescription",
+                                address = clientAddress
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Text(
-                            text = stringResource(R.string.labor_title),
-                            fontSize = 42.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = White,
-                            lineHeight = 48.sp,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    enabled = operationState !is OperationState.Loading &&
+                            selectedCategory != null &&
+                            briefDescription.isNotBlank() &&
+                            detailedDescription.isNotBlank()
+                ) {
+                    if (operationState is OperationState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = White
                         )
-
-                        Spacer(modifier = Modifier.height(16.dp))
-
+                    } else {
                         Text(
-                            text = stringResource(R.string.labor_category_label),
+                            text = stringResource(R.string.labor_button),
                             fontSize = 18.sp,
-                            color = White,
-                            lineHeight = 22.sp,
-                            modifier = Modifier.fillMaxWidth()
+                            fontWeight = FontWeight.SemiBold,
+                            color = White
                         )
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        CategorySelector(
-                            selectedCategory = selectedCategory,
-                            onCategorySelected = { selectedCategory = it }
-                        )
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Text(
-                            text = stringResource(R.string.labor_brief_description_label),
-                            fontSize = 18.sp,
-                            color = White,
-                            lineHeight = 22.sp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Text(
-                            text = stringResource(R.string.labor_word_limit),
-                            fontSize = 13.sp,
-                            color = White.copy(alpha = 0.8f),
-                            lineHeight = 16.sp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        TextField(
-                            value = briefDescription,
-                            onValueChange = { if (it.split(" ").size <= 10) briefDescription = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(60.dp),
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.labor_placeholder),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = White,
-                                unfocusedContainerColor = White,
-                                focusedIndicatorColor = White,
-                                unfocusedIndicatorColor = White
-                            ),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(20.dp))
-
-                        Text(
-                            text = stringResource(R.string.labor_detailed_description_label),
-                            fontSize = 18.sp,
-                            color = White,
-                            lineHeight = 22.sp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        TextField(
-                            value = detailedDescription,
-                            onValueChange = { detailedDescription = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(150.dp),
-                            placeholder = {
-                                Text(
-                                    text = stringResource(R.string.labor_placeholder),
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = White,
-                                unfocusedContainerColor = White,
-                                focusedIndicatorColor = White,
-                                unfocusedIndicatorColor = White
-                            ),
-                            shape = RoundedCornerShape(12.dp)
-                        )
-
-                        Spacer(modifier = Modifier.height(30.dp))
-
-                        Button(
-                            onClick = {
-                                if (selectedCategory != null && clientId.isNotEmpty()) {
-                                    viewModel.createServiceRequest(
-                                        clientId = clientId,
-                                        clientName = clientName,
-                                        serviceType = selectedCategory!!,
-                                        description = "$briefDescription - $detailedDescription",
-                                        address = clientAddress
-                                    )
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(56.dp),
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.secondary
-                            ),
-                            enabled = operationState !is OperationState.Loading &&
-                                    selectedCategory != null &&
-                                    clientId.isNotEmpty()
-                        ) {
-                            if (operationState is OperationState.Loading) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    color = White
-                                )
-                            } else {
-                                Text(
-                                    text = stringResource(R.string.labor_button),
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = White
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }
