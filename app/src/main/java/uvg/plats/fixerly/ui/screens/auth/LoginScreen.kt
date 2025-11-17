@@ -93,12 +93,12 @@ fun LoginScreen(
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.logo_icon),
-                            contentDescription = stringResource(id = R.string.logo_description),
+                            contentDescription = stringResource(R.string.onboarding_logo_description),
                             modifier = Modifier.size(80.dp)
                         )
 
                         Text(
-                            text = stringResource(id = R.string.app_name_display),
+                            text = stringResource(R.string.app_name),
                             fontSize = 64.sp,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimary
@@ -107,37 +107,91 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(120.dp))
                     Text(
-                        text = stringResource(id = R.string.login_welcome_back),
-                        fontSize = 28.sp,
+                        text = stringResource(R.string.login_welcome_back),
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary,
                         textAlign = TextAlign.Center
                     )
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(25.dp))
 
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    LoginFormField(
-                        label = stringResource(id = R.string.login_email_label),
-                        value = email,
-                        onValueChange = { email = it }
+                    Text(
+                        text = stringResource(R.string.login_email_label),
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        fontWeight = FontWeight.Medium
                     )
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    TextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.login_placeholder),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
 
-                    LoginFormField(
-                        label = stringResource(id = R.string.login_password_label),
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = stringResource(R.string.login_password_label),
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    TextField(
                         value = password,
                         onValueChange = { password = it },
-                        isPassword = true
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.login_placeholder),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                            )
+                        },
+                        visualTransformation = PasswordVisualTransformation(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        shape = RoundedCornerShape(12.dp)
                     )
 
-                    Spacer(modifier = Modifier.height(40.dp))
-
+                    Spacer(modifier = Modifier.height(80.dp))
                     Button(
                         onClick = {
                             viewModel.login(email, password)
@@ -147,78 +201,67 @@ fun LoginScreen(
                             .height(56.dp),
                         shape = RoundedCornerShape(50),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.surface
+                            containerColor = MaterialTheme.colorScheme.secondary
                         ),
                         enabled = authState !is AuthState.Loading
                     ) {
                         if (authState is AuthState.Loading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.primary
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                         } else {
                             Text(
-                                text = stringResource(id = R.string.login_button),
-                                color = MaterialTheme.colorScheme.primary,
+                                text = stringResource(R.string.login_next_button),
                                 fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                         }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(15.dp))
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        thickness = 1.dp
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
 
                     Row(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(id = R.string.login_no_account),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = 14.sp
+                            text = stringResource(R.string.login_no_account),
+                            fontSize = 15.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+
                         Text(
-                            text = stringResource(id = R.string.login_register),
+                            text = stringResource(R.string.login_register),
+                            fontSize = 15.sp,
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
                             textDecoration = TextDecoration.Underline,
                             modifier = Modifier.clickable { onNavigateToRegister() }
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(20.dp))
             }
         }
     }
 }
 
-@Composable
-fun LoginFormField(
-    label: String,
-    value: String,
-    onValueChange: (String) -> Unit,
-    isPassword: Boolean = false
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
-        shape = RoundedCornerShape(12.dp)
-    )
-}
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
     FixerlyTheme {

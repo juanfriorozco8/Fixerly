@@ -33,22 +33,22 @@ fun RegisterScreen(
     onNavigateToAccountType: () -> Unit = {},
     viewModel: AuthViewModel = viewModel()
 ) {
-    var nombre by remember { mutableStateOf("") }
-    var telefono by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var lastName by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var apellido by remember { mutableStateOf("") }
 
     val authState by viewModel.authState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(authState) {
-        when (val state = authState) {
+        when (authState) {
             is AuthState.Success -> {
                 onNavigateToAccountType()
             }
             is AuthState.Error -> {
-                snackbarHostState.showSnackbar(state.message)
+                snackbarHostState.showSnackbar((authState as AuthState.Error).message)
             }
             else -> {}
         }
@@ -86,136 +86,145 @@ fun RegisterScreen(
             ) {
                 Spacer(modifier = Modifier.height(20.dp))
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logo_icon),
-                            contentDescription = stringResource(R.string.logo_description),
-                            modifier = Modifier.size(70.dp)
-                        )
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_icon),
+                        contentDescription = stringResource(R.string.onboarding_logo_description),
+                        modifier = Modifier.size(70.dp)
+                    )
 
-                        Text(
-                            text = stringResource(R.string.app_name_display),
-                            fontSize = 56.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(32.dp))
                     Text(
-                        text = stringResource(R.string.register_title),
-                        fontSize = 26.sp,
+                        text = stringResource(R.string.app_name),
+                        fontSize = 56.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(
-                        text = stringResource(R.string.register_subtitle),
-                        fontSize = 15.sp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Spacer(modifier = Modifier.height(32.dp))
+                }
 
-                    FormField(
-                        label = stringResource(R.string.register_name_label),
-                        value = nombre,
-                        onValueChange = { nombre = it }
-                    )
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(
+                    text = stringResource(R.string.register_title),
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textAlign = TextAlign.Center
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(30.dp))
 
-                    FormField(
-                        label = stringResource(R.string.register_phone_label),
-                        value = telefono,
-                        onValueChange = { telefono = it }
-                    )
+                FormField(
+                    label = stringResource(R.string.register_name),
+                    value = name,
+                    onValueChange = { name = it }
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                    FormField(
-                        label = stringResource(R.string.register_email_label),
-                        value = email,
-                        onValueChange = { email = it }
-                    )
+                FormField(
+                    label = stringResource(R.string.register_lastname),
+                    value = lastName,
+                    onValueChange = { lastName = it }
+                )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                    FormField(
-                        label = stringResource(R.string.register_password_label),
-                        value = password,
-                        onValueChange = { password = it },
-                        isPassword = true
-                    )
+                FormField(
+                    label = stringResource(R.string.register_phone),
+                    value = phone,
+                    onValueChange = { phone = it }
+                )
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(20.dp))
+                FormField(
+                    label = stringResource(R.string.register_email),
+                    value = email,
+                    onValueChange = { email = it }
+                )
 
-                    Button(
-                        onClick = {
-                            viewModel.registerClient(
-                                name = nombre,
-                                lastName = "",
-                                email = email,
-                                password = password,
-                                phone = telefono,
-                                department = "",
-                                address = "",
-                                zone = "",
-                                directions = ""
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp),
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.surface
-                        ),
-                        enabled = authState !is AuthState.Loading
-                    ) {
-                        if (authState is AuthState.Loading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(R.string.register_button),
-                                color = MaterialTheme.colorScheme.primary,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
+                Spacer(modifier = Modifier.height(20.dp))
 
-                    Spacer(modifier = Modifier.height(24.dp))
+                FormField(
+                    label = stringResource(R.string.register_password),
+                    value = password,
+                    onValueChange = { password = it },
+                    isPassword = true
+                )
 
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = stringResource(R.string.register_have_account),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = 14.sp
+                Spacer(modifier = Modifier.height(30.dp))
+
+                Button(
+                    onClick = {
+                        viewModel.registerClient(
+                            name = name,
+                            lastName = lastName,
+                            email = email,
+                            password = password,
+                            phone = phone,
+                            department = "",
+                            address = "",
+                            zone = "",
+                            directions = ""
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    enabled = authState !is AuthState.Loading
+                ) {
+                    if (authState is AuthState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    } else {
                         Text(
-                            text = stringResource(R.string.register_login),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold,
-                            textDecoration = TextDecoration.Underline,
-                            modifier = Modifier.clickable { onNavigateToLogin() }
+                            text = stringResource(R.string.login_next_button),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSecondary
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    thickness = 1.dp
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.register_already_have_account),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+
+                    Text(
+                        text = stringResource(R.string.register_login_link),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontWeight = FontWeight.Bold,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.clickable { onNavigateToLogin() }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
             }
         }
     }
@@ -228,25 +237,43 @@ fun FormField(
     onValueChange: (String) -> Unit,
     isPassword: Boolean = false
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-            focusedBorderColor = MaterialTheme.colorScheme.primary,
-            unfocusedBorderColor = MaterialTheme.colorScheme.outline
-        ),
-        shape = RoundedCornerShape(12.dp)
-    )
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(bottom = 6.dp),
+            fontWeight = FontWeight.Medium
+        )
+
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.login_placeholder),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
+            },
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+            ),
+            shape = RoundedCornerShape(12.dp)
+        )
+    }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun RegisterScreenPreview() {
     FixerlyTheme {

@@ -16,8 +16,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
+import uvg.plats.fixerly.R
 
 @Composable
 fun OnboardingScreen(
@@ -36,6 +36,7 @@ fun OnboardingScreen(
                 )
             )
     ) {
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
@@ -69,7 +70,7 @@ fun LogoSection() {
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo_icon),
-            contentDescription = stringResource(id = R.string.onboarding_logo_description),
+            contentDescription = stringResource(R.string.onboarding_logo_description),
             modifier = Modifier
                 .size(90.dp)
                 .align(Alignment.CenterVertically)
@@ -78,7 +79,7 @@ fun LogoSection() {
         Spacer(modifier = Modifier.width(1.dp))
 
         Text(
-            text = stringResource(id = R.string.onboarding_app_name),
+            text = stringResource(R.string.app_name),
             fontSize = 72.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onPrimary,
@@ -111,7 +112,7 @@ fun ButtonsSection(
             )
         ) {
             Text(
-                text = stringResource(id = R.string.onboarding_register_button),
+                text = stringResource(R.string.onboarding_register_button),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold
             )
@@ -134,7 +135,7 @@ fun ButtonsSection(
             )
         ) {
             Text(
-                text = stringResource(id = R.string.onboarding_login_button),
+                text = stringResource(R.string.onboarding_login_button),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.SemiBold
             )
