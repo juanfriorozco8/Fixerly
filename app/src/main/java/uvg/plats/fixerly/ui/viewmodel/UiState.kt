@@ -17,7 +17,7 @@ data class UiState<T>(
     val isLoading: Boolean = false,
     val data: T? = null,
     val hasError: Boolean = false,
-    val errorMessage: String? = nullper
+    val errorMessage: String? = null
 )
 
 /**
@@ -28,3 +28,4 @@ sealed class OperationState {
     data object Loading : OperationState()
     data class Success(val message: String) : OperationState()
     data class Error(val message: String) : OperationState()
+}
