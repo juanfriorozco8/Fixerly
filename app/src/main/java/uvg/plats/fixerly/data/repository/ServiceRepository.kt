@@ -1,12 +1,13 @@
 package uvg.plats.fixerly.data.repository
 
-import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import uvg.plats.fixerly.data.model.Address
 import uvg.plats.fixerly.data.model.ProviderResponse
 import uvg.plats.fixerly.data.model.ServiceRequest
 import uvg.plats.fixerly.data.model.User
@@ -16,14 +17,14 @@ class ServiceRepository {
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     /**
-     * Crear una nueva solicitud de servicio (CLIENTE)
+     * Crear nueva solicitud de servicio (CLIENTE)
      */
     suspend fun createServiceRequest(
         clientId: String,
         clientName: String,
         serviceType: String,
         description: String,
-        address: uvg.plats.fixerly.data.model.Address
+        address: Address
     ): Result<String> {
         return try {
             val request = ServiceRequest(
@@ -32,15 +33,15 @@ class ServiceRepository {
                 serviceType = serviceType,
                 description = description,
                 address = address,
-                status = FirebaseConstants.REQUEST_STATUS_PENDING,
-                createdAt = Timestamp.now()
+                status = "pending"
             )
 
-            val docRef = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
-                .add(request)
+            firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
+                .document(request.requestId)
+                .set(request.toMap())
                 .await()
 
-            Result.success(docRef.id)
+            Result.success(request.requestId)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -48,12 +49,12 @@ class ServiceRepository {
 
     /**
      * Obtener todas las solicitudes pendientes (PROVEEDOR)
-     * Escucha cambios en tiempo real
+     * Flow para actualizaciones en tiempo real
      */
     fun getAllPendingRequests(): Flow<List<ServiceRequest>> = callbackFlow {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
-            .whereEqualTo(FirebaseConstants.FIELD_STATUS, FirebaseConstants.REQUEST_STATUS_PENDING)
-            .orderBy(FirebaseConstants.FIELD_CREATED_AT, Query.Direction.DESCENDING)
+            .whereEqualTo("status", "pending")
+            .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
@@ -61,7 +62,7 @@ class ServiceRepository {
                 }
 
                 val requests = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(ServiceRequest::class.java)?.copy(requestId = doc.id)
+                    ServiceRequest.fromMap(doc.data)
                 } ?: emptyList()
 
                 trySend(requests)
@@ -75,8 +76,8 @@ class ServiceRepository {
      */
     fun getClientRequests(clientId: String): Flow<List<ServiceRequest>> = callbackFlow {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
-            .whereEqualTo(FirebaseConstants.FIELD_CLIENT_ID, clientId)
-            .orderBy(FirebaseConstants.FIELD_CREATED_AT, Query.Direction.DESCENDING)
+            .whereEqualTo("clientId", clientId)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
@@ -84,7 +85,7 @@ class ServiceRepository {
                 }
 
                 val requests = snapshot?.documents?.mapNotNull { doc ->
-                    doc.toObject(ServiceRequest::class.java)?.copy(requestId = doc.id)
+                    ServiceRequest.fromMap(doc.data)
                 } ?: emptyList()
 
                 trySend(requests)
@@ -94,7 +95,26 @@ class ServiceRepository {
     }
 
     /**
-     * Proveedor envía su info a una solicitud
+     * Obtener una solicitud específica
+     */
+    suspend fun getRequestById(requestId: String): Result<ServiceRequest> {
+        return try {
+            val snapshot = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
+                .document(requestId)
+                .get()
+                .await()
+
+            val request = ServiceRequest.fromMap(snapshot.data)
+                ?: throw Exception("Solicitud no encontrada")
+
+            Result.success(request)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    /**
+     * Proveedor responde a una solicitud
      */
     suspend fun respondToRequest(
         requestId: String,
@@ -102,25 +122,15 @@ class ServiceRepository {
         message: String = ""
     ): Result<Unit> {
         return try {
-            val response = ProviderResponse(
-                providerId = providerUser.userId,
-                providerName = providerUser.fullName(),
-                providerPhone = providerUser.phone,
-                providerEmail = providerUser.email,
-                providerSkills = providerUser.skills,
-                providerAbout = providerUser.about,
-                providerImageUrl = providerUser.profileImageUrl,
-                message = message,
-                status = "pending",
-                respondedAt = Timestamp.now()
-            )
+            // Crear respuesta del proveedor
+            val response = ProviderResponse.fromUser(providerUser, message)
 
-            // Agregar la respuesta al array de responses
+            // Agregar la respuesta al array de respuestas en Firestore
             firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
                 .document(requestId)
                 .update(
-                    FirebaseConstants.FIELD_RESPONSES,
-                    com.google.firebase.firestore.FieldValue.arrayUnion(response.toMap())
+                    "responses", FieldValue.arrayUnion(response.toMap()),
+                    "updatedAt", System.currentTimeMillis()
                 )
                 .await()
 
@@ -138,35 +148,32 @@ class ServiceRepository {
         providerId: String
     ): Result<Unit> {
         return try {
-            // Obtener la solicitud actual
-            val requestDoc = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
+            val requestRef = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
                 .document(requestId)
-                .get()
-                .await()
 
-            val request = requestDoc.toObject(ServiceRequest::class.java)
+            // Obtener el documento actual
+            val snapshot = requestRef.get().await()
+            val request = ServiceRequest.fromMap(snapshot.data)
                 ?: throw Exception("Solicitud no encontrada")
 
-            // Actualizar el array de responses
+            // Actualizar estado de las respuestas
             val updatedResponses = request.responses.map { response ->
                 if (response.providerId == providerId) {
                     response.copy(status = "accepted")
                 } else {
-                    response
+                    response.copy(status = "rejected")
                 }
             }
 
-            // Actualizar la solicitud
-            firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
-                .document(requestId)
-                .update(
-                    mapOf(
-                        FirebaseConstants.FIELD_STATUS to FirebaseConstants.REQUEST_STATUS_ACCEPTED,
-                        "acceptedProviderId" to providerId,
-                        FirebaseConstants.FIELD_RESPONSES to updatedResponses.map { it.toMap() }
-                    )
+            // Actualizar documento
+            requestRef.update(
+                mapOf(
+                    "responses" to updatedResponses.map { it.toMap() },
+                    "acceptedProviderId" to providerId,
+                    "status" to "in_progress",
+                    "updatedAt" to System.currentTimeMillis()
                 )
-                .await()
+            ).await()
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -182,15 +189,14 @@ class ServiceRepository {
         providerId: String
     ): Result<Unit> {
         return try {
-            val requestDoc = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
+            val requestRef = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
                 .document(requestId)
-                .get()
-                .await()
 
-            val request = requestDoc.toObject(ServiceRequest::class.java)
+            val snapshot = requestRef.get().await()
+            val request = ServiceRequest.fromMap(snapshot.data)
                 ?: throw Exception("Solicitud no encontrada")
 
-            // Actualizar el array de responses
+            // Actualizar solo esa respuesta
             val updatedResponses = request.responses.map { response ->
                 if (response.providerId == providerId) {
                     response.copy(status = "rejected")
@@ -199,13 +205,12 @@ class ServiceRepository {
                 }
             }
 
-            firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
-                .document(requestId)
-                .update(
-                    FirebaseConstants.FIELD_RESPONSES,
-                    updatedResponses.map { it.toMap() }
+            requestRef.update(
+                mapOf(
+                    "responses" to updatedResponses.map { it.toMap() },
+                    "updatedAt" to System.currentTimeMillis()
                 )
-                .await()
+            ).await()
 
             Result.success(Unit)
         } catch (e: Exception) {
@@ -220,7 +225,12 @@ class ServiceRepository {
         return try {
             firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
                 .document(requestId)
-                .update(FirebaseConstants.FIELD_STATUS, FirebaseConstants.REQUEST_STATUS_COMPLETED)
+                .update(
+                    mapOf(
+                        "status" to "completed",
+                        "updatedAt" to System.currentTimeMillis()
+                    )
+                )
                 .await()
 
             Result.success(Unit)
@@ -243,5 +253,29 @@ class ServiceRepository {
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    /**
+     * Filtrar solicitudes por tipo de servicio
+     */
+    fun getRequestsByServiceType(serviceType: String): Flow<List<ServiceRequest>> = callbackFlow {
+        val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
+            .whereEqualTo("serviceType", serviceType)
+            .whereEqualTo("status", "pending")
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null) {
+                    close(error)
+                    return@addSnapshotListener
+                }
+
+                val requests = snapshot?.documents?.mapNotNull { doc ->
+                    ServiceRequest.fromMap(doc.data)
+                } ?: emptyList()
+
+                trySend(requests)
+            }
+
+        awaitClose { listener.remove() }
     }
 }
