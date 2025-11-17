@@ -11,19 +11,17 @@ import uvg.plats.fixerly.data.model.Address
 import uvg.plats.fixerly.data.model.User
 import uvg.plats.fixerly.data.repository.AuthRepository
 import uvg.plats.fixerly.utils.ErrorMessages
+import uvg.plats.fixerly.utils.Validators
 
 class AuthViewModel : ViewModel() {
     private val repository = AuthRepository()
 
-    // Estado de autenticación
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState = _authState.asStateFlow()
 
-    // Estado del usuario actual
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser = _currentUser.asStateFlow()
 
-    // Mensajes de error/éxito (para mostrar Snackbar/Toast)
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
 
@@ -31,9 +29,6 @@ class AuthViewModel : ViewModel() {
         checkUserLoggedIn()
     }
 
-    /**
-     * Verificar si hay usuario logueado al iniciar
-     */
     private fun checkUserLoggedIn() {
         viewModelScope.launch {
             val firebaseUser = repository.getCurrentUser()
@@ -43,20 +38,26 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Login
-     */
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            // Validaciones básicas
-            if (email.isBlank() || password.isBlank()) {
-                _authState.value = AuthState.Error("Completa todos los campos")
-                return@launch
+            when (val emailValidation = Validators.validateEmail(email)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(emailValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
             }
 
-            // Llamar al repository
+            when (val passwordValidation = Validators.validatePassword(password)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(passwordValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
+            }
+
             repository.login(email, password).fold(
                 onSuccess = { userId ->
                     loadUserData(userId)
@@ -77,9 +78,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Registro de CLIENTE
-     */
     fun registerClient(
         name: String,
         lastName: String,
@@ -94,18 +92,55 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            // Validaciones
-            if (name.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
-                _authState.value = AuthState.Error("Completa todos los campos obligatorios")
-                return@launch
+            when (val nameValidation = Validators.validateName(name)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(nameValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
             }
 
-            if (password.length < 6) {
-                _authState.value = AuthState.Error(ErrorMessages.WEAK_PASSWORD)
-                return@launch
+            when (val nameValidation = Validators.validateName(lastName)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(nameValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
             }
 
-            val addressObj = Address(department, address, zone, directions)
+            when (val emailValidation = Validators.validateEmail(email)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(emailValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
+            }
+
+            when (val passwordValidation = Validators.validatePassword(password)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(passwordValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
+            }
+
+            if (phone.isNotBlank()) {
+                when (val phoneValidation = Validators.validatePhone(phone)) {
+                    is Validators.ValidationResult.Error -> {
+                        _authState.value = AuthState.Error(phoneValidation.message)
+                        return@launch
+                    }
+                    is Validators.ValidationResult.Success -> {}
+                }
+            }
+
+            val addressObj = Address(
+                department = department,
+                address = address,
+                zone = zone,
+                directions = directions,
+                isDefault = true
+            )
 
             repository.registerClient(name, lastName, email, password, phone, addressObj).fold(
                 onSuccess = { userId ->
@@ -128,9 +163,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Registro de PROVEEDOR
-     */
     fun registerProvider(
         name: String,
         lastName: String,
@@ -144,15 +176,46 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            // Validaciones
-            if (name.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
-                _authState.value = AuthState.Error("Completa todos los campos obligatorios")
-                return@launch
+            when (val nameValidation = Validators.validateName(name)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(nameValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
             }
 
-            if (password.length < 6) {
-                _authState.value = AuthState.Error(ErrorMessages.WEAK_PASSWORD)
-                return@launch
+            when (val nameValidation = Validators.validateName(lastName)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(nameValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
+            }
+
+            when (val emailValidation = Validators.validateEmail(email)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(emailValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
+            }
+
+            when (val passwordValidation = Validators.validatePassword(password)) {
+                is Validators.ValidationResult.Error -> {
+                    _authState.value = AuthState.Error(passwordValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
+            }
+
+            if (phone.isNotBlank()) {
+                when (val phoneValidation = Validators.validatePhone(phone)) {
+                    is Validators.ValidationResult.Error -> {
+                        _authState.value = AuthState.Error(phoneValidation.message)
+                        return@launch
+                    }
+                    is Validators.ValidationResult.Success -> {}
+                }
             }
 
             if (skills.isEmpty()) {
@@ -184,9 +247,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cargar datos del usuario
-     */
     private fun loadUserData(userId: String) {
         viewModelScope.launch {
             repository.getUserData(userId).fold(
@@ -200,23 +260,20 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Logout
-     */
     fun logout() {
         repository.logout()
         _authState.value = AuthState.Idle
         _currentUser.value = null
     }
 
-    /**
-     * Recuperar contraseña
-     */
     fun resetPassword(email: String) {
         viewModelScope.launch {
-            if (email.isBlank()) {
-                _message.emit("Ingresa tu correo electrónico")
-                return@launch
+            when (val emailValidation = Validators.validateEmail(email)) {
+                is Validators.ValidationResult.Error -> {
+                    _message.emit(emailValidation.message)
+                    return@launch
+                }
+                is Validators.ValidationResult.Success -> {}
             }
 
             repository.resetPassword(email).fold(
@@ -230,9 +287,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Reset del estado (útil para limpiar errores)
-     */
     fun resetAuthState() {
         _authState.value = AuthState.Idle
     }
