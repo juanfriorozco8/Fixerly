@@ -1,0 +1,266 @@
+package uvg.plats.fixerly.ui.viewmodel
+
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import uvg.plats.fixerly.data.model.Address
+import uvg.plats.fixerly.data.model.User
+import uvg.plats.fixerly.data.repository.ProfileRepository
+
+class ProfileViewModel : ViewModel() {
+    private val repository = ProfileRepository()
+
+    // Perfil del usuario actual
+    private val _userProfile = MutableStateFlow<UiState<User>>(UiState())
+    val userProfile = _userProfile.asStateFlow()
+
+    // Estado de operaciones (actualizar, subir imagen, etc.)
+    private val _operationState = MutableStateFlow<OperationState>(OperationState.Idle)
+    val operationState = _operationState.asStateFlow()
+
+    // Mensajes
+    private val _message = MutableSharedFlow<String>()
+    val message = _message.asSharedFlow()
+
+    /**
+     * Cargar perfil del usuario
+     */
+    fun loadUserProfile(userId: String) {
+        viewModelScope.launch {
+            _userProfile.value = UiState(isLoading = true)
+
+            repository.getUserProfile(userId).fold(
+                onSuccess = { user ->
+                    _userProfile.value = UiState(
+                        isLoading = false,
+                        data = user
+                    )
+                },
+                onFailure = { error ->
+                    _userProfile.value = UiState(
+                        isLoading = false,
+                        hasError = true,
+                        errorMessage = error.message ?: "Error al cargar perfil"
+                    )
+                    _message.emit("Error al cargar perfil: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Actualizar información básica
+     */
+    fun updateBasicInfo(
+        userId: String,
+        name: String,
+        lastName: String,
+        phone: String
+    ) {
+        viewModelScope.launch {
+            _operationState.value = OperationState.Loading
+
+            // Validaciones
+            if (name.isBlank() || lastName.isBlank()) {
+                _operationState.value = OperationState.Error("Completa todos los campos")
+                _message.emit("Completa todos los campos")
+                return@launch
+            }
+
+            repository.updateBasicInfo(userId, name, lastName, phone).fold(
+                onSuccess = {
+                    _operationState.value = OperationState.Success("Perfil actualizado")
+                    _message.emit("Perfil actualizado exitosamente")
+                    // Recargar perfil
+                    loadUserProfile(userId)
+                },
+                onFailure = { error ->
+                    _operationState.value = OperationState.Error(error.message ?: "Error")
+                    _message.emit("Error al actualizar: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Actualizar dirección del cliente
+     */
+    fun updateClientAddress(
+        userId: String,
+        address: Address
+    ) {
+        viewModelScope.launch {
+            _operationState.value = OperationState.Loading
+
+            repository.updateClientAddress(userId, address).fold(
+                onSuccess = {
+                    _operationState.value = OperationState.Success("Dirección actualizada")
+                    _message.emit("Dirección actualizada")
+                    loadUserProfile(userId)
+                },
+                onFailure = { error ->
+                    _operationState.value = OperationState.Error(error.message ?: "Error")
+                    _message.emit("Error: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Actualizar habilidades del proveedor
+     */
+    fun updateProviderSkills(
+        userId: String,
+        skills: List<String>
+    ) {
+        viewModelScope.launch {
+            _operationState.value = OperationState.Loading
+
+            if (skills.isEmpty()) {
+                _operationState.value = OperationState.Error("Selecciona al menos una habilidad")
+                _message.emit("Selecciona al menos una habilidad")
+                return@launch
+            }
+
+            repository.updateProviderSkills(userId, skills).fold(
+                onSuccess = {
+                    _operationState.value = OperationState.Success("Habilidades actualizadas")
+                    _message.emit("Habilidades actualizadas")
+                    loadUserProfile(userId)
+                },
+                onFailure = { error ->
+                    _operationState.value = OperationState.Error(error.message ?: "Error")
+                    _message.emit("Error: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Actualizar descripción del proveedor
+     */
+    fun updateProviderAbout(
+        userId: String,
+        about: String
+    ) {
+        viewModelScope.launch {
+            _operationState.value = OperationState.Loading
+
+            repository.updateProviderAbout(userId, about).fold(
+                onSuccess = {
+                    _operationState.value = OperationState.Success("Descripción actualizada")
+                    _message.emit("Descripción actualizada")
+                    loadUserProfile(userId)
+                },
+                onFailure = { error ->
+                    _operationState.value = OperationState.Error(error.message ?: "Error")
+                    _message.emit("Error: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Actualizar preferencias de contacto
+     */
+    fun updateContactPreferences(
+        userId: String,
+        preferences: List<String>
+    ) {
+        viewModelScope.launch {
+            _operationState.value = OperationState.Loading
+
+            repository.updateContactPreferences(userId, preferences).fold(
+                onSuccess = {
+                    _operationState.value = OperationState.Success("Preferencias actualizadas")
+                    _message.emit("Preferencias de contacto actualizadas")
+                    loadUserProfile(userId)
+                },
+                onFailure = { error ->
+                    _operationState.value = OperationState.Error(error.message ?: "Error")
+                    _message.emit("Error: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Subir foto de perfil
+     */
+    fun uploadProfileImage(
+        userId: String,
+        imageUri: Uri
+    ) {
+        viewModelScope.launch {
+            _operationState.value = OperationState.Loading
+
+            repository.uploadProfileImage(userId, imageUri).fold(
+                onSuccess = { downloadUrl ->
+                    _operationState.value = OperationState.Success("Foto actualizada")
+                    _message.emit("Foto de perfil actualizada")
+                    loadUserProfile(userId)
+                },
+                onFailure = { error ->
+                    _operationState.value = OperationState.Error(error.message ?: "Error")
+                    _message.emit("Error al subir foto: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Eliminar foto de perfil
+     */
+    fun deleteProfileImage(userId: String) {
+        viewModelScope.launch {
+            _operationState.value = OperationState.Loading
+
+            repository.deleteProfileImage(userId).fold(
+                onSuccess = {
+                    _operationState.value = OperationState.Success("Foto eliminada")
+                    _message.emit("Foto de perfil eliminada")
+                    loadUserProfile(userId)
+                },
+                onFailure = { error ->
+                    _operationState.value = OperationState.Error(error.message ?: "Error")
+                    _message.emit("Error al eliminar foto: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Obtener proveedores por habilidad (útil para búsquedas)
+     */
+    fun searchProvidersBySkill(skill: String) {
+        viewModelScope.launch {
+            repository.getProvidersBySkill(skill).fold(
+                onSuccess = { providers ->
+                    _message.emit("${providers.size} proveedores encontrados")
+                },
+                onFailure = { error ->
+                    _message.emit("Error en búsqueda: ${error.message}")
+                }
+            )
+        }
+    }
+
+    /**
+     * Reset del estado de operación
+     */
+    fun resetOperationState() {
+        _operationState.value = OperationState.Idle
+    }
+
+    /**
+     * Retry para cargar perfil
+     */
+    fun retryLoadProfile(userId: String) {
+        loadUserProfile(userId)
+    }
+}

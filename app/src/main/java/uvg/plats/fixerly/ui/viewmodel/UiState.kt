@@ -1,32 +1,30 @@
 package uvg.plats.fixerly.ui.viewmodel
 
 /**
- * Estado genérico para manejar UI en ViewModels
- * Basado en tu ejemplo de lab8
- */
-data class UiState<T>(
-    val isLoading: Boolean = false,
-    val data: T? = null,
-    val hasError: Boolean = false,
-    val errorMessage: String? = null
-)
-
-/**
- * Estados específicos para autenticación
+ * Estado de autenticación
  */
 sealed class AuthState {
-    object Idle : AuthState()
-    object Loading : AuthState()
+    data object Idle : AuthState()
+    data object Loading : AuthState()
     data class Success(val userId: String) : AuthState()
     data class Error(val message: String) : AuthState()
 }
 
 /**
- * Estados para operaciones CRUD
+ * Estado genérico de UI para datos
+ */
+data class UiState<T>(
+    val isLoading: Boolean = false,
+    val data: T? = null,
+    val hasError: Boolean = false,
+    val errorMessage: String? = nullper
+)
+
+/**
+ * Estado de operaciones (crear, actualizar, eliminar)
  */
 sealed class OperationState {
-    object Idle : OperationState()
-    object Loading : OperationState()
-    data class Success(val message: String = "Operación exitosa") : OperationState()
+    data object Idle : OperationState()
+    data object Loading : OperationState()
+    data class Success(val message: String) : OperationState()
     data class Error(val message: String) : OperationState()
-}
