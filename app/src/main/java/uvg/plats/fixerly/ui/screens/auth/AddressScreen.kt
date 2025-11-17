@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -57,13 +58,13 @@ fun AddressScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.logo_icon),
-                    contentDescription = "Logo",
+                    contentDescription = stringResource(R.string.logo_description),
                     modifier = Modifier.size(70.dp),
                     alignment = Alignment.Center
                 )
 
                 Text(
-                    text = "Fixerly.",
+                    text = stringResource(R.string.app_name_display),
                     fontSize = 56.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -73,7 +74,7 @@ fun AddressScreen(
 
             Spacer(modifier = Modifier.height(90.dp))
             Text(
-                text = "¿Listo para comenzar?",
+                text = stringResource(R.string.address_title),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary,
@@ -81,7 +82,7 @@ fun AddressScreen(
             )
 
             Text(
-                text = "Agrega una dirección",
+                text = stringResource(R.string.address_subtitle),
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary,
@@ -106,13 +107,13 @@ fun AddressScreen(
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     AddressField(
-                        label = "Departamento",
+                        label = stringResource(R.string.address_department_label),
                         value = departamento,
                         onValueChange = { departamento = it }
                     )
 
                     AddressField(
-                        label = "Zona",
+                        label = stringResource(R.string.address_city_label),
                         value = zona,
                         onValueChange = { zona = it }
                     )
@@ -123,13 +124,13 @@ fun AddressScreen(
                     verticalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     AddressField(
-                        label = "Dirección",
+                        label = stringResource(R.string.address_street_label),
                         value = direccion,
                         onValueChange = { direccion = it }
                     )
 
                     AddressField(
-                        label = "Indicaciones",
+                        label = stringResource(R.string.address_reference_label),
                         value = indicaciones,
                         onValueChange = { indicaciones = it }
                     )
@@ -139,9 +140,7 @@ fun AddressScreen(
             Spacer(modifier = Modifier.height(60.dp))
 
             Button(
-                onClick = {
-                    onComplete()
-                },
+                onClick = { onComplete() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -151,7 +150,7 @@ fun AddressScreen(
                 )
             ) {
                 Text(
-                    text = "Listo!",
+                    text = stringResource(R.string.address_continue),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onSecondary
@@ -172,7 +171,7 @@ fun AddressField(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             text = label,
-            fontSize = 14.sp,
+            fontSize = 15.sp,
             color = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier.padding(bottom = 6.dp),
             fontWeight = FontWeight.Medium
@@ -186,10 +185,9 @@ fun AddressField(
                 .height(56.dp),
             placeholder = {
                 Text(
-                    text = "Escribe acá",
+                    text = stringResource(R.string.form_field_placeholder),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                    fontSize = 13.sp
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                 )
             },
             colors = TextFieldDefaults.colors(
@@ -205,7 +203,7 @@ fun AddressField(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
 fun AddressScreenPreview() {
     FixerlyTheme {
