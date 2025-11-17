@@ -37,7 +37,8 @@ fun YourRequestsScreen(
     clientId: String = "",
     viewModel: ServiceViewModel = viewModel()
 ) {
-    LaunchedEffect(clientId) {
+    // Cambié a Unit para que se recargue cada vez que se navega a esta pantalla
+    LaunchedEffect(Unit) {
         if (clientId.isNotEmpty()) {
             viewModel.loadClientRequests(clientId)
         }
@@ -49,12 +50,18 @@ fun YourRequestsScreen(
         onNavigateToRequests = {},
         onNavigateToNewRequest = onNavigateToNewRequest
     ) {
-        YourRequestsContent(viewModel = viewModel)
+        YourRequestsContent(
+            viewModel = viewModel,
+            clientId = clientId
+        )
     }
 }
 
 @Composable
-fun YourRequestsContent(viewModel: ServiceViewModel) {
+fun YourRequestsContent(
+    viewModel: ServiceViewModel,
+    clientId: String = ""
+) {
     val isDarkMode = isSystemInDarkTheme()
     val clientRequests by viewModel.clientRequests.collectAsState()
 
@@ -155,7 +162,11 @@ fun YourRequestsContent(viewModel: ServiceViewModel) {
                             fontSize = 16.sp
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = { /* Reintentar */ }) {
+                        Button(onClick = {
+                            if (clientId.isNotEmpty()) {
+                                viewModel.loadClientRequests(clientId)
+                            }
+                        }) {
                             Text("Reintentar")
                         }
                     }
@@ -207,6 +218,9 @@ fun SolicitudCard(
     isExpanded: Boolean,
     onExpandClick: () -> Unit
 ) {
+    // Extraer la descripción breve (primera parte antes del " - ")
+    val briefDescription = request.description.split(" - ").firstOrNull() ?: request.description
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -226,8 +240,9 @@ fun SolicitudCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                // Aquí va el nombre del problema que escribió el usuario
                 Text(
-                    text = stringResource(R.string.your_requests_problem_name),
+                    text = briefDescription,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -236,7 +251,8 @@ fun SolicitudCard(
                 Text(
                     text = stringResource(R.string.your_requests_view_full),
                     fontSize = 11.sp,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable { onExpandClick() },
                     lineHeight = 14.sp
                 )
@@ -255,6 +271,27 @@ fun SolicitudCard(
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
+
+                // Mostrar descripción detallada solo cuando está expandido
+                if (isExpanded) {
+                    val detailedDescription = request.description.split(" - ").getOrNull(1)
+                    if (!detailedDescription.isNullOrBlank()) {
+                        Text(
+                            text = "Descripción:",
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = detailedDescription,
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
+                            lineHeight = 18.sp
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                }
 
                 Text(
                     text = stringResource(R.string.your_requests_responses_label),
