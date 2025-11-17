@@ -328,4 +328,9 @@
     <string name="empty_state_search">No results found</string>
     <string name="empty_state_try_again">Try a different search</string>
 
+    <string name="app_name_display">Fixerly.</string>
+    <string name="logo_description">Logo</string>
+    <string name="login_welcome_back">Welcome back!</string>
+    <string name="form_field_placeholder">Type here</string>
+
 </resources>

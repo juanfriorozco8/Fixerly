@@ -328,4 +328,9 @@
     <string name="empty_state_search">No se encontraron resultados</string>
     <string name="empty_state_try_again">Intenta una búsqueda diferente</string>
 
+    <string name="app_name_display">Fixerly.</string>
+    <string name="logo_description">Logo</string>
+    <string name="login_welcome_back">¡Bienvenido de vuelta!</string>
+    <string name="form_field_placeholder">Escribe acá</string>
+
 </resources>

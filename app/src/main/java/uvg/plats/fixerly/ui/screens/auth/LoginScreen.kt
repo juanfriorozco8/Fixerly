@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -54,7 +55,6 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Logo y título
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -64,12 +64,12 @@ fun LoginScreen(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.logo_icon),
-                        contentDescription = "Logo",
+                        contentDescription = stringResource(id = R.string.logo_description),
                         modifier = Modifier.size(80.dp)
                     )
 
                     Text(
-                        text = "Fixerly.",
+                        text = stringResource(id = R.string.app_name_display),
                         fontSize = 64.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary
@@ -78,103 +78,40 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(120.dp))
                 Text(
-                    text = "¡Bienvenido de vuelta!",
-                    fontSize = 32.sp,
+                    text = stringResource(id = R.string.login_welcome_back),
+                    fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Center
                 )
-
-                //Text(
-                    //text = "vuelta!",
-                   // fontSize = 32.sp,
-                    //fontWeight = FontWeight.Bold,
-                    //color = MaterialTheme.colorScheme.onPrimary,
-                    //textAlign = TextAlign.Center
-                //)
             }
 
-            Spacer(modifier = Modifier.height(25.dp))
-            // Formulario
+            Spacer(modifier = Modifier.height(40.dp))
+
             Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = "Escribe tu correo/número:",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    fontWeight = FontWeight.Medium
-                )
-
-                TextField(
+                LoginFormField(
+                    label = stringResource(id = R.string.login_email_label),
                     value = email,
-                    onValueChange = { email = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    placeholder = {
-                        Text(
-                            text = "Escribe acá",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                        )
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.surface,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    onValueChange = { email = it }
                 )
 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Text(
-                    text = "Ingresa tu contraseña",
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    fontWeight = FontWeight.Medium
-                )
-
-                TextField(
+                LoginFormField(
+                    label = stringResource(id = R.string.login_password_label),
                     value = password,
                     onValueChange = { password = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    placeholder = {
-                        Text(
-                            text = "Escribe acá",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
-                        )
-                    },
-                    visualTransformation = PasswordVisualTransformation(),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        focusedIndicatorColor = MaterialTheme.colorScheme.surface,
-                        unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
-                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    shape = RoundedCornerShape(12.dp)
+                    isPassword = true
                 )
 
-                Spacer(modifier = Modifier.height(80.dp))
+                Spacer(modifier = Modifier.height(40.dp))
+
                 Button(
                     onClick = {
-                        val accountType = "Cliente"
-                        onLoginSuccess(accountType)
+                        onLoginSuccess("client")
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -185,51 +122,91 @@ fun LoginScreen(
                     )
                 ) {
                     Text(
-                        text = "Siguiente",
+                        text = stringResource(id = R.string.login_button),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onSecondary
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(15.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
-            // Footer
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
                     color = MaterialTheme.colorScheme.onPrimary,
                     thickness = 1.dp
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
                 Row(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "¿No tienes una cuenta? ",
-                        fontSize = 15.sp,
+                        text = stringResource(id = R.string.login_no_account),
+                        fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onPrimary
                     )
 
+                    Spacer(modifier = Modifier.width(4.dp))
+
                     Text(
-                        text = "Regístrate",
-                        fontSize = 15.sp,
+                        text = stringResource(id = R.string.login_register),
+                        fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onPrimary,
                         fontWeight = FontWeight.Bold,
                         textDecoration = TextDecoration.Underline,
                         modifier = Modifier.clickable { onNavigateToRegister() }
                     )
                 }
-            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
+    }
+}
+
+@Composable
+fun LoginFormField(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    isPassword: Boolean = false
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(bottom = 6.dp),
+            fontWeight = FontWeight.Medium
+        )
+
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.form_field_placeholder),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
+            },
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+            ),
+            shape = RoundedCornerShape(12.dp)
+        )
     }
 }
 
