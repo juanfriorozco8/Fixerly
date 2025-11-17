@@ -40,14 +40,12 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    // validaciones en tiempo real
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
 
     val authState by viewModel.authState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // validar email cuando cambia
     LaunchedEffect(email) {
         emailError = when {
             email.isEmpty() -> null
@@ -56,7 +54,6 @@ fun RegisterScreen(
         }
     }
 
-    // validar contraseña
     LaunchedEffect(password) {
         passwordError = when {
             password.isEmpty() -> null
@@ -164,7 +161,6 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Email con validación
                 FormFieldWithError(
                     label = stringResource(R.string.register_email),
                     value = email,
@@ -174,7 +170,6 @@ fun RegisterScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // Password con validación
                 FormFieldWithError(
                     label = stringResource(R.string.register_password),
                     value = password,

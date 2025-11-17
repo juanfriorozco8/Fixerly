@@ -54,7 +54,8 @@ class ServiceRepository {
     fun getAllPendingRequests(): Flow<List<ServiceRequest>> = callbackFlow {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
             .whereEqualTo("status", "pending")
-            .orderBy("createdAt", Query.Direction.DESCENDING)
+            // TODO: Agregar índice compuesto en Firebase Console para: status (ASC) + createdAt (DESC)
+            // .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
@@ -77,7 +78,8 @@ class ServiceRepository {
     fun getClientRequests(clientId: String): Flow<List<ServiceRequest>> = callbackFlow {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
             .whereEqualTo("clientId", clientId)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
+            // TODO: Agregar índice compuesto en Firebase Console para: clientId (ASC) + createdAt (DESC)
+            // .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
@@ -262,7 +264,8 @@ class ServiceRepository {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
             .whereEqualTo("serviceType", serviceType)
             .whereEqualTo("status", "pending")
-            .orderBy("createdAt", Query.Direction.DESCENDING)
+            // TODO: Agregar índice compuesto en Firebase Console para: serviceType (ASC) + status (ASC) + createdAt (DESC)
+            // .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)

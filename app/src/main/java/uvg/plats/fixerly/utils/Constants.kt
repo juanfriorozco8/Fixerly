@@ -2,17 +2,10 @@ package uvg.plats.fixerly.utils
 
 object FirebaseConstants {
 
-    // -------------------------
-    // Firestore Collections
-    // -------------------------
 
     const val USERS_COLLECTION = "users"
     const val SERVICE_REQUESTS_COLLECTION = "serviceRequests"
     const val RATINGS_COLLECTION = "ratings"
-
-    // -------------------------
-    // User Fields
-    // -------------------------
 
     const val FIELD_USER_ID = "userId"
     const val FIELD_NAME = "name"
@@ -23,26 +16,17 @@ object FirebaseConstants {
     const val FIELD_CREATED_AT = "createdAt"
     const val FIELD_PROFILE_IMAGE_URL = "profileImageUrl"
 
-    // Rating fields inside user document
     const val FIELD_RATING = "rating"
     const val FIELD_RATING_COUNT = "ratingCount"
 
-    // User types
     const val TYPE_CLIENT = "client"
     const val TYPE_PROVIDER = "provider"
 
-    // -------------------------
-    // Address fields
-    // -------------------------
 
     const val FIELD_ADDRESS = "address"
     const val FIELD_DEPARTMENT = "department"
     const val FIELD_ZONE = "zone"
     const val FIELD_DIRECTIONS = "directions"
-
-    // -------------------------
-    // Provider fields
-    // -------------------------
 
     const val FIELD_CONTACT_PREFERENCES = "contactPreferences"
     const val FIELD_ABOUT = "about"
@@ -59,9 +43,6 @@ object FirebaseConstants {
         const val OTHER = "otros"
     }
 
-    // -------------------------
-    // ServiceRequest fields
-    // -------------------------
     const val FIELD_CLIENT_ID = "clientId"
     const val FIELD_CLIENT_NAME = "clientName"
     const val FIELD_SERVICE_TYPE = "serviceType"
@@ -77,9 +58,6 @@ object FirebaseConstants {
         const val CANCELLED = "cancelled"
     }
 
-    // -------------------------
-    // ProviderResponse fields
-    // -------------------------
     object ProviderResponseFields {
         const val PROVIDER_ID = "providerId"
         const val PROVIDER_NAME = "providerName"
@@ -98,8 +76,6 @@ object FirebaseConstants {
         const val REJECTED = "rejected"
     }
 
-    // -------------------------
-    // Storage paths
-    // -------------------------
+
     const val STORAGE_PROFILE_IMAGES = "profile_images"
 }

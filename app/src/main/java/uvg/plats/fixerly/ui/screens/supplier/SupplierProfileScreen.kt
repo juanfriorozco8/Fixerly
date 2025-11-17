@@ -47,18 +47,16 @@ fun SupplierProfileScreen(
 
     var currentRoute by remember { mutableStateOf("profile") }
 
-    FixerlyTheme {
-        ScreenWithBottomNav(
-            currentRoute = currentRoute,
-            onNavigate = { route -> currentRoute = route },
-            onNavigateToProfile = onNavigateToProfile,
-            onNavigateToHome = onNavigateToHome
-        ) {
-            SupplierProfileContent(
-                viewModel = profileViewModel,
-                onLogout = onLogout
-            )
-        }
+    ScreenWithBottomNav(
+        currentRoute = currentRoute,
+        onNavigate = { route -> currentRoute = route },
+        onNavigateToProfile = onNavigateToProfile,
+        onNavigateToHome = onNavigateToHome
+    ) {
+        SupplierProfileContent(
+            viewModel = profileViewModel,
+            onLogout = onLogout
+        )
     }
 }
 

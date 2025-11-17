@@ -2,9 +2,12 @@ package uvg.plats.fixerly.ui.screens.client
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -19,10 +22,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
-import uvg.plats.fixerly.ui.theme.FixerlyTheme
-import uvg.plats.fixerly.ui.theme.White
+import uvg.plats.fixerly.ui.theme.*
 import uvg.plats.fixerly.R
-import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
+import uvg.plats.fixerly.ui.screens.components.ClientScreenWithBottomNav
 import uvg.plats.fixerly.ui.viewmodel.ProfileViewModel
 import uvg.plats.fixerly.ui.viewmodel.OperationState
 
@@ -30,43 +32,27 @@ import uvg.plats.fixerly.ui.viewmodel.OperationState
 fun UserProfileScreen(
     onNavigateToProfile: () -> Unit = {},
     onNavigateToHome: () -> Unit = {},
+    onNavigateToNewRequest: () -> Unit = {},
     onLogout: () -> Unit = {},
     userId: String = "",
     viewModel: ProfileViewModel = viewModel()
 ) {
-    var currentRoute by remember { mutableStateOf("profile") }
-
     LaunchedEffect(userId) {
         if (userId.isNotEmpty()) {
             viewModel.loadUserProfile(userId)
         }
     }
 
-    FixerlyTheme {
-        ScreenWithBottomNav(
-            currentRoute = currentRoute,
-            onNavigate = { route -> currentRoute = route },
-            onNavigateToProfile = onNavigateToProfile,
-            onNavigateToHome = onNavigateToHome
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                MaterialTheme.colorScheme.background,
-                                MaterialTheme.colorScheme.primaryContainer
-                            )
-                        )
-                    )
-            ) {
-                UserProfileContent(
-                    viewModel = viewModel,
-                    onLogout = onLogout
-                )
-            }
-        }
+    ClientScreenWithBottomNav(
+        currentRoute = "profile",
+        onNavigateToProfile = {},
+        onNavigateToRequests = onNavigateToHome,
+        onNavigateToNewRequest = onNavigateToNewRequest
+    ) {
+        UserProfileContent(
+            viewModel = viewModel,
+            onLogout = onLogout
+        )
     }
 }
 
@@ -75,6 +61,7 @@ fun UserProfileContent(
     viewModel: ProfileViewModel,
     onLogout: () -> Unit = {}
 ) {
+    val isDarkMode = isSystemInDarkTheme()
     val userProfile by viewModel.userProfile.collectAsState()
     val operationState by viewModel.operationState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -97,6 +84,22 @@ fun UserProfileContent(
         }
     }
 
+    val backgroundBrush = if (isDarkMode) {
+        Brush.verticalGradient(
+            colors = listOf(
+                DarkBackgroundTop,
+                DarkBackgroundBottom
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.background,
+                MaterialTheme.colorScheme.primaryContainer
+            )
+        )
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
     ) { paddingValues ->
@@ -105,7 +108,8 @@ fun UserProfileContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .padding(paddingValues)
+                        .background(brush = backgroundBrush),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -115,7 +119,8 @@ fun UserProfileContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .padding(paddingValues)
+                        .background(brush = backgroundBrush),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -129,7 +134,9 @@ fun UserProfileContent(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .padding(paddingValues)
+                        .background(brush = backgroundBrush)
+                        .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Box(
@@ -243,7 +250,7 @@ fun UserProfileContent(
                             fontWeight = FontWeight.Bold
                         )
 
-                        Spacer(modifier = Modifier.height(32.dp))
+                        Spacer(modifier = Modifier.height(40.dp))
 
                         Button(
                             onClick = onLogout,
@@ -262,9 +269,9 @@ fun UserProfileContent(
                                 color = White
                             )
                         }
-                    }
 
-                    Spacer(modifier = Modifier.weight(1f))
+                        Spacer(modifier = Modifier.height(32.dp))
+                    }
                 }
             }
         }

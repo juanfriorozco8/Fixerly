@@ -26,9 +26,6 @@ class AuthViewModel : ViewModel() {
 
     private var tempRegistrationData: TempRegistrationData? = null
 
-    init {
-        checkUserLoggedIn()
-    }
 
     data class TempRegistrationData(
         val name: String,
@@ -39,11 +36,24 @@ class AuthViewModel : ViewModel() {
     )
 
 
-    private fun checkUserLoggedIn() {
+    fun checkUserLoggedIn() {
         viewModelScope.launch {
+            _authState.value = AuthState.Loading
             val firebaseUser = repository.getCurrentUser()
             if (firebaseUser != null) {
-                loadUserData(firebaseUser.uid)
+                repository.getUserData(firebaseUser.uid).fold(
+                    onSuccess = { user ->
+                        _currentUser.value = user
+                        _authState.value = AuthState.Success(firebaseUser.uid)
+                    },
+                    onFailure = { error ->
+                        repository.logout()
+                        _authState.value = AuthState.Idle
+                        _currentUser.value = null
+                    }
+                )
+            } else {
+                _authState.value = AuthState.Idle
             }
         }
     }
@@ -60,9 +70,17 @@ class AuthViewModel : ViewModel() {
 
             repository.login(email, password).fold(
                 onSuccess = { userId ->
-                    loadUserData(userId)
-                    _authState.value = AuthState.Success(userId)
-                    _message.emit("Bienvenido!")
+                    repository.getUserData(userId).fold(
+                        onSuccess = { user ->
+                            _currentUser.value = user
+                            _authState.value = AuthState.Success(userId)
+                            _message.emit("Bienvenido!")
+                        },
+                        onFailure = { error ->
+                            _authState.value = AuthState.Error("Error al cargar datos del usuario")
+                            _message.emit("Error al cargar datos del usuario")
+                        }
+                    )
                 },
                 onFailure = { error ->
                     val errorMsg = when {
@@ -147,11 +165,18 @@ class AuthViewModel : ViewModel() {
                 address = addressObj
             ).fold(
                 onSuccess = { userId ->
-                    loadUserData(userId)
-                    _authState.value = AuthState.Success(userId)
-                    _message.emit("Cuenta creada exitosamente!")
-                    // Limpiar datos temporales
-                    tempRegistrationData = null
+                    repository.getUserData(userId).fold(
+                        onSuccess = { user ->
+                            _currentUser.value = user
+                            _authState.value = AuthState.Success(userId)
+                            _message.emit("Cuenta creada exitosamente!")
+                            tempRegistrationData = null
+                        },
+                        onFailure = { error ->
+                            _authState.value = AuthState.Error("Error al cargar datos del usuario")
+                            _message.emit("Error al cargar datos del usuario")
+                        }
+                    )
                 },
                 onFailure = { error ->
                     val errorMsg = when {
@@ -201,10 +226,18 @@ class AuthViewModel : ViewModel() {
                 skills = skills
             ).fold(
                 onSuccess = { userId ->
-                    loadUserData(userId)
-                    _authState.value = AuthState.Success(userId)
-                    _message.emit("Cuenta de proveedor creada!")
-                    tempRegistrationData = null
+                    repository.getUserData(userId).fold(
+                        onSuccess = { user ->
+                            _currentUser.value = user
+                            _authState.value = AuthState.Success(userId)
+                            _message.emit("Cuenta de proveedor creada!")
+                            tempRegistrationData = null
+                        },
+                        onFailure = { error ->
+                            _authState.value = AuthState.Error("Error al cargar datos del usuario")
+                            _message.emit("Error al cargar datos del usuario")
+                        }
+                    )
                 },
                 onFailure = { error ->
                     val errorMsg = when {
