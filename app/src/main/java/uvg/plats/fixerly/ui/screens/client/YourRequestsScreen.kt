@@ -28,18 +28,8 @@ import uvg.plats.fixerly.ui.theme.*
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 import uvg.plats.fixerly.ui.viewmodel.ServiceViewModel
-
-data class Solicitud(
-    val nombreProblema: String,
-    val respuestas: List<RespuestaProveedor>
-)
-
-data class RespuestaProveedor(
-    val nombre: String,
-    val contacto: String,
-    val habilidades: String,
-    val detalles: String
-)
+import uvg.plats.fixerly.data.model.ServiceRequest
+import uvg.plats.fixerly.data.model.ProviderResponse
 
 @Composable
 fun YourRequestsScreen(
@@ -72,37 +62,6 @@ fun YourRequestsScreen(
 fun YourRequestsContent(viewModel: ServiceViewModel) {
     val isDarkMode = isSystemInDarkTheme()
     val clientRequests by viewModel.clientRequests.collectAsState()
-
-    val solicitudes = listOf(
-        Solicitud(
-            nombreProblema = "Falla de electrodomésticos",
-            respuestas = listOf(
-                RespuestaProveedor(
-                    nombre = "Juan Pérez",
-                    contacto = "0000 0000 y ejemplo@gmail.com",
-                    habilidades = "Electrodomésticos y Electricidad",
-                    detalles = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                ),
-                RespuestaProveedor(
-                    nombre = "María González",
-                    contacto = "1111 1111 y maria@gmail.com",
-                    habilidades = "Electrodomésticos y Electricidad",
-                    detalles = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                )
-            )
-        ),
-        Solicitud(
-            nombreProblema = "Reparación de tubería",
-            respuestas = listOf(
-                RespuestaProveedor(
-                    nombre = "Carlos Mendoza",
-                    contacto = "2222 2222 y carlos@gmail.com",
-                    habilidades = "Plomería",
-                    detalles = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-                )
-            )
-        )
-    )
 
     var solicitudExpandida by remember { mutableStateOf<String?>(null) }
 
@@ -191,9 +150,32 @@ fun YourRequestsContent(viewModel: ServiceViewModel) {
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = clientRequests.errorMessage ?: "Error al cargar solicitudes",
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        Button(onClick = { /* retry */ }) {
+                            Text("Reintentar")
+                        }
+                    }
+                }
+            }
+            clientRequests.data.isNullOrEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
-                        text = clientRequests.errorMessage ?: "Error al cargar solicitudes",
-                        color = MaterialTheme.colorScheme.error
+                        text = "No tienes solicitudes aún.\n¡Crea tu primera solicitud!",
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
                 }
             }
@@ -205,15 +187,15 @@ fun YourRequestsContent(viewModel: ServiceViewModel) {
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(vertical = 12.dp)
                 ) {
-                    items(solicitudes) { solicitud ->
-                        SolicitudCard(
-                            solicitud = solicitud,
-                            isExpanded = solicitudExpandida == solicitud.nombreProblema,
+                    items(clientRequests.data ?: emptyList()) { request ->
+                        ServiceRequestCard(
+                            request = request,
+                            isExpanded = solicitudExpandida == request.requestId,
                             onExpandClick = {
-                                solicitudExpandida = if (solicitudExpandida == solicitud.nombreProblema) {
+                                solicitudExpandida = if (solicitudExpandida == request.requestId) {
                                     null
                                 } else {
-                                    solicitud.nombreProblema
+                                    request.requestId
                                 }
                             }
                         )
@@ -225,8 +207,8 @@ fun YourRequestsContent(viewModel: ServiceViewModel) {
 }
 
 @Composable
-fun SolicitudCard(
-    solicitud: Solicitud,
+fun ServiceRequestCard(
+    request: ServiceRequest,
     isExpanded: Boolean,
     onExpandClick: () -> Unit
 ) {
@@ -250,14 +232,14 @@ fun SolicitudCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.your_requests_problem_name),
+                    text = request.serviceType,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Text(
-                    text = stringResource(R.string.your_requests_view_full),
+                    text = "Ver respuestas (${request.responses.size})",
                     fontSize = 11.sp,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clickable { onExpandClick() },
@@ -271,32 +253,44 @@ fun SolicitudCard(
                     .padding(16.dp)
             ) {
                 Text(
-                    text = solicitud.nombreProblema,
+                    text = request.description,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = stringResource(R.string.your_requests_responses_label),
+                    text = "Estado: ${request.status}",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                if (isExpanded && request.responses.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                solicitud.respuestas.forEachIndexed { index, respuesta ->
-                    RespuestaProveedorItem(
-                        respuesta = respuesta,
-                        isExpanded = isExpanded
+                    Text(
+                        text = stringResource(R.string.your_requests_responses_label),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
-                    if (index < solicitud.respuestas.size - 1) {
-                        Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    request.responses.forEach { response ->
+                        ProviderResponseItem(response = response)
+                        Spacer(modifier = Modifier.height(8.dp))
                     }
+                } else if (isExpanded && request.responses.isEmpty()) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "Aún no hay respuestas de proveedores",
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                    )
                 }
             }
         }
@@ -304,10 +298,7 @@ fun SolicitudCard(
 }
 
 @Composable
-fun RespuestaProveedorItem(
-    respuesta: RespuestaProveedor,
-    isExpanded: Boolean
-) {
+fun ProviderResponseItem(response: ProviderResponse) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -336,36 +327,46 @@ fun RespuestaProveedorItem(
             }
             Spacer(modifier = Modifier.width(10.dp))
             Text(
-                text = respuesta.nombre,
+                text = response.providerName,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
 
-        if (isExpanded) {
-            Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
+        Text(
+            text = "${stringResource(R.string.your_requests_contact_label)} ${response.providerEmail}",
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurface,
+            lineHeight = 16.sp
+        )
+
+        if (response.providerPhone.isNotBlank()) {
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "${stringResource(R.string.your_requests_contact_label)} ${respuesta.contacto}",
+                text = "Teléfono: ${response.providerPhone}",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 lineHeight = 16.sp
             )
+        }
 
+        if (response.skills.isNotEmpty()) {
             Spacer(modifier = Modifier.height(4.dp))
-
             Text(
-                text = "${stringResource(R.string.your_requests_skills_label)} ${respuesta.habilidades}",
+                text = "${stringResource(R.string.your_requests_skills_label)} ${response.skills.joinToString(", ")}",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 lineHeight = 16.sp
             )
+        }
 
+        if (response.message.isNotBlank()) {
             Spacer(modifier = Modifier.height(4.dp))
-
             Text(
-                text = "${stringResource(R.string.your_requests_details_label)} ${respuesta.detalles}",
+                text = "${stringResource(R.string.your_requests_details_label)} ${response.message}",
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f),
                 lineHeight = 16.sp

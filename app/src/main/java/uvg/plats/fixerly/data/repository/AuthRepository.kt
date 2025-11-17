@@ -13,7 +13,6 @@ class AuthRepository {
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
-
     fun isUserLoggedIn(): Boolean = getCurrentUser() != null
 
     suspend fun login(email: String, password: String): Result<String> {
@@ -49,9 +48,10 @@ class AuthRepository {
                 profileImageUrl = ""
             )
 
+            // CAMBIO AQUÍ: usar .toMap()
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
                 .document(userId)
-                .set(user)
+                .set(user.toMap())
                 .await()
 
             Result.success(userId)
@@ -87,9 +87,10 @@ class AuthRepository {
                 profileImageUrl = ""
             )
 
+            // CAMBIO AQUÍ: usar .toMap()
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
                 .document(userId)
-                .set(user)
+                .set(user.toMap())
                 .await()
 
             Result.success(userId)
