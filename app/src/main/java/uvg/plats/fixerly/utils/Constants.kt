@@ -5,24 +5,27 @@ object FirebaseConstants {
     // -------------------------
     // Firestore Collections
     // -------------------------
-    const val USERS = "users"
-    const val SERVICE_REQUESTS = "serviceRequests"
+
+    const val USERS_COLLECTION = "users"
+    const val SERVICE_REQUESTS_COLLECTION = "serviceRequests"
+    const val RATINGS_COLLECTION = "ratings"
 
     // -------------------------
-    // User fields
+    // User Fields
     // -------------------------
-    const val USER_ID = "userId"
-    const val NAME = "name"
-    const val LAST_NAME = "lastName"
-    const val EMAIL = "email"
-    const val PHONE = "phone"
-    const val USER_TYPE = "userType"
-    const val CREATED_AT = "createdAt"
-    const val PROFILE_IMAGE_URL = "profileImageUrl"
 
-    // Ratings
-    const val RATING = "rating"
-    const val RATING_COUNT = "ratingCount"
+    const val FIELD_USER_ID = "userId"
+    const val FIELD_NAME = "name"
+    const val FIELD_LAST_NAME = "lastName"
+    const val FIELD_EMAIL = "email"
+    const val FIELD_PHONE = "phone"
+    const val FIELD_USER_TYPE = "userType"
+    const val FIELD_CREATED_AT = "createdAt"
+    const val FIELD_PROFILE_IMAGE_URL = "profileImageUrl"
+
+    // Rating fields inside user document
+    const val FIELD_RATING = "rating"
+    const val FIELD_RATING_COUNT = "ratingCount"
 
     // User types
     const val TYPE_CLIENT = "client"
@@ -31,17 +34,19 @@ object FirebaseConstants {
     // -------------------------
     // Address fields
     // -------------------------
-    const val ADDRESS = "address"
-    const val DEPARTMENT = "department"
-    const val ZONE = "zone"
-    const val DIRECTIONS = "directions"
+
+    const val FIELD_ADDRESS = "address"
+    const val FIELD_DEPARTMENT = "department"
+    const val FIELD_ZONE = "zone"
+    const val FIELD_DIRECTIONS = "directions"
 
     // -------------------------
-    // Provider-specific fields
+    // Provider fields
     // -------------------------
-    const val CONTACT_PREFERENCES = "contactPreferences"
-    const val ABOUT = "about"
-    const val SKILLS = "skills"
+
+    const val FIELD_CONTACT_PREFERENCES = "contactPreferences"
+    const val FIELD_ABOUT = "about"
+    const val FIELD_SKILLS = "skills"
 
     object Skills {
         const val PLUMBING = "plomeria"
@@ -57,15 +62,14 @@ object FirebaseConstants {
     // -------------------------
     // ServiceRequest fields
     // -------------------------
-    const val CLIENT_ID = "clientId"
-    const val CLIENT_NAME = "clientName"
-    const val SERVICE_TYPE = "serviceType"
-    const val DESCRIPTION = "description"
-    const val STATUS = "status"
-    const val RESPONSES = "responses"
-    const val ACCEPTED_PROVIDER_ID = "acceptedProviderId"
+    const val FIELD_CLIENT_ID = "clientId"
+    const val FIELD_CLIENT_NAME = "clientName"
+    const val FIELD_SERVICE_TYPE = "serviceType"
+    const val FIELD_DESCRIPTION = "description"
+    const val FIELD_STATUS = "status"
+    const val FIELD_RESPONSES = "responses"
+    const val FIELD_ACCEPTED_PROVIDER_ID = "acceptedProviderId"
 
-    // ServiceRequest statuses
     object RequestStatus {
         const val PENDING = "pending"
         const val IN_PROGRESS = "in_progress"

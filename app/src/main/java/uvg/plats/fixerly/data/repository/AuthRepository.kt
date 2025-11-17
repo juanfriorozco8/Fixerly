@@ -12,16 +12,10 @@ class AuthRepository {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-    /**
-     * Usuario actualmente autenticado
-     */
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
 
     fun isUserLoggedIn(): Boolean = getCurrentUser() != null
 
-    /**
-     * Login con email y password
-     */
     suspend fun login(email: String, password: String): Result<String> {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
@@ -32,9 +26,6 @@ class AuthRepository {
         }
     }
 
-    /**
-     * Registro de CLIENTE
-     */
     suspend fun registerClient(
         name: String,
         lastName: String,
@@ -44,20 +35,18 @@ class AuthRepository {
         address: Address
     ): Result<String> {
         return try {
-            // 1. Crear usuario en Firebase Auth
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val userId = authResult.user?.uid ?: throw Exception("Error al crear usuario")
 
-            // 2. Crear documento en Firestore
             val user = User(
                 userId = userId,
                 name = name,
                 lastName = lastName,
                 email = email,
                 phone = phone,
-                userType = FirebaseConstants.USER_TYPE_CLIENT,
+                userType = FirebaseConstants.TYPE_CLIENT,
                 address = address,
-                profileImageUrl = "" // URL por defecto o vacío
+                profileImageUrl = ""
             )
 
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
@@ -71,9 +60,6 @@ class AuthRepository {
         }
     }
 
-    /**
-     * Registro de PROVEEDOR
-     */
     suspend fun registerProvider(
         name: String,
         lastName: String,
@@ -85,22 +71,20 @@ class AuthRepository {
         skills: List<String>
     ): Result<String> {
         return try {
-            // 1. Crear usuario en Firebase Auth
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val userId = authResult.user?.uid ?: throw Exception("Error al crear usuario")
 
-            // 2. Crear documento en Firestore
             val user = User(
                 userId = userId,
                 name = name,
                 lastName = lastName,
                 email = email,
                 phone = phone,
-                userType = FirebaseConstants.USER_TYPE_PROVIDER,
+                userType = FirebaseConstants.TYPE_PROVIDER,
                 contactPreferences = contactPreferences,
                 about = about,
                 skills = skills,
-                profileImageUrl = "" // URL por defecto o vacío
+                profileImageUrl = ""
             )
 
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
@@ -114,9 +98,6 @@ class AuthRepository {
         }
     }
 
-    /**
-     * Obtener datos del usuario actual
-     */
     suspend fun getUserData(userId: String): Result<User> {
         return try {
             val snapshot = firestore.collection(FirebaseConstants.USERS_COLLECTION)
@@ -133,16 +114,10 @@ class AuthRepository {
         }
     }
 
-    /**
-     * Logout
-     */
     fun logout() {
         auth.signOut()
     }
 
-    /**
-     * Recuperar contraseña
-     */
     suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             auth.sendPasswordResetEmail(email).await()
