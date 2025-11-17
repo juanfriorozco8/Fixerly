@@ -150,6 +150,7 @@ class AuthViewModel : ViewModel() {
             }
 
             val addressObj = Address(
+                id = java.util.UUID.randomUUID().toString(),
                 department = department,
                 address = address,
                 zone = zone,

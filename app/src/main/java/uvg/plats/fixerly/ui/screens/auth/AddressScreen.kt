@@ -40,11 +40,6 @@ fun AddressScreen(
 
     LaunchedEffect(authState) {
         when (val state = authState) {
-            is AuthState.Success -> {
-                onComplete()
-                delay(100)
-                viewModel.resetAuthState()
-            }
             is AuthState.Error -> {
                 snackbarHostState.showSnackbar(state.message)
                 viewModel.resetAuthState()

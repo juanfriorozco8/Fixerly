@@ -1,17 +1,29 @@
 package uvg.plats.fixerly.data.model
 
+import com.google.firebase.firestore.PropertyName
 import uvg.plats.fixerly.data.local.entities.AddressEntity
 import java.util.UUID
 
 data class Address(
-    val id: String = UUID.randomUUID().toString(),
+    @PropertyName("id")
+    val id: String = "",
+
+    @PropertyName("userId")
     val userId: String = "",
 
+    @PropertyName("department")
     val department: String = "",
+
+    @PropertyName("address")
     val address: String = "",
+
+    @PropertyName("zone")
     val zone: String = "",
+
+    @PropertyName("directions")
     val directions: String = "",
 
+    @PropertyName("isDefault")
     val isDefault: Boolean = false
 ) {
 

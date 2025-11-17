@@ -100,10 +100,6 @@ fun NavigationGraph(
         ) {
 
             composable<RegisterStepDestination> {
-                val sharedViewModel: AuthViewModel = viewModel(
-                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
-                )
-
                 RegisterScreen(
                     onNavigateToLogin = {
                         navController.navigate(LoginDestination) {
@@ -115,15 +111,11 @@ fun NavigationGraph(
                             launchSingleTop = true
                         }
                     },
-                    viewModel = sharedViewModel
+                    viewModel = authViewModel
                 )
             }
 
             composable<AccountTypeDestination> {
-                val sharedViewModel: AuthViewModel = viewModel(
-                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
-                )
-
                 AccountTypeScreen(
                     onNavigateToLogin = {
                         navController.navigate(LoginDestination) {
@@ -145,34 +137,40 @@ fun NavigationGraph(
             }
 
             composable<AddressDestination> {
-                val sharedViewModel: AuthViewModel = viewModel(
-                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
-                )
+                val authState by authViewModel.authState.collectAsState()
 
-                AddressScreen(
-                    onComplete = {
+                LaunchedEffect(authState) {
+                    if (authState is AuthState.Success) {
                         navController.navigate(YourRequestsDestination) {
                             popUpTo(OnboardingDestination) { inclusive = true }
                             launchSingleTop = true
                         }
-                    },
-                    viewModel = sharedViewModel
+                        authViewModel.resetAuthState()
+                    }
+                }
+
+                AddressScreen(
+                    onComplete = {},
+                    viewModel = authViewModel
                 )
             }
 
             composable<SupplierDataDestination> {
-                val sharedViewModel: AuthViewModel = viewModel(
-                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
-                )
+                val authState by authViewModel.authState.collectAsState()
 
-                SupplierDataScreen(
-                    onComplete = {
+                LaunchedEffect(authState) {
+                    if (authState is AuthState.Success) {
                         navController.navigate(SupplierWelcomeDestination) {
                             popUpTo(OnboardingDestination) { inclusive = true }
                             launchSingleTop = true
                         }
-                    },
-                    viewModel = sharedViewModel
+                        authViewModel.resetAuthState()
+                    }
+                }
+
+                SupplierDataScreen(
+                    onComplete = {},
+                    viewModel = authViewModel
                 )
             }
         }
