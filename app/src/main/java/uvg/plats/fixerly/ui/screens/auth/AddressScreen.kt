@@ -18,148 +18,192 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
+import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
+import uvg.plats.fixerly.ui.viewmodel.AuthState
 
 @Composable
 fun AddressScreen(
-    onComplete: () -> Unit = {}
+    onComplete: () -> Unit = {},
+    viewModel: AuthViewModel = viewModel()
 ) {
     var departamento by remember { mutableStateOf("") }
     var direccion by remember { mutableStateOf("") }
     var zona by remember { mutableStateOf("") }
     var indicaciones by remember { mutableStateOf("") }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        MaterialTheme.colorScheme.primary,
-                        MaterialTheme.colorScheme.primaryContainer
-                    )
-                )
-            )
-    ) {
-        Column(
+    val authState by viewModel.authState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Success -> {
+                onComplete()
+            }
+            is AuthState.Error -> {
+                snackbarHostState.showSnackbar((authState as AuthState.Error).message)
+            }
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.message.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 32.dp)
-                .padding(vertical = 40.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(100.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.logo_icon),
-                    contentDescription = stringResource(R.string.onboarding_logo_description),
-                    modifier = Modifier.size(70.dp),
-                    alignment = Alignment.Center
+                .padding(paddingValues)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.primaryContainer
+                        )
+                    )
                 )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 32.dp)
+                    .padding(vertical = 40.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(100.dp))
 
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo_icon),
+                        contentDescription = stringResource(R.string.onboarding_logo_description),
+                        modifier = Modifier.size(70.dp),
+                        alignment = Alignment.Center
+                    )
+
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        fontSize = 56.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(90.dp))
                 Text(
-                    text = stringResource(R.string.app_name),
-                    fontSize = 56.sp,
+                    text = stringResource(R.string.address_ready_title),
+                    fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Center
                 )
-            }
 
-            Spacer(modifier = Modifier.height(90.dp))
-            Text(
-                text = stringResource(R.string.address_ready_title),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center
-            )
-
-            Text(
-                text = stringResource(R.string.address_add_title),
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimary,
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            HorizontalDivider(
-                modifier = Modifier.width(200.dp),
-                color = MaterialTheme.colorScheme.onPrimary,
-                thickness = 2.dp
-            )
-
-            Spacer(modifier = Modifier.height(36.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    AddressField(
-                        label = stringResource(R.string.address_department),
-                        value = departamento,
-                        onValueChange = { departamento = it }
-                    )
-
-                    AddressField(
-                        label = stringResource(R.string.address_zone),
-                        value = zona,
-                        onValueChange = { zona = it }
-                    )
-                }
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    AddressField(
-                        label = stringResource(R.string.address_street),
-                        value = direccion,
-                        onValueChange = { direccion = it }
-                    )
-
-                    AddressField(
-                        label = stringResource(R.string.address_directions),
-                        value = indicaciones,
-                        onValueChange = { indicaciones = it }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(60.dp))
-
-            Button(
-                onClick = {
-                    onComplete()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(50),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                )
-            ) {
                 Text(
-                    text = stringResource(R.string.address_done_button),
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSecondary
+                    text = stringResource(R.string.address_add_title),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textAlign = TextAlign.Center
                 )
-            }
 
-            Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(32.dp))
+
+                HorizontalDivider(
+                    modifier = Modifier.width(200.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    thickness = 2.dp
+                )
+
+                Spacer(modifier = Modifier.height(36.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        AddressField(
+                            label = stringResource(R.string.address_department),
+                            value = departamento,
+                            onValueChange = { departamento = it }
+                        )
+
+                        AddressField(
+                            label = stringResource(R.string.address_zone),
+                            value = zona,
+                            onValueChange = { zona = it }
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        AddressField(
+                            label = stringResource(R.string.address_street),
+                            value = direccion,
+                            onValueChange = { direccion = it }
+                        )
+
+                        AddressField(
+                            label = stringResource(R.string.address_directions),
+                            value = indicaciones,
+                            onValueChange = { indicaciones = it }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(60.dp))
+
+                Button(
+                    onClick = {
+                        // Ahora sí registrar el cliente en Firebase
+                        viewModel.registerClient(
+                            department = departamento,
+                            address = direccion,
+                            zone = zona,
+                            directions = indicaciones
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(50),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    enabled = authState !is AuthState.Loading
+                ) {
+                    if (authState is AuthState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.address_done_button),
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+            }
         }
     }
 }

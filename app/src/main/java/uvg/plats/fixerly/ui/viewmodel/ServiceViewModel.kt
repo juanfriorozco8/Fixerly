@@ -15,25 +15,19 @@ import uvg.plats.fixerly.data.repository.ServiceRepository
 class ServiceViewModel : ViewModel() {
     private val repository = ServiceRepository()
 
-    // Lista de solicitudes pendientes (para proveedores)
     private val _pendingRequests = MutableStateFlow<UiState<List<ServiceRequest>>>(UiState())
     val pendingRequests = _pendingRequests.asStateFlow()
 
-    // Lista de solicitudes del cliente
     private val _clientRequests = MutableStateFlow<UiState<List<ServiceRequest>>>(UiState())
     val clientRequests = _clientRequests.asStateFlow()
 
-    // Estado de operaciones (crear, responder, aceptar, etc.)
     private val _operationState = MutableStateFlow<OperationState>(OperationState.Idle)
     val operationState = _operationState.asStateFlow()
 
-    // Mensajes
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
 
-    /**
-     * Cargar todas las solicitudes pendientes (PROVEEDOR)
-     */
+
     fun loadPendingRequests() {
         viewModelScope.launch {
             _pendingRequests.value = UiState(isLoading = true)
@@ -54,9 +48,7 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cargar solicitudes de un cliente específico
-     */
+
     fun loadClientRequests(clientId: String) {
         viewModelScope.launch {
             _clientRequests.value = UiState(isLoading = true)
@@ -77,9 +69,7 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Crear nueva solicitud de servicio (CLIENTE)
-     */
+
     fun createServiceRequest(
         clientId: String,
         clientName: String,
@@ -90,7 +80,6 @@ class ServiceViewModel : ViewModel() {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
 
-            // Validaciones
             if (serviceType.isBlank() || description.isBlank()) {
                 _operationState.value = OperationState.Error("Completa todos los campos")
                 _message.emit("Completa todos los campos")
@@ -112,9 +101,6 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Proveedor responde a una solicitud
-     */
     fun respondToRequest(
         requestId: String,
         providerUser: User,
@@ -136,9 +122,7 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cliente acepta un proveedor
-     */
+
     fun acceptProvider(requestId: String, providerId: String) {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
@@ -156,9 +140,7 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cliente rechaza un proveedor
-     */
+
     fun rejectProvider(requestId: String, providerId: String) {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
@@ -176,9 +158,7 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Marcar solicitud como completada
-     */
+
     fun completeRequest(requestId: String) {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
@@ -196,9 +176,6 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Eliminar solicitud
-     */
     fun deleteRequest(requestId: String) {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
@@ -216,16 +193,11 @@ class ServiceViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Reset de estado de operación
-     */
     fun resetOperationState() {
         _operationState.value = OperationState.Idle
     }
 
-    /**
-     * Retry para cargar solicitudes
-     */
+
     fun retryLoadRequests(isProvider: Boolean, clientId: String? = null) {
         if (isProvider) {
             loadPendingRequests()

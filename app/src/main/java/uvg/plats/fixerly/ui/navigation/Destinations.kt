@@ -15,8 +15,13 @@ data object OnboardingDestination
 @Serializable
 data object LoginDestination
 
+// Flujo de registro completo (ruta padre)
 @Serializable
 data object RegisterDestination
+
+// Primera pantalla del registro
+@Serializable
+data object RegisterStepDestination
 
 @Serializable
 data object AccountTypeDestination
@@ -30,7 +35,6 @@ data class SupplierDataDestination(
 )
 
 
-// navs y flujo del cliente
 @Serializable
 data object LaborDestination
 
@@ -41,7 +45,6 @@ data object YourRequestsDestination
 data object UserProfileDestination
 
 
-// navs y flujo del proveedor
 @Serializable
 data object SupplierWelcomeDestination
 

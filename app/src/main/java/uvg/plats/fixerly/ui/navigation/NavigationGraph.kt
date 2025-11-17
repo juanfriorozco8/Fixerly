@@ -1,10 +1,12 @@
 package uvg.plats.fixerly.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
 
 // Auth screens
 import uvg.plats.fixerly.ui.screens.auth.OnboardingScreen
@@ -23,6 +25,9 @@ import uvg.plats.fixerly.ui.screens.client.UserProfileScreen
 import uvg.plats.fixerly.ui.screens.supplier.SupplierWelcomeScreen
 import uvg.plats.fixerly.ui.screens.supplier.SupplierProfileScreen
 
+// ViewModel
+import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
+
 @Composable
 fun NavigationGraph(
     navController: NavHostController = rememberNavController()
@@ -32,7 +37,6 @@ fun NavigationGraph(
         startDestination = OnboardingDestination
     ) {
 
-        // ONBOARDING
         composable<OnboardingDestination> {
             OnboardingScreen(
                 onNavigateToLogin = { navController.navigate(LoginDestination) },
@@ -40,7 +44,6 @@ fun NavigationGraph(
             )
         }
 
-        // LOGIN
         composable<LoginDestination> {
             LoginScreen(
                 onNavigateToRegister = {
@@ -60,61 +63,80 @@ fun NavigationGraph(
             )
         }
 
-        // REGISTRO
-        composable<RegisterDestination> {
-            RegisterScreen(
-                onNavigateToLogin = {
-                    navController.navigate(LoginDestination) {
-                        popUpTo(RegisterDestination) { inclusive = true }
+        // viewModel compartido
+        navigation<RegisterDestination>(
+            startDestination = RegisterStepDestination
+        ) {
+
+            composable<RegisterStepDestination> {
+                val sharedViewModel: AuthViewModel = viewModel(
+                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
+                )
+
+                RegisterScreen(
+                    onNavigateToLogin = {
+                        navController.navigate(LoginDestination) {
+                            popUpTo(RegisterDestination) { inclusive = true }
+                        }
+                    },
+                    onNavigateToAccountType = {
+                        navController.navigate(AccountTypeDestination)
+                    },
+                    viewModel = sharedViewModel
+                )
+            }
+
+            composable<AccountTypeDestination> {
+                val sharedViewModel: AuthViewModel = viewModel(
+                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
+                )
+
+                AccountTypeScreen(
+                    onNavigateToLogin = {
+                        navController.navigate(LoginDestination)
+                    },
+                    onNavigateToNext = { accountType ->
+                        if (accountType == "Proveedor") {
+                            navController.navigate(SupplierDataDestination(accountType))
+                        } else {
+                            navController.navigate(AddressDestination)
+                        }
                     }
-                },
-                onNavigateToAccountType = {
-                    navController.navigate(AccountTypeDestination)
-                }
-            )
+                )
+            }
+
+            composable<AddressDestination> {
+                val sharedViewModel: AuthViewModel = viewModel(
+                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
+                )
+
+                AddressScreen(
+                    onComplete = {
+                        navController.navigate(LaborDestination) {
+                            popUpTo(OnboardingDestination) { inclusive = true }
+                        }
+                    },
+                    viewModel = sharedViewModel
+                )
+            }
+
+            composable<SupplierDataDestination> {
+                val sharedViewModel: AuthViewModel = viewModel(
+                    viewModelStoreOwner = navController.getBackStackEntry(RegisterDestination)
+                )
+
+                SupplierDataScreen(
+                    onComplete = {
+                        navController.navigate(SupplierWelcomeDestination) {
+                            popUpTo(OnboardingDestination) { inclusive = true }
+                        }
+                    },
+                    viewModel = sharedViewModel
+                )
+            }
         }
 
-        // TIPO DE CUENTA
-        composable<AccountTypeDestination> {
-            AccountTypeScreen(
-                onNavigateToLogin = {
-                    navController.navigate(LoginDestination)
-                },
-                onNavigateToNext = { accountType ->
-                    if (accountType == "Proveedor") {
-                        // No necesitamos leer el parámetro en la pantalla,
-                        // solo navegamos a esa ruta.
-                        navController.navigate(SupplierDataDestination(accountType))
-                    } else {
-                        navController.navigate(AddressDestination)
-                    }
-                }
-            )
-        }
-
-        // DIRECCIÓN DEL CLIENTE
-        composable<AddressDestination> {
-            AddressScreen(
-                onComplete = {
-                    navController.navigate(LaborDestination) {
-                        popUpTo(OnboardingDestination) { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        // DATOS DEL PROVEEDOR
-        composable<SupplierDataDestination> {
-            SupplierDataScreen(
-                onComplete = {
-                    navController.navigate(SupplierWelcomeDestination) {
-                        popUpTo(OnboardingDestination) { inclusive = true }
-                    }
-                }
-            )
-        }
-
-        // ==================== CLIENTE ====================
+        // cliente
 
         composable<LaborDestination> {
             LaborScreen()
@@ -128,7 +150,7 @@ fun NavigationGraph(
             UserProfileScreen()
         }
 
-        // ==================== PROVEEDOR ====================
+        // proovedor
 
         composable<SupplierWelcomeDestination> {
             SupplierWelcomeScreen()

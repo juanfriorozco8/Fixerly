@@ -15,21 +15,16 @@ import uvg.plats.fixerly.data.repository.ProfileRepository
 class ProfileViewModel : ViewModel() {
     private val repository = ProfileRepository()
 
-    // Perfil del usuario actual
     private val _userProfile = MutableStateFlow<UiState<User>>(UiState())
     val userProfile = _userProfile.asStateFlow()
 
-    // Estado de operaciones (actualizar, subir imagen, etc.)
     private val _operationState = MutableStateFlow<OperationState>(OperationState.Idle)
     val operationState = _operationState.asStateFlow()
 
-    // Mensajes
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
 
-    /**
-     * Cargar perfil del usuario
-     */
+
     fun loadUserProfile(userId: String) {
         viewModelScope.launch {
             _userProfile.value = UiState(isLoading = true)
@@ -53,9 +48,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Actualizar información básica
-     */
+
     fun updateBasicInfo(
         userId: String,
         name: String,
@@ -65,7 +58,6 @@ class ProfileViewModel : ViewModel() {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
 
-            // Validaciones
             if (name.isBlank() || lastName.isBlank()) {
                 _operationState.value = OperationState.Error("Completa todos los campos")
                 _message.emit("Completa todos los campos")
@@ -76,7 +68,6 @@ class ProfileViewModel : ViewModel() {
                 onSuccess = {
                     _operationState.value = OperationState.Success("Perfil actualizado")
                     _message.emit("Perfil actualizado exitosamente")
-                    // Recargar perfil
                     loadUserProfile(userId)
                 },
                 onFailure = { error ->
@@ -87,9 +78,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Actualizar dirección del cliente
-     */
+
     fun updateClientAddress(
         userId: String,
         address: Address
@@ -111,9 +100,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Actualizar habilidades del proveedor
-     */
+
     fun updateProviderSkills(
         userId: String,
         skills: List<String>
@@ -141,9 +128,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Actualizar descripción del proveedor
-     */
+
     fun updateProviderAbout(
         userId: String,
         about: String
@@ -165,9 +150,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Actualizar preferencias de contacto
-     */
+
     fun updateContactPreferences(
         userId: String,
         preferences: List<String>
@@ -189,9 +172,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Subir foto de perfil
-     */
+
     fun uploadProfileImage(
         userId: String,
         imageUri: Uri
@@ -213,9 +194,6 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Eliminar foto de perfil
-     */
     fun deleteProfileImage(userId: String) {
         viewModelScope.launch {
             _operationState.value = OperationState.Loading
@@ -234,9 +212,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Obtener proveedores por habilidad (útil para búsquedas)
-     */
+
     fun searchProvidersBySkill(skill: String) {
         viewModelScope.launch {
             repository.getProvidersBySkill(skill).fold(
@@ -250,16 +226,12 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Reset del estado de operación
-     */
+
     fun resetOperationState() {
         _operationState.value = OperationState.Idle
     }
 
-    /**
-     * Retry para cargar perfil
-     */
+
     fun retryLoadProfile(userId: String) {
         loadUserProfile(userId)
     }

@@ -21,14 +21,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
+import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
+import uvg.plats.fixerly.ui.viewmodel.AuthState
 
 @Composable
 fun SupplierDataScreen(
     accountType: String = "Proveedor",
     onNavigateBack: () -> Unit = {},
-    onComplete: () -> Unit = {}
+    onComplete: () -> Unit = {},
+    viewModel: AuthViewModel = viewModel()
 ) {
     var contactoEmail by remember { mutableStateOf(false) }
     var contactoTelefono by remember { mutableStateOf(false) }
@@ -52,101 +56,165 @@ fun SupplierDataScreen(
 
     var detalles by remember { mutableStateOf(TextFieldValue("")) }
 
-    FixerlyTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primaryContainer
-                        )
-                    )
-                )
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top,
+    val authState by viewModel.authState.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Success -> {
+                onComplete()
+            }
+            is AuthState.Error -> {
+                snackbarHostState.showSnackbar((authState as AuthState.Error).message)
+            }
+            else -> {}
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.message.collect { message ->
+            snackbarHostState.showSnackbar(message)
+        }
+    }
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
+        FixerlyTheme {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp)
-                    .padding(vertical = 40.dp)
-            ) {
-                Spacer(modifier = Modifier.height(60.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_icon),
-                        contentDescription = stringResource(R.string.onboarding_logo_description),
-                        modifier = Modifier.size(60.dp)
-                    )
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        fontSize = 48.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                Text(
-                    text = stringResource(R.string.address_ready_title),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Text(
-                    text = stringResource(R.string.supplier_data_subtitle),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text = stringResource(R.string.supplier_data_info),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 14.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    thickness = 1.dp
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-                        Text(
-                            text = stringResource(R.string.supplier_data_select_skills),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
+                    .padding(paddingValues)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primaryContainer
+                            )
                         )
+                    )
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 24.dp)
+                        .padding(vertical = 40.dp)
+                ) {
+                    Spacer(modifier = Modifier.height(60.dp))
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_icon),
+                            contentDescription = stringResource(R.string.onboarding_logo_description),
+                            modifier = Modifier.size(60.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            fontSize = 48.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
 
-                        habilidades.forEach { habilidad ->
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    Text(
+                        text = stringResource(R.string.address_ready_title),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+
+                    Text(
+                        text = stringResource(R.string.supplier_data_subtitle),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 28.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Text(
+                        text = stringResource(R.string.supplier_data_info),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        thickness = 1.dp
+                    )
+
+                    Spacer(modifier = Modifier.height(40.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                text = stringResource(R.string.supplier_data_select_skills),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            habilidades.forEach { habilidad ->
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .padding(vertical = 0.dp)
+                                        .height(32.dp)
+                                ) {
+                                    Checkbox(
+                                        checked = habilidadesSeleccionadas[habilidad] == true,
+                                        onCheckedChange = { habilidadesSeleccionadas[habilidad] = it },
+                                        colors = CheckboxDefaults.colors(
+                                            checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    Text(
+                                        text = habilidad,
+                                        color = MaterialTheme.colorScheme.onPrimary,
+                                        fontSize = 13.sp
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.width(20.dp))
+
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            horizontalAlignment = Alignment.Start
+                        ) {
+                            Text(
+                                text = stringResource(R.string.supplier_data_contact_method),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(4.dp))
+
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
@@ -154,8 +222,8 @@ fun SupplierDataScreen(
                                     .height(32.dp)
                             ) {
                                 Checkbox(
-                                    checked = habilidadesSeleccionadas[habilidad] == true,
-                                    onCheckedChange = { habilidadesSeleccionadas[habilidad] = it },
+                                    checked = contactoEmail,
+                                    onCheckedChange = { contactoEmail = it },
                                     colors = CheckboxDefaults.colors(
                                         checkmarkColor = MaterialTheme.colorScheme.onPrimary
                                     ),
@@ -163,161 +231,149 @@ fun SupplierDataScreen(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = habilidad,
+                                    text = stringResource(R.string.supplier_data_contact_email),
                                     color = MaterialTheme.colorScheme.onPrimary,
                                     fontSize = 13.sp
                                 )
                             }
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                                    .padding(vertical = 0.dp)
+                                    .height(32.dp)
+                            ) {
+                                Checkbox(
+                                    checked = contactoTelefono,
+                                    onCheckedChange = { contactoTelefono = it },
+                                    colors = CheckboxDefaults.colors(
+                                        checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                                    ),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = stringResource(R.string.supplier_data_contact_phone),
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    fontSize = 13.sp
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Text(
+                                text = stringResource(R.string.supplier_data_details_optional),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 16.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            OutlinedTextField(
+                                value = detalles,
+                                onValueChange = { detalles = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(80.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                placeholder = {
+                                    Text(
+                                        stringResource(R.string.supplier_data_details_placeholder),
+                                        fontSize = 12.sp
+                                    )
+                                },
+                                colors = TextFieldDefaults.colors(
+                                    focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    cursorColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+                                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
+                                    focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
+                                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
+                                )
+                            )
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(20.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
 
+                    Button(
+                        onClick = {
+                            // Preparar lista de contactos
+                            val contactPrefs = mutableListOf<String>()
+                            if (contactoEmail) contactPrefs.add("email")
+                            if (contactoTelefono) contactPrefs.add("telefono")
 
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.Start
+                            // Preparar lista de habilidades seleccionadas
+                            val skillsList = habilidadesSeleccionadas
+                                .filter { it.value }
+                                .map { it.key }
+
+                            // Ahora sí registrar el proveedor en Firebase
+                            viewModel.registerProvider(
+                                contactPreferences = contactPrefs,
+                                about = detalles.text,
+                                skills = skillsList
+                            )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        enabled = authState !is AuthState.Loading
+                    ) {
+                        if (authState is AuthState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                        } else {
+                            Text(
+                                stringResource(R.string.supplier_data_finish),
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    HorizontalDivider(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        thickness = 1.dp
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.supplier_data_contact_method),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
+                            text = stringResource(R.string.supplier_data_forgot_something),
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
-
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(vertical = 0.dp)
-                                .height(32.dp)
-                        ) {
-                            Checkbox(
-                                checked = contactoEmail,
-                                onCheckedChange = { contactoEmail = it },
-                                colors = CheckboxDefaults.colors(
-                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
-                                ),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = stringResource(R.string.supplier_data_contact_email),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontSize = 13.sp
-                            )
-                        }
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .padding(vertical = 0.dp)
-                                .height(32.dp)
-                        ) {
-                            Checkbox(
-                                checked = contactoTelefono,
-                                onCheckedChange = { contactoTelefono = it },
-                                colors = CheckboxDefaults.colors(
-                                    checkmarkColor = MaterialTheme.colorScheme.onPrimary
-                                ),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                text = stringResource(R.string.supplier_data_contact_phone),
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontSize = 13.sp
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
-                            text = stringResource(R.string.supplier_data_details_optional),
+                            text = stringResource(R.string.supplier_data_go_back),
+                            fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
-                        )
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        OutlinedTextField(
-                            value = detalles,
-                            onValueChange = { detalles = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(80.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            placeholder = {
-                                Text(
-                                    stringResource(R.string.supplier_data_details_placeholder),
-                                    fontSize = 12.sp
-                                )
-                            },
-                            colors = TextFieldDefaults.colors(
-                                focusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
-                                focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                cursorColor = MaterialTheme.colorScheme.onPrimary,
-                                focusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
-                                unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
-                                focusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f),
-                                unfocusedPlaceholderColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.6f)
-                            )
+                            fontWeight = FontWeight.Bold,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable { onNavigateBack() }
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                Button(
-                    onClick = {
-                        onComplete()
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    )
-                ) {
-                    Text(stringResource(R.string.supplier_data_finish), fontSize = 18.sp, color = MaterialTheme.colorScheme.onSecondary)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth(),
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    thickness = 1.dp
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.supplier_data_forgot_something),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-
-                    Text(
-                        text = stringResource(R.string.supplier_data_go_back),
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        fontWeight = FontWeight.Bold,
-                        textDecoration = TextDecoration.Underline,
-                        modifier = Modifier.clickable { onNavigateBack() }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

@@ -15,25 +15,30 @@ import uvg.plats.fixerly.utils.ErrorMessages
 class AuthViewModel : ViewModel() {
     private val repository = AuthRepository()
 
-    // Estado de autenticación
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState = _authState.asStateFlow()
 
-    // Estado del usuario actual
     private val _currentUser = MutableStateFlow<User?>(null)
     val currentUser = _currentUser.asStateFlow()
 
-    // Mensajes de error/éxito (para mostrar Snackbar/Toast)
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
+
+    private var tempRegistrationData: TempRegistrationData? = null
 
     init {
         checkUserLoggedIn()
     }
 
-    /**
-     * Verificar si hay usuario logueado al iniciar
-     */
+    data class TempRegistrationData(
+        val name: String,
+        val lastName: String,
+        val email: String,
+        val password: String,
+        val phone: String
+    )
+
+
     private fun checkUserLoggedIn() {
         viewModelScope.launch {
             val firebaseUser = repository.getCurrentUser()
@@ -43,20 +48,16 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Login
-     */
+
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            // Validaciones básicas
             if (email.isBlank() || password.isBlank()) {
                 _authState.value = AuthState.Error("Completa todos los campos")
                 return@launch
             }
 
-            // Llamar al repository
             repository.login(email, password).fold(
                 onSuccess = { userId ->
                     loadUserData(userId)
@@ -77,15 +78,44 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Registro de CLIENTE
-     */
-    fun registerClient(
+
+    fun saveTempRegistrationData(
         name: String,
         lastName: String,
         email: String,
         password: String,
-        phone: String,
+        phone: String
+    ) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+
+            if (name.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
+                _authState.value = AuthState.Error("Completa todos los campos obligatorios")
+                _message.emit("Completa todos los campos obligatorios")
+                return@launch
+            }
+
+            if (password.length < 6) {
+                _authState.value = AuthState.Error(ErrorMessages.WEAK_PASSWORD)
+                _message.emit(ErrorMessages.WEAK_PASSWORD)
+                return@launch
+            }
+
+            tempRegistrationData = TempRegistrationData(
+                name = name,
+                lastName = lastName,
+                email = email,
+                password = password,
+                phone = phone
+            )
+
+            _authState.value = AuthState.Success("")
+            _message.emit("Datos guardados. Selecciona tu tipo de cuenta")
+        }
+    }
+
+
+    fun registerClient(
         department: String,
         address: String,
         zone: String,
@@ -94,24 +124,34 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            // Validaciones
-            if (name.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
-                _authState.value = AuthState.Error("Completa todos los campos obligatorios")
+            val tempData = tempRegistrationData
+            if (tempData == null) {
+                _authState.value = AuthState.Error("Error: datos de registro no encontrados")
+                _message.emit("Error: datos de registro no encontrados")
                 return@launch
             }
 
-            if (password.length < 6) {
-                _authState.value = AuthState.Error(ErrorMessages.WEAK_PASSWORD)
-                return@launch
-            }
+            val addressObj = Address(
+                department = department,
+                address = address,
+                zone = zone,
+                directions = directions
+            )
 
-            val addressObj = Address(department, address, zone, directions)
-
-            repository.registerClient(name, lastName, email, password, phone, addressObj).fold(
+            repository.registerClient(
+                name = tempData.name,
+                lastName = tempData.lastName,
+                email = tempData.email,
+                password = tempData.password,
+                phone = tempData.phone,
+                address = addressObj
+            ).fold(
                 onSuccess = { userId ->
                     loadUserData(userId)
                     _authState.value = AuthState.Success(userId)
                     _message.emit("Cuenta creada exitosamente!")
+                    // Limpiar datos temporales
+                    tempRegistrationData = null
                 },
                 onFailure = { error ->
                     val errorMsg = when {
@@ -128,15 +168,8 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Registro de PROVEEDOR
-     */
+
     fun registerProvider(
-        name: String,
-        lastName: String,
-        email: String,
-        password: String,
-        phone: String,
         contactPreferences: List<String>,
         about: String,
         skills: List<String>
@@ -144,30 +177,34 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
 
-            // Validaciones
-            if (name.isBlank() || lastName.isBlank() || email.isBlank() || password.isBlank()) {
-                _authState.value = AuthState.Error("Completa todos los campos obligatorios")
-                return@launch
-            }
-
-            if (password.length < 6) {
-                _authState.value = AuthState.Error(ErrorMessages.WEAK_PASSWORD)
+            val tempData = tempRegistrationData
+            if (tempData == null) {
+                _authState.value = AuthState.Error("Error: datos de registro no encontrados")
+                _message.emit("Error: datos de registro no encontrados")
                 return@launch
             }
 
             if (skills.isEmpty()) {
                 _authState.value = AuthState.Error("Selecciona al menos una habilidad")
+                _message.emit("Selecciona al menos una habilidad")
                 return@launch
             }
 
             repository.registerProvider(
-                name, lastName, email, password, phone,
-                contactPreferences, about, skills
+                name = tempData.name,
+                lastName = tempData.lastName,
+                email = tempData.email,
+                password = tempData.password,
+                phone = tempData.phone,
+                contactPreferences = contactPreferences,
+                about = about,
+                skills = skills
             ).fold(
                 onSuccess = { userId ->
                     loadUserData(userId)
                     _authState.value = AuthState.Success(userId)
                     _message.emit("Cuenta de proveedor creada!")
+                    tempRegistrationData = null
                 },
                 onFailure = { error ->
                     val errorMsg = when {
@@ -184,9 +221,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Cargar datos del usuario
-     */
     private fun loadUserData(userId: String) {
         viewModelScope.launch {
             repository.getUserData(userId).fold(
@@ -200,18 +234,13 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Logout
-     */
     fun logout() {
         repository.logout()
         _authState.value = AuthState.Idle
         _currentUser.value = null
+        tempRegistrationData = null
     }
 
-    /**
-     * Recuperar contraseña
-     */
     fun resetPassword(email: String) {
         viewModelScope.launch {
             if (email.isBlank()) {
@@ -230,9 +259,6 @@ class AuthViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Reset del estado (útil para limpiar errores)
-     */
     fun resetAuthState() {
         _authState.value = AuthState.Idle
     }

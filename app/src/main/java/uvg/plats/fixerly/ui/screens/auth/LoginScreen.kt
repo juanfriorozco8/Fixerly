@@ -37,13 +37,17 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
 
     val authState by viewModel.authState.collectAsState()
+    val currentUser by viewModel.currentUser.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(currentUser) {
+        currentUser?.let { user ->
+            onLoginSuccess(user.userType)
+        }
+    }
 
     LaunchedEffect(authState) {
         when (val state = authState) {
-            is AuthState.Success -> {
-                onLoginSuccess(state.userId)
-            }
             is AuthState.Error -> {
                 snackbarHostState.showSnackbar(state.message)
             }

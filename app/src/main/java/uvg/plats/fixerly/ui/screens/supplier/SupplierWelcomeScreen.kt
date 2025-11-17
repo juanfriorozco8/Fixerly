@@ -26,12 +26,15 @@ import androidx.compose.ui.unit.sp
 import uvg.plats.fixerly.ui.theme.*
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 data class Cliente(
     val nombre: String,
     val zona: String,
     val problema: String,
-    val descripcion: String
+    val descripcion: String,
+    val categoria: String // para el filtro
 )
 
 @Composable
@@ -71,39 +74,62 @@ fun SupplierWelcomeScreenContent() {
 
     var categoriaSeleccionada by remember { mutableStateOf(categorias.last()) }
 
-    val clientes = listOf(
-        Cliente(
-            nombre = "Juan Pérez",
-            zona = "Zona 10, Ciudad de Guatemala",
-            problema = "Falla de electrodomésticos",
-            descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        ),
-        Cliente(
-            nombre = "María González",
-            zona = "Zona 15, Ciudad de Guatemala",
-            problema = "Instalación de electrodomésticos",
-            descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        ),
-        Cliente(
-            nombre = "Carlos Mendoza",
-            zona = "Zona 1, Ciudad de Guatemala",
-            problema = "Reparación de electrodomésticos",
-            descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        ),
-        Cliente(
-            nombre = "Ana Martínez",
-            zona = "Zona 9, Ciudad de Guatemala",
-            problema = "Mantenimiento de electrodomésticos",
-            descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
-        ),
-        Cliente(
-            nombre = "Roberto Castillo",
-            zona = "Zona 4, Ciudad de Guatemala",
-            problema = "Falla de refrigerador",
-            descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+    // Lista completa de clientes con categorías
+    val clientesCompletos = remember {
+        listOf(
+            Cliente(
+                nombre = "Juan Pérez",
+                zona = "Zona 10, Ciudad de Guatemala",
+                problema = "Falla de electrodomésticos",
+                descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                categoria = "Electrodomésticos"
+            ),
+            Cliente(
+                nombre = "María González",
+                zona = "Zona 15, Ciudad de Guatemala",
+                problema = "Instalación de electrodomésticos",
+                descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                categoria = "Electrodomésticos"
+            ),
+            Cliente(
+                nombre = "Carlos Mendoza",
+                zona = "Zona 1, Ciudad de Guatemala",
+                problema = "Reparación de tubería",
+                descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                categoria = "Plomería"
+            ),
+            Cliente(
+                nombre = "Ana Martínez",
+                zona = "Zona 9, Ciudad de Guatemala",
+                problema = "Mantenimiento de jardín",
+                descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                categoria = "Jardinería y exteriores"
+            ),
+            Cliente(
+                nombre = "Roberto Castillo",
+                zona = "Zona 4, Ciudad de Guatemala",
+                problema = "Falla eléctrica",
+                descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                categoria = "Electricidad"
+            ),
+            Cliente(
+                nombre = "Sofía Hernández",
+                zona = "Zona 7, Ciudad de Guatemala",
+                problema = "Pintura de casa",
+                descripcion = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                categoria = "Pintura y acabados"
+            )
         )
-    )
+    }
 
+    // filtrar según categoría
+    val clientesFiltrados = remember(categoriaSeleccionada) {
+        if (categoriaSeleccionada == categorias.last()) { // "Todos"
+            clientesCompletos
+        } else {
+            clientesCompletos.filter { it.categoria == categoriaSeleccionada }
+        }
+    }
 
     val backgroundBrush = if (isDarkMode) {
         Brush.verticalGradient(
@@ -176,7 +202,6 @@ fun SupplierWelcomeScreenContent() {
             }
         }
 
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -221,16 +246,32 @@ fun SupplierWelcomeScreenContent() {
             thickness = 1.dp
         )
 
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding = PaddingValues(vertical = 12.dp)
-        ) {
-            items(clientes) { cliente ->
-                ClientCard(cliente = cliente)
+        // mostrar mensaje si no hay resultados
+        if (clientesFiltrados.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "No hay solicitudes en esta categoría",
+                    fontSize = 16.sp,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(vertical = 12.dp)
+            ) {
+                items(clientesFiltrados) { cliente ->
+                    ClientCard(cliente = cliente)
+                }
             }
         }
     }
@@ -238,6 +279,15 @@ fun SupplierWelcomeScreenContent() {
 
 @Composable
 fun ClientCard(cliente: Cliente) {
+    var buttonState by remember { mutableStateOf(ButtonState.IDLE) }
+
+    LaunchedEffect(buttonState) {
+        if (buttonState == ButtonState.SENT) {
+            delay(2000) // Mantener verde por 2 segundos
+            buttonState = ButtonState.IDLE
+        }
+    }
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
@@ -283,18 +333,48 @@ fun ClientCard(cliente: Cliente) {
                 }
 
                 Button(
-                    onClick = { },
+                    onClick = {
+                        buttonState = ButtonState.SENDING
+                        // Simular envío
+                        kotlinx.coroutines.GlobalScope.launch {
+                            delay(500)
+                            buttonState = ButtonState.SENT
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = when (buttonState) {
+                            ButtonState.IDLE -> MaterialTheme.colorScheme.primary
+                            ButtonState.SENDING -> MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+                            ButtonState.SENT -> Color(0xFF52B788) // Verde
+                        }
                     ),
                     shape = RoundedCornerShape(20.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    enabled = buttonState != ButtonState.SENDING
                 ) {
-                    Text(
-                        text = stringResource(R.string.supplier_welcome_send_info),
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
+                    when (buttonState) {
+                        ButtonState.IDLE -> {
+                            Text(
+                                text = stringResource(R.string.supplier_welcome_send_info),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
+                        ButtonState.SENDING -> {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                strokeWidth = 2.dp
+                            )
+                        }
+                        ButtonState.SENT -> {
+                            Text(
+                                text = "✓ Enviado",
+                                fontSize = 12.sp,
+                                color = White
+                            )
+                        }
+                    }
                 }
             }
 
@@ -322,6 +402,12 @@ fun ClientCard(cliente: Cliente) {
             )
         }
     }
+}
+
+enum class ButtonState {
+    IDLE,
+    SENDING,
+    SENT
 }
 
 @Preview(showBackground = true)

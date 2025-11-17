@@ -26,6 +26,7 @@ import uvg.plats.fixerly.ui.theme.FixerlyTheme
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.viewmodel.AuthViewModel
 import uvg.plats.fixerly.ui.viewmodel.AuthState
+import android.util.Patterns
 
 @Composable
 fun RegisterScreen(
@@ -39,13 +40,36 @@ fun RegisterScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    // validaciones en tiempo real
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
     val authState by viewModel.authState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // validar email cuando cambia
+    LaunchedEffect(email) {
+        emailError = when {
+            email.isEmpty() -> null
+            !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> "Correo electrónico inválido"
+            else -> null
+        }
+    }
+
+    // validar contraseña
+    LaunchedEffect(password) {
+        passwordError = when {
+            password.isEmpty() -> null
+            password.length < 6 -> "La contraseña debe tener al menos 6 caracteres"
+            else -> null
+        }
+    }
 
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Success -> {
                 onNavigateToAccountType()
+                viewModel.resetAuthState()
             }
             is AuthState.Error -> {
                 snackbarHostState.showSnackbar((authState as AuthState.Error).message)
@@ -139,35 +163,36 @@ fun RegisterScreen(
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
-                FormField(
+
+                // Email con validación
+                FormFieldWithError(
                     label = stringResource(R.string.register_email),
                     value = email,
-                    onValueChange = { email = it }
+                    onValueChange = { email = it },
+                    errorMessage = emailError
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                FormField(
+                // Password con validación
+                FormFieldWithError(
                     label = stringResource(R.string.register_password),
                     value = password,
                     onValueChange = { password = it },
-                    isPassword = true
+                    isPassword = true,
+                    errorMessage = passwordError
                 )
 
                 Spacer(modifier = Modifier.height(30.dp))
 
                 Button(
                     onClick = {
-                        viewModel.registerClient(
+                        viewModel.saveTempRegistrationData(
                             name = name,
                             lastName = lastName,
                             email = email,
                             password = password,
-                            phone = phone,
-                            department = "",
-                            address = "",
-                            zone = "",
-                            directions = ""
+                            phone = phone
                         )
                     },
                     modifier = Modifier
@@ -177,7 +202,13 @@ fun RegisterScreen(
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.secondary
                     ),
-                    enabled = authState !is AuthState.Loading
+                    enabled = authState !is AuthState.Loading &&
+                            emailError == null &&
+                            passwordError == null &&
+                            name.isNotBlank() &&
+                            lastName.isNotBlank() &&
+                            email.isNotBlank() &&
+                            password.isNotBlank()
                 ) {
                     if (authState is AuthState.Loading) {
                         CircularProgressIndicator(
@@ -270,6 +301,62 @@ fun FormField(
             ),
             shape = RoundedCornerShape(12.dp)
         )
+    }
+}
+
+@Composable
+fun FormFieldWithError(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit,
+    isPassword: Boolean = false,
+    errorMessage: String? = null
+) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            fontSize = 15.sp,
+            color = MaterialTheme.colorScheme.onPrimary,
+            modifier = Modifier.padding(bottom = 6.dp),
+            fontWeight = FontWeight.Medium
+        )
+
+        TextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            placeholder = {
+                Text(
+                    text = stringResource(R.string.login_placeholder),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
+            },
+            visualTransformation = if (isPassword) PasswordVisualTransformation() else androidx.compose.ui.text.input.VisualTransformation.None,
+            isError = errorMessage != null,
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                focusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.surface,
+                errorContainerColor = MaterialTheme.colorScheme.surface,
+                errorIndicatorColor = MaterialTheme.colorScheme.error,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+            ),
+            shape = RoundedCornerShape(12.dp)
+        )
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                fontSize = 12.sp,
+                modifier = Modifier.padding(start = 8.dp, top = 4.dp)
+            )
+        }
     }
 }
 
