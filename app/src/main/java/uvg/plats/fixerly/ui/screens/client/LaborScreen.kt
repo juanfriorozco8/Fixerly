@@ -11,6 +11,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,11 +57,13 @@ fun LaborScreen(
     LaunchedEffect(operationState) {
         when (val state = operationState) {
             is OperationState.Success -> {
-                snackbarHostState.showSnackbar(state.message)
+                snackbarHostState.showSnackbar("Solicitud enviada correctamente")
+
                 selectedCategory = null
                 briefDescription = ""
                 detailedDescription = ""
                 viewModel.resetOperationState()
+
                 onNavigateToRequests()
             }
             is OperationState.Error -> {
@@ -76,201 +80,222 @@ fun LaborScreen(
         onNavigateToRequests = onNavigateToRequests,
         onNavigateToNewRequest = {}
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            MaterialTheme.colorScheme.primary,
-                            MaterialTheme.colorScheme.primaryContainer
-                        )
-                    )
-                )
-        ) {
+        Box(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primaryContainer
+                            )
+                        )
+                    )
             ) {
-                Row(
+                // Header con logo centrado
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(vertical = 12.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
                         Image(
                             painter = painterResource(id = R.drawable.logo_icon),
                             contentDescription = stringResource(R.string.onboarding_logo_description),
-                            modifier = Modifier.size(50.dp)
+                            modifier = Modifier.size(36.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = stringResource(R.string.app_name),
-                            fontSize = 36.sp,
+                            fontSize = 28.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+
+                // Banner con imagen y texto "¡Manos a la obra!"
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.herramientas),
+                        contentDescription = stringResource(R.string.labor_image_description),
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.4f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.labor_title),
+                            fontSize = 40.sp,
                             fontWeight = FontWeight.Bold,
                             color = White
                         )
                     }
-
-                    Image(
-                        painter = painterResource(id = R.drawable.herramientas),
-                        contentDescription = stringResource(R.string.labor_image_description),
-                        modifier = Modifier.size(60.dp)
-                    )
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.labor_title),
-                    fontSize = 42.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = White,
-                    lineHeight = 48.sp,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = stringResource(R.string.labor_category_label),
-                    fontSize = 18.sp,
-                    color = White,
-                    lineHeight = 22.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                CategorySelector(
-                    selectedCategory = selectedCategory,
-                    onCategorySelected = { selectedCategory = it }
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text = stringResource(R.string.labor_brief_description_label),
-                    fontSize = 18.sp,
-                    color = White,
-                    lineHeight = 22.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Text(
-                    text = stringResource(R.string.labor_word_limit),
-                    fontSize = 13.sp,
-                    color = White.copy(alpha = 0.8f),
-                    lineHeight = 16.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                TextField(
-                    value = briefDescription,
-                    onValueChange = { if (it.split(" ").size <= 10) briefDescription = it },
+                // Contenido scrollable
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp),
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.labor_placeholder),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = White,
-                        unfocusedContainerColor = White,
-                        focusedIndicatorColor = White,
-                        unfocusedIndicatorColor = White
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                )
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
 
-                Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                Text(
-                    text = stringResource(R.string.labor_detailed_description_label),
-                    fontSize = 18.sp,
-                    color = White,
-                    lineHeight = 22.sp,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    Text(
+                        text = stringResource(R.string.labor_category_label),
+                        fontSize = 18.sp,
+                        color = White,
+                        lineHeight = 22.sp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                TextField(
-                    value = detailedDescription,
-                    onValueChange = { detailedDescription = it },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(150.dp),
-                    placeholder = {
-                        Text(
-                            text = stringResource(R.string.labor_placeholder),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    },
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = White,
-                        unfocusedContainerColor = White,
-                        focusedIndicatorColor = White,
-                        unfocusedIndicatorColor = White
-                    ),
-                    shape = RoundedCornerShape(12.dp)
-                )
+                    CategorySelector(
+                        selectedCategory = selectedCategory,
+                        onCategorySelected = { selectedCategory = it }
+                    )
 
-                Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                Button(
-                    onClick = {
-                        if (selectedCategory != null && clientId.isNotEmpty()) {
-                            viewModel.createServiceRequest(
-                                clientId = clientId,
-                                clientName = clientName,
-                                serviceType = selectedCategory!!,
-                                description = "$briefDescription - $detailedDescription",
-                                address = clientAddress
+                    Text(
+                        text = stringResource(R.string.labor_brief_description_label),
+                        fontSize = 18.sp,
+                        color = White,
+                        lineHeight = 22.sp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = stringResource(R.string.labor_word_limit),
+                        fontSize = 13.sp,
+                        color = White.copy(alpha = 0.8f),
+                        lineHeight = 16.sp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TextField(
+                        value = briefDescription,
+                        onValueChange = { if (it.split(" ").size <= 10) briefDescription = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp),
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.labor_placeholder),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = White,
+                            unfocusedContainerColor = White,
+                            focusedIndicatorColor = White,
+                            unfocusedIndicatorColor = White,
+                            focusedTextColor = MaterialTheme.colorScheme.primary,
+                            unfocusedTextColor = MaterialTheme.colorScheme.primary
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Text(
+                        text = stringResource(R.string.labor_detailed_description_label),
+                        fontSize = 18.sp,
+                        color = White,
+                        lineHeight = 22.sp,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    TextField(
+                        value = detailedDescription,
+                        onValueChange = { detailedDescription = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(150.dp),
+                        placeholder = {
+                            Text(
+                                text = stringResource(R.string.labor_placeholder),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = White,
+                            unfocusedContainerColor = White,
+                            focusedIndicatorColor = White,
+                            unfocusedIndicatorColor = White,
+                            focusedTextColor = MaterialTheme.colorScheme.primary,
+                            unfocusedTextColor = MaterialTheme.colorScheme.primary
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(30.dp))
+
+                    Button(
+                        onClick = {
+                            if (selectedCategory != null && clientId.isNotEmpty()) {
+                                viewModel.createServiceRequest(
+                                    clientId = clientId,
+                                    clientName = clientName,
+                                    serviceType = selectedCategory!!,
+                                    description = "$briefDescription - $detailedDescription",
+                                    address = clientAddress
+                                )
+                            }
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        enabled = operationState !is OperationState.Loading &&
+                                selectedCategory != null &&
+                                briefDescription.isNotBlank() &&
+                                detailedDescription.isNotBlank()
+                    ) {
+                        if (operationState is OperationState.Loading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = White
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.labor_button),
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = White
                             )
                         }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(50),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
-                    enabled = operationState !is OperationState.Loading &&
-                            selectedCategory != null &&
-                            briefDescription.isNotBlank() &&
-                            detailedDescription.isNotBlank()
-                ) {
-                    if (operationState is OperationState.Loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = White
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(R.string.labor_button),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = White
-                        )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
             }
         }
     }
@@ -333,8 +358,9 @@ fun CategoryButton(
     ) {
         Text(
             text = text,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1
         )
     }
 }

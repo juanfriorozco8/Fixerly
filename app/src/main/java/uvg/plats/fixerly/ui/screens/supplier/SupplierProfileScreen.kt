@@ -2,6 +2,7 @@ package uvg.plats.fixerly.ui.screens.supplier
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -21,8 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
-import uvg.plats.fixerly.ui.theme.FixerlyTheme
-import uvg.plats.fixerly.ui.theme.White
+import uvg.plats.fixerly.ui.theme.*
 import uvg.plats.fixerly.R
 import uvg.plats.fixerly.ui.screens.components.ScreenWithBottomNav
 import uvg.plats.fixerly.ui.viewmodel.ProfileViewModel
@@ -65,6 +66,8 @@ fun SupplierProfileContent(
     viewModel: ProfileViewModel,
     onLogout: () -> Unit = {}
 ) {
+    val isDarkMode = isSystemInDarkTheme()
+
     val habilidades = listOf(
         stringResource(R.string.labor_filter_plumbing),
         stringResource(R.string.labor_filter_electricity),
@@ -114,15 +117,29 @@ fun SupplierProfileContent(
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
+    val backgroundBrush = if (isDarkMode) {
+        Brush.verticalGradient(
+            colors = listOf(
+                DarkBackgroundTop,
+                DarkBackgroundBottom
+            )
+        )
+    } else {
+        Brush.verticalGradient(
+            colors = listOf(
+                MaterialTheme.colorScheme.background,
+                MaterialTheme.colorScheme.primaryContainer
+            )
+        )
+    }
+
+    Box(modifier = Modifier.fillMaxSize()) {
         when {
             userProfile.isLoading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .background(brush = backgroundBrush),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -132,7 +149,7 @@ fun SupplierProfileContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
+                        .background(brush = backgroundBrush),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -146,8 +163,7 @@ fun SupplierProfileContent(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
-                        .background(White)
+                        .background(brush = backgroundBrush)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -172,7 +188,7 @@ fun SupplierProfileContent(
                                 text = stringResource(R.string.app_name),
                                 fontSize = 32.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = White
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
@@ -208,13 +224,13 @@ fun SupplierProfileContent(
                             Text(
                                 text = stringResource(R.string.user_profile_name),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = user?.name ?: "Nombre del Usuario",
                                 fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Normal
                             )
 
@@ -223,13 +239,13 @@ fun SupplierProfileContent(
                             Text(
                                 text = stringResource(R.string.user_profile_lastname),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = user?.lastName ?: "Apellidos del Usuario",
                                 fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Normal
                             )
 
@@ -238,13 +254,13 @@ fun SupplierProfileContent(
                             Text(
                                 text = stringResource(R.string.user_profile_phone),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = user?.phone ?: "1111 1111",
                                 fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Normal
                             )
 
@@ -253,13 +269,13 @@ fun SupplierProfileContent(
                             Text(
                                 text = stringResource(R.string.user_profile_email),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = user?.email ?: "usuario@gmail.com",
                                 fontSize = 16.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Normal
                             )
 
@@ -268,7 +284,7 @@ fun SupplierProfileContent(
                             Text(
                                 text = stringResource(R.string.supplier_profile_details),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold
                             )
 
@@ -277,7 +293,7 @@ fun SupplierProfileContent(
                             Text(
                                 text = user?.about ?: detalles.text,
                                 fontSize = 13.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 lineHeight = 18.sp
                             )
                         }
@@ -291,7 +307,7 @@ fun SupplierProfileContent(
                             Text(
                                 text = stringResource(R.string.supplier_profile_select_skills),
                                 fontSize = 15.sp,
-                                color = MaterialTheme.colorScheme.primary,
+                                color = MaterialTheme.colorScheme.onBackground,
                                 fontWeight = FontWeight.Bold,
                                 lineHeight = 18.sp
                             )
@@ -311,13 +327,13 @@ fun SupplierProfileContent(
                                         },
                                         colors = CheckboxDefaults.colors(
                                             checkedColor = MaterialTheme.colorScheme.primary,
-                                            uncheckedColor = MaterialTheme.colorScheme.primary,
+                                            uncheckedColor = MaterialTheme.colorScheme.onBackground,
                                             checkmarkColor = White
                                         )
                                     )
                                     Text(
                                         text = habilidad,
-                                        color = MaterialTheme.colorScheme.primary,
+                                        color = MaterialTheme.colorScheme.onBackground,
                                         fontSize = 14.sp
                                     )
                                 }
@@ -350,6 +366,14 @@ fun SupplierProfileContent(
                 }
             }
         }
+
+        // Snackbar flotante
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp, start = 16.dp, end = 16.dp)
+        )
     }
 }
 

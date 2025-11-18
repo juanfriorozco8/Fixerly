@@ -13,7 +13,6 @@ class AuthRepository {
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
-
     fun isUserLoggedIn(): Boolean = getCurrentUser() != null
 
     suspend fun login(email: String, password: String): Result<String> {
@@ -35,11 +34,8 @@ class AuthRepository {
         address: Address
     ): Result<String> {
         return try {
-            android.util.Log.d("AuthRepository", "Creando cuenta de cliente para: $email")
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val userId = authResult.user?.uid ?: throw Exception("Error al crear usuario")
-
-            android.util.Log.d("AuthRepository", "Usuario creado con ID: $userId")
 
             val user = User(
                 userId = userId,
@@ -52,16 +48,14 @@ class AuthRepository {
                 profileImageUrl = ""
             )
 
-            android.util.Log.d("AuthRepository", "Guardando datos del cliente en Firestore")
+            // CAMBIO AQUÍ: usar .toMap()
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
                 .document(userId)
-                .set(user)
+                .set(user.toMap())
                 .await()
 
-            android.util.Log.d("AuthRepository", "Cliente registrado exitosamente")
             Result.success(userId)
         } catch (e: Exception) {
-            android.util.Log.e("AuthRepository", "Error al registrar cliente: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -77,11 +71,8 @@ class AuthRepository {
         skills: List<String>
     ): Result<String> {
         return try {
-            android.util.Log.d("AuthRepository", "Creando cuenta de proveedor para: $email")
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val userId = authResult.user?.uid ?: throw Exception("Error al crear usuario")
-
-            android.util.Log.d("AuthRepository", "Proveedor creado con ID: $userId")
 
             val user = User(
                 userId = userId,
@@ -96,16 +87,14 @@ class AuthRepository {
                 profileImageUrl = ""
             )
 
-            android.util.Log.d("AuthRepository", "Guardando datos del proveedor en Firestore")
+            // CAMBIO AQUÍ: usar .toMap()
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
                 .document(userId)
-                .set(user)
+                .set(user.toMap())
                 .await()
 
-            android.util.Log.d("AuthRepository", "Proveedor registrado exitosamente")
             Result.success(userId)
         } catch (e: Exception) {
-            android.util.Log.e("AuthRepository", "Error al registrar proveedor: ${e.message}", e)
             Result.failure(e)
         }
     }
@@ -117,16 +106,11 @@ class AuthRepository {
                 .get()
                 .await()
 
-            if (!snapshot.exists()) {
-                return Result.failure(Exception("Usuario no encontrado en Firestore"))
-            }
-
             val user = snapshot.toObject(User::class.java)
-                ?: throw Exception("Error al deserializar usuario")
+                ?: throw Exception("Usuario no encontrado")
 
             Result.success(user)
         } catch (e: Exception) {
-            android.util.Log.e("AuthRepository", "Error al obtener datos del usuario: ${e.message}", e)
             Result.failure(e)
         }
     }

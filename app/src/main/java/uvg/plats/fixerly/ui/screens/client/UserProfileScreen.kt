@@ -100,15 +100,12 @@ fun UserProfileContent(
         )
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
+    Box(modifier = Modifier.fillMaxSize()) {
         when {
             userProfile.isLoading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
                         .background(brush = backgroundBrush),
                     contentAlignment = Alignment.Center
                 ) {
@@ -119,7 +116,6 @@ fun UserProfileContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
                         .background(brush = backgroundBrush),
                     contentAlignment = Alignment.Center
                 ) {
@@ -134,7 +130,6 @@ fun UserProfileContent(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
                         .background(brush = backgroundBrush)
                         .verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -275,6 +270,14 @@ fun UserProfileContent(
                 }
             }
         }
+
+        // Snackbar flotante
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp, start = 16.dp, end = 16.dp)
+        )
     }
 }
 

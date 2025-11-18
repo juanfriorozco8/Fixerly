@@ -108,13 +108,10 @@ fun SupplierWelcomeScreenContent(
         )
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) { paddingValues ->
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
                 .background(brush = backgroundBrush)
         ) {
             Box(
@@ -305,6 +302,14 @@ fun SupplierWelcomeScreenContent(
                 }
             }
         }
+
+        // Snackbar flotante
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 80.dp, start = 16.dp, end = 16.dp)
+        )
     }
 }
 
