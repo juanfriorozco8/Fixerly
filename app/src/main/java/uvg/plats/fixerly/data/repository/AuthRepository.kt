@@ -9,12 +9,17 @@ import uvg.plats.fixerly.data.model.User
 import uvg.plats.fixerly.utils.FirebaseConstants
 
 class AuthRepository {
+
+    // se crean los valores que tendran la instancia de firebase y sus servicios
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 
+    // las funciones para obtener el usuario y login
     fun getCurrentUser(): FirebaseUser? = auth.currentUser
     fun isUserLoggedIn(): Boolean = getCurrentUser() != null
 
+
+    // función suspend del login, donde se comprueba si está validado el usuario o no
     suspend fun login(email: String, password: String): Result<String> {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
@@ -25,6 +30,8 @@ class AuthRepository {
         }
     }
 
+    // funcion suspend del registro, igual, metodos de validacion si está bien o no, además de la comparación con los datos reales dentro de la DB
+    // solo para el cliente
     suspend fun registerClient(
         name: String,
         lastName: String,
@@ -59,6 +66,9 @@ class AuthRepository {
             Result.failure(e)
         }
     }
+
+    // funcion suspend del registro, igual, metodos de validacion si está bien o no, además de la comparación con los datos reales dentro de la DB
+    // solo para el proveedor
 
     suspend fun registerProvider(
         name: String,
@@ -99,6 +109,8 @@ class AuthRepository {
         }
     }
 
+    // aqui tenemos la función suspendida para conseguir la data del usuario 
+    // se valida y si no existe da una excepción.
     suspend fun getUserData(userId: String): Result<User> {
         return try {
             val snapshot = firestore.collection(FirebaseConstants.USERS_COLLECTION)
@@ -115,10 +127,14 @@ class AuthRepository {
         }
     }
 
+
+    // logout 
     fun logout() {
         auth.signOut()
     }
 
+
+    // restear password (creo que este si no lo tocamos)
     suspend fun resetPassword(email: String): Result<Unit> {
         return try {
             auth.sendPasswordResetEmail(email).await()

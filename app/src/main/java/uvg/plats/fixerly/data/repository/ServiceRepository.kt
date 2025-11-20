@@ -19,6 +19,9 @@ class ServiceRepository {
     /**
      * Crear nueva solicitud de servicio (CLIENTE)
      */
+
+    // para las solicitudes de cliente
+    // se crea, luego se envia a la colección y listo 
     suspend fun createServiceRequest(
         clientId: String,
         clientName: String,
@@ -51,20 +54,31 @@ class ServiceRepository {
      * Obtener todas las solicitudes pendientes (PROVEEDOR)
      * Flow para actualizaciones en tiempo real
      */
+
+    // lo que dice arriba
+    // es un streamsito 
+    // basicamente es un stream que se actualiza solo cada vez que se actualiza el firestore o cambia algo y en la UI sale en tiempo real
+    // se toman todas las requests pendientes y basicamente avisa cada que cambian 
+
+    // hace la lista -> manda al flow -> se actualiza ui -> se limpia el listener
     fun getAllPendingRequests(): Flow<List<ServiceRequest>> = callbackFlow {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
             .whereEqualTo("status", "pending")
-            // TODO: Agregar índice compuesto en Firebase Console para: status (ASC) + createdAt (DESC)
-            // .orderBy("createdAt", Query.Direction.DESCENDING)
+            // TODO: Agregar índice compuesto en Firebase Console para: status (ASC) + createdAt (DESC) // instrucciones extra como guia
+            // .orderBy("createdAt", Query.Direction.DESCENDING) 
             .addSnapshotListener { snapshot, error ->
                 if (error != null) {
                     close(error)
                     return@addSnapshotListener
                 }
 
+                // como extra, esta onda aqui abajito solo convierte los docs en objetos servicerequest
+
                 val requests = snapshot?.documents?.mapNotNull { doc ->
                     ServiceRequest.fromMap(doc.data)
                 } ?: emptyList()
+
+                // se envia la lista al flow
 
                 trySend(requests)
             }

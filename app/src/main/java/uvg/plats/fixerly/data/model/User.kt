@@ -4,6 +4,10 @@ import com.google.firebase.firestore.PropertyName
 import uvg.plats.fixerly.data.local.entities.UserEntity
 import java.util.UUID
 
+// este funciona como un dto mas o menos xd o al menos ese es el concepto base
+
+// campos de propiedades que tiene la clase usuario 
+
 data class User(
     @PropertyName("userId")
     val userId: String = "",
@@ -53,6 +57,7 @@ data class User(
 
 ) {
     // Constructor sin argumentos requerido por Firestore
+    // solo para la db ps
     constructor() : this(
         userId = "",
         name = "",

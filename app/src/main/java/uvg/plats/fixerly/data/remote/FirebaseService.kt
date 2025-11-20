@@ -12,18 +12,24 @@ import uvg.plats.fixerly.data.model.*
  * FirebaseService:
  * - Provee instancias de Firebase (Auth, Firestore, Storage)
  * - Implementa toda la lógica remota por medio de ApiService
- * - Mantiene TODO centralizado en un solo archivo
  */
+
 class FirebaseService : ApiService {
 
     // ----------------------------
     // INSTANCIAS ÚNICAS
     // ----------------------------
+
+    // con by lazy se crean objetos 1 sola vez para luego reutilizar
+
+    // trae la instancia de la autenticación y la guarda aquí
     private val auth: FirebaseAuth by lazy {
         FirebaseAuth.getInstance()
     }
 
-    private val db: FirebaseFirestore by lazy {
+    // trae la instancia de Firestore y le activa la persistencia (cache local) usando las settings del Builder
+
+     private val db: FirebaseFirestore by lazy {
         FirebaseFirestore.getInstance().apply {
             firestoreSettings = FirebaseFirestoreSettings.Builder()
                 .setPersistenceEnabled(true) // Cache local
@@ -31,9 +37,15 @@ class FirebaseService : ApiService {
         }
     }
 
+    // trae el storage de firebase (sirve pa guardar archivos) y la guarda aquí
+
     private val storage: FirebaseStorage by lazy {
         FirebaseStorage.getInstance()
     }
+
+
+    // estas son las colecciones
+    // 1 usuarios (general) y otra de requests de usuarios
 
     private val usersRef = db.collection("users")
     private val requestsRef = db.collection("serviceRequests")
@@ -42,6 +54,9 @@ class FirebaseService : ApiService {
     // MÉTODOS UTILITARIOS
     // ----------------------------
 
+
+    // funciones de autenticación y de control de usuario 
+
     fun isUserAuthenticated(): Boolean = auth.currentUser != null
     fun getCurrentUserId(): String? = auth.currentUser?.uid
     fun getCurrentUserEmail(): String? = auth.currentUser?.email
@@ -49,19 +64,24 @@ class FirebaseService : ApiService {
     // ----------------------------
     // USER / PROVIDER
     // ----------------------------
+
+    // sobreescribe la fun y luego digamos que jala la captura del documento en Firestore y la transforma en un objeto user
     override suspend fun getUser(userId: String): User? {
         val snap = usersRef.document(userId).get().await()
         return snap.toObject(User::class.java)
     }
 
+    // se crea el usuario
     override suspend fun createUser(user: User) {
         usersRef.document(user.userId).set(user.toMap()).await()
     }
 
+    // se acutaliza el usuario
     override suspend fun updateUser(userId: String, updates: Map<String, Any>) {
         usersRef.document(userId).update(updates).await()
     }
 
+    // Rating del usuario (YA NO SE USÓ)
     override suspend fun updateProviderRating(providerId: String, newRating: Double) {
         val snap = usersRef.document(providerId).get().await()
         val provider = snap.toObject(User::class.java) ?: return
@@ -80,15 +100,19 @@ class FirebaseService : ApiService {
     // ----------------------------
     // SERVICE REQUESTS
     // ----------------------------
+
+    // para crear una request 
     override suspend fun createServiceRequest(request: ServiceRequest) {
         requestsRef.document(request.requestId).set(request.toMap()).await()
     }
 
+    // para obtener las requests del cliente y mostrarselas
     override suspend fun getRequestsByClient(clientId: String): List<ServiceRequest> {
         val snap = requestsRef.whereEqualTo("clientId", clientId).get().await()
         return snap.documents.mapNotNull { ServiceRequest.fromMap(it.data) }
     }
 
+    // para obtener las requests de los clientes y mostrarlas a proveedores
     override suspend fun getRequestsByProvider(providerId: String): List<ServiceRequest> {
         val snap = requestsRef
             .whereArrayContains("responses.providerId", providerId)
@@ -98,6 +122,7 @@ class FirebaseService : ApiService {
         return snap.documents.mapNotNull { ServiceRequest.fromMap(it.data) }
     }
 
+    // para actualizar la requests del usuario
     override suspend fun updateServiceRequest(
         requestId: String,
         updates: Map<String, Any>
@@ -108,6 +133,8 @@ class FirebaseService : ApiService {
     // ----------------------------
     // STORAGE
     // ----------------------------
+
+    // para subir imagenes al storage dentro de firebase
     override suspend fun uploadImage(path: String, fileUri: Uri): String {
         val ref = storage.reference.child(path)
         ref.putFile(fileUri).await()

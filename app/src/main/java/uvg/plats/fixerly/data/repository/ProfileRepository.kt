@@ -15,6 +15,10 @@ class ProfileRepository {
     /**
      * Obtener información del usuario
      */
+
+    // funcion suspend para obtener el perfil de Usuario
+    // se toma de la coleccion de firebase
+    // se valida tambien y se retorna 
     suspend fun getUserProfile(userId: String): Result<User> {
         return try {
             val snapshot = firestore.collection(FirebaseConstants.USERS_COLLECTION)
@@ -34,6 +38,10 @@ class ProfileRepository {
     /**
      * Actualizar información genérica del perfil con un mapa de campos
      */
+
+    // los mapitas son como diccionarios de Python basicamente xd
+    // se obtienen los datos del mapita y se devuelven para el perfil del user
+    // se valida también 
     suspend fun updateProfile(
         userId: String,
         updates: Map<String, Any>
@@ -53,6 +61,8 @@ class ProfileRepository {
     /**
      * Actualizar foto de perfil
      */
+
+    // para la foto del perfil pero esto quedó muy secundario, no añadimos lo de actualizar eso directamente 
     suspend fun updateProfileImage(userId: String, imageUri: Uri): Result<String> {
         return try {
             // 1. Subir imagen a Firebase Storage
@@ -79,6 +89,8 @@ class ProfileRepository {
     /**
      * Actualizar habilidades del proveedor
      */
+    // de la users collection se sacan los datos de los campos de las skills
+    // y se devuelven 
     suspend fun updateProviderSkills(userId: String, skills: List<String>): Result<Unit> {
         return try {
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
@@ -95,6 +107,8 @@ class ProfileRepository {
     /**
      * Actualizar descripción del proveedor
      */
+
+    // mismo que el anterior pero pa actualizar el about o el sobre mi
     suspend fun updateProviderAbout(userId: String, about: String): Result<Unit> {
         return try {
             firestore.collection(FirebaseConstants.USERS_COLLECTION)
@@ -111,6 +125,8 @@ class ProfileRepository {
     /**
      * Actualizar preferencias de contacto del proveedor
      */
+
+     // igual que el anterior, pero para el contacto del proveedor y sus preferencias
     suspend fun updateContactPreferences(
         userId: String,
         preferences: List<String>
@@ -131,9 +147,14 @@ class ProfileRepository {
     // Helpers extra para que el ProfileViewModel compile sin tocarlo
     // -------------------------------------------------------------------------
 
+    // obviamente no queremos tocar cosas de los viewmodels dentro, por eso usamos repos para evitar andar metiendo cosas ahí
+
     /**
      * Actualizar info básica: nombre, apellidos, teléfono
      */
+
+    // lo que dice arriba
+    // se utiliza mapita para obtener los valores y retornarlos
     suspend fun updateBasicInfo(
         userId: String,
         name: String,
@@ -151,6 +172,8 @@ class ProfileRepository {
     /**
      * Actualizar dirección completa del cliente
      */
+
+    // otro mapita para actualizar la direccion del cliente
     suspend fun updateClientAddress(
         userId: String,
         address: Address
@@ -164,6 +187,8 @@ class ProfileRepository {
     /**
      * Wrapper con el mismo nombre que usa el ViewModel
      */
+
+    // otro que se encarga de cargar la imagen del user pero pues no se usa  
     suspend fun uploadProfileImage(
         userId: String,
         imageUri: Uri
@@ -172,6 +197,8 @@ class ProfileRepository {
     /**
      * Eliminar foto de perfil
      */
+
+    // otra que no se usa xd
     suspend fun deleteProfileImage(userId: String): Result<Unit> {
         return try {
             val storageRef = storage.reference
@@ -193,6 +220,8 @@ class ProfileRepository {
     /**
      * Obtener proveedores por habilidad
      */
+    
+    // tampoco se usa, se debió quitar pero fue de las primeras hechas y la deje  
     suspend fun getProvidersBySkill(skill: String): Result<List<User>> {
         return try {
             val snapshot = firestore.collection(FirebaseConstants.USERS_COLLECTION)
