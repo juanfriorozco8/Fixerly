@@ -100,6 +100,8 @@ data class User(
      */
     fun isProvider(): Boolean = userType == "provider"
 
+
+    // map = diccionario recordar
     /**
      * Convertir a Map para Firestore
      */
@@ -133,6 +135,8 @@ data class User(
         /**
          * Crear desde entidad de Room
          */
+
+         // y luego lo convierte para que la app lo use
         fun fromEntity(entity: UserEntity): User {
             return User(
                 userId = entity.id,

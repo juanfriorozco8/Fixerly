@@ -6,6 +6,7 @@ import uvg.plats.fixerly.data.model.*
 interface ApiService {
 
     // recordar que se usa suspend fun para que la app siga funcionando mientras se espera que se haga.
+    // luego se usa con las coroutines 
 
     // USER / PROVIDER
     suspend fun getUser(userId: String): User?

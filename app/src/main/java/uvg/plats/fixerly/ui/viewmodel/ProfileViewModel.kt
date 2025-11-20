@@ -13,18 +13,24 @@ import uvg.plats.fixerly.data.model.User
 import uvg.plats.fixerly.data.repository.ProfileRepository
 
 class ProfileViewModel : ViewModel() {
+
+    // este se conecta al repo del perfil
     private val repository = ProfileRepository()
 
+    // val que sirve para contener el profile y hacerlo mutable (puede cambiar con el tiempo)
     private val _userProfile = MutableStateFlow<UiState<User>>(UiState())
     val userProfile = _userProfile.asStateFlow()
 
+    // contiene el estado de la operacion y lo hace mutable 
     private val _operationState = MutableStateFlow<OperationState>(OperationState.Idle)
     val operationState = _operationState.asStateFlow()
 
+    // mensaje del perfil que se hace mutable 
     private val _message = MutableSharedFlow<String>()
     val message = _message.asSharedFlow()
 
-
+    // la funcion sirve para cargar el perfil del usuario
+    // el value del perfil de usuario se actualiza segun el estado de la ui, si está cargando o no
     fun loadUserProfile(userId: String) {
         viewModelScope.launch {
             _userProfile.value = UiState(isLoading = true)
@@ -48,7 +54,7 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-
+    
     fun updateBasicInfo(
         userId: String,
         name: String,

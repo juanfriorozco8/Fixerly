@@ -89,6 +89,9 @@ class ServiceRepository {
     /**
      * Obtener solicitudes de un cliente específico
      */
+
+     // lo de arribita
+     // es parecido al anterior, solo que para obtener las solicitudes del cliente 
     fun getClientRequests(clientId: String): Flow<List<ServiceRequest>> = callbackFlow {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
             .whereEqualTo("clientId", clientId)
@@ -113,6 +116,8 @@ class ServiceRepository {
     /**
      * Obtener una solicitud específica
      */
+
+     // igual, pero para una especifica
     suspend fun getRequestById(requestId: String): Result<ServiceRequest> {
         return try {
             val snapshot = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
@@ -132,6 +137,8 @@ class ServiceRepository {
     /**
      * Proveedor responde a una solicitud
      */
+
+     // para que salga la respuesta del proveedor
     suspend fun respondToRequest(
         requestId: String,
         providerUser: User,
@@ -159,6 +166,7 @@ class ServiceRepository {
     /**
      * Cliente acepta la respuesta de un proveedor
      */
+
     suspend fun acceptProviderResponse(
         requestId: String,
         providerId: String
@@ -274,6 +282,10 @@ class ServiceRepository {
     /**
      * Filtrar solicitudes por tipo de servicio
      */
+
+    // pum: las requests que estén en status pending, y actualizarlas en vivo
+    // aunque creo que no las usamos completamente 
+    
     fun getRequestsByServiceType(serviceType: String): Flow<List<ServiceRequest>> = callbackFlow {
         val listener = firestore.collection(FirebaseConstants.SERVICE_REQUESTS_COLLECTION)
             .whereEqualTo("serviceType", serviceType)
